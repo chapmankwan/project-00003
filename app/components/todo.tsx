@@ -3,7 +3,7 @@ import type {Task} from "@/app/models";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
 
-import { Ref } from "react";
+import React, { Ref } from "react";
 
 interface TodoListModel {
     ref:  Ref<HTMLLIElement | null>; // fix
@@ -21,9 +21,18 @@ export const Todo = ({
     toggleTaskCompletion
 }: TodoListModel) => {
 
+    const stopPropagation = (event: React.MouseEvent<HTMLButtonElement | HTMLDivElement | HTMLLabelElement>) => {
+        event.stopPropagation();
+    };
+
     return (
-        <li ref={ref} key={index} className="flex items-center bg-slate-700 m-3 p-2 gap-3 rounded-sm cursor-pointer">
-            <label className="*:cursor-pointer">
+        <li 
+            className="flex items-center bg-slate-700 m-3 p-2 gap-3 rounded-sm cursor-pointer"
+            key={index} 
+            onClick={() => toggleTaskCompletion(index)}
+            ref={ref} 
+        >
+            <label className="*:cursor-pointer" onClick={stopPropagation}>
                 <input 
                     checked={task.completed} 
                     className="border-gray-300 rounded-sm bg-black"
@@ -37,7 +46,10 @@ export const Todo = ({
 
             <div className="ml-auto">
                 <Menu>
-                    <MenuButton className="inline-flex p-2 rounded-full cursor-pointer hover:bg-slate-600">
+                    <MenuButton 
+                        className="inline-flex p-2 rounded-full cursor-pointer hover:bg-slate-600" 
+                        onClick={stopPropagation}
+                    >
                         <EllipsisVerticalIcon className="size-6"/>
                     </MenuButton>
 
@@ -45,14 +57,20 @@ export const Todo = ({
                         transition
                         anchor="bottom end"
                         className="origin-top-right bg-slate-500 rounded-md"
+                        onClick={stopPropagation}
                     >
                         <MenuItem>
-                            <button className="flex items-center gap-2 cursor-pointer p-2 hover:text-gray-400 w-full">
+                            <button 
+                                className="flex items-center gap-2 cursor-pointer p-2 hover:text-gray-400 w-full"
+                                onClick={stopPropagation}
+                            >
                                 Edit
                             </button>
                         </MenuItem>
                         <MenuItem>
-                            <button className="flex items-center gap-2 cursor-pointer p-2 hover:text-red-500 w-full" onClick={() => deleteTask(index)}>
+                            <button 
+                                className="flex items-center gap-2 cursor-pointer p-2 hover:text-red-500 w-full" 
+                                onClick={() => {deleteTask(index)}}>
                                 Delete
                             </button>
                         </MenuItem>
