@@ -5,26 +5,8 @@ import { Todo } from "@/app/components";
 import type { Task } from "@/app/models";
 import Form from "next/form";
 
-const taskList: Task[] = [
-    {
-        id: "1",
-        text: "This is the first task for visual representation",
-        completed: false,
-    },
-    {
-        id: "2",
-        text: "This is the second task for visual representation, it is completed",
-        completed: true,
-    },
-    {
-        id: "3",
-        text: "This is the first task for visual representation",
-        completed: false,
-    },
-];
-
 export default function TaskList () {
-    const [tasks, setTasks] = useState(taskList);
+    const [tasks, setTasks] = useState<Task[]>([]);
     const [newTask, setNewTask] = useState("");
 
     const lastTaskRef = useRef<HTMLLIElement>(null);
