@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 
-import { Loader, Todo } from "@/app/components";
+import { Loader, Modal, Todo } from "@/app/components";
 import type { Task } from "@/app/models";
 import Form from "next/form";
 
@@ -94,7 +94,14 @@ export default function TaskList () {
             <h3 className="w-full text-2xl p-7 cursor-default select-none">Task list</h3>
 
             <div className="p-2">Tasks completed: {completedTasks} / {totalTasks} </div>
-            <button className="m-3 py-1 px-2 rounded cursor-pointer bg-slate-400 hover:bg-slate-500" onClick={deleteAllTasks}>delete all</button>
+            <Modal  
+                callback={deleteAllTasks}
+                cancelButtonText="Cancel"
+                approveButtonText="Delete all"
+                modalTitle="Delete all tasks"
+                modalDescription="This will permanently delete all your written tasks"
+                modalExtraDetails="Are you sure you want to delete all your tasks? Deleted tasks will not be retrievable."
+            />
 
             {
                 loading ? <Loader/> :
