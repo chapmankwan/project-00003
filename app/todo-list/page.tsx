@@ -71,13 +71,13 @@ export default function TaskList () {
             text: input.trim(),
             completed: false,
         };
-        const updated = [...tasks, newTask];
+        const updatedTasks = [...tasks, newTask];
         // Flag this as a new task added
         justAddedRef.current = true;
-        setTasks(updated);
-        saveTasks(updated);
+        setTasks(updatedTasks);
+        saveTasks(updatedTasks);
         setInput('');
-      };
+    };
 
     const completedTasks = tasks.filter( task => task.completed).length;
 
@@ -110,8 +110,15 @@ export default function TaskList () {
                                 key={index}
                                 index={index}
                                 deleteTask={deleteTask}
-                                toggleTaskCompletion={toggleTaskCompletion}
                                 task={task} 
+                                toggleTaskCompletion={toggleTaskCompletion}
+                                updateTask={(id:string, editInput ) => {
+                                    const updatedTasks: Task[] = [...tasks];
+                                    const index = updatedTasks.findIndex(task => task.id === id);
+                                    updatedTasks[index].text = editInput
+                                    setTasks(updatedTasks);
+                                    saveTasks(updatedTasks);
+                                }}
                             />
                         )
                     })

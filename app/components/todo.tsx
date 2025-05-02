@@ -1,3 +1,6 @@
+"use client";
+import { useState } from "react";
+
 import type {Task} from "@/app/models";
 
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
@@ -11,6 +14,7 @@ interface TodoListModel {
     task: Task;
     deleteTask: (index: number) => void;
     toggleTaskCompletion: (index: number) => void;
+    updateTask: (id: string, text:string) => void;
 };
 
 export const Todo = ({
@@ -18,12 +22,26 @@ export const Todo = ({
     index,
     task,
     deleteTask,
-    toggleTaskCompletion
+    toggleTaskCompletion,
+    updateTask,
 }: TodoListModel) => {
+    const [isEditing, setIsEditing] = useState(false);
+    const [editTaskInput, setEditTaskInput] = useState("");
 
     const stopPropagation = (event: React.MouseEvent<HTMLButtonElement | HTMLDivElement | HTMLLabelElement>) => {
         event.stopPropagation();
     };
+
+    const editTaskHandler = () => {
+        setIsEditing(true);
+        setEditTaskInput(task.text);
+    };
+      
+    const cancelEditing = () => {
+        setIsEditing(false);
+        setEditTaskInput("");
+    };
+
 
     return (
         <li 
@@ -40,9 +58,27 @@ export const Todo = ({
                     type="checkbox" />
             </label>
 
-            <span className="w-full select-none">
-                {task.text}
-            </span>
+            {
+                isEditing ?
+                <input 
+                    autoFocus
+                    value={editTaskInput}
+                    onClick={stopPropagation}
+                    onChange={(e) => {setEditTaskInput(e.target.value)}}
+                    onBlur={() => updateTask(task.id, editTaskInput)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            updateTask(task.id, editTaskInput);
+                            setIsEditing(false);
+                        }
+                        if (e.key === 'Escape') cancelEditing();
+                    }}
+                />
+                :
+                <span className="w-full select-none">
+                    {task.text}
+                </span>
+            }
 
             <div className="ml-auto">
                 <Menu>
@@ -55,14 +91,14 @@ export const Todo = ({
 
                     <MenuItems
                         transition
-                        anchor="bottom end"
+                        anchor="left"
                         className="origin-top-right bg-slate-500 rounded-md"
                         onClick={stopPropagation}
                     >
                         <MenuItem>
                             <button 
                                 className="flex items-center gap-2 cursor-pointer p-2 hover:text-gray-400 w-full"
-                                onClick={stopPropagation}
+                                onClick={editTaskHandler}
                             >
                                 Edit
                             </button>
