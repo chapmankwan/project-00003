@@ -45,7 +45,15 @@ export default function TaskList () {
     const deleteTask = (index: number) => {
         const updatedTasks = tasks.filter((_, i) => i !== index);
         setTasks(updatedTasks);
+        saveTasks(updatedTasks);
     };
+
+    const deleteAllTasks = () => {
+        const updatedTasks: Task[] = [];
+        setTasks(updatedTasks);
+        saveTasks(updatedTasks);
+    }
+
 
     const toggleTaskCompletion = (index: number) => {
         const updatedTasks = tasks.map( (task, i) => index === i ? { ...task, completed: !task.completed } : task);
@@ -77,15 +85,16 @@ export default function TaskList () {
     }
 
     return (
-        <section className="flex flex-col items-center min-h-[calc(100vh-56px)]">
+        <section className="flex-1 flex flex-col items-center h-[calc(100vh-56px)]">
             <h3 className="w-full text-2xl p-7 cursor-default select-none">Task list</h3>
 
             <div className="p-2">Tasks completed: {completedTasks} / {totalTasks} </div>
+            <button className="m-2 p-2 cursor-pointer" onClick={deleteAllTasks}>delete all</button>
 
             {
                 loading ? <Loader/> :
 
-                <ul className="w-[90%] md:w-2/3 mx-3 rounded-md flex-grow h-full overflow-y-auto">
+                <ul className="space-y-2 w-[90%] md:w-2/3 mx-3 rounded-md flex-grow h-full overflow-y-auto">
                 {
                     tasks.map((task, index) => {
                         const isLast = index === tasks.length - 1;
@@ -105,7 +114,7 @@ export default function TaskList () {
                 </ul>
             }
 
-            <section className="sticky bottom-0 z-10 flex justify-center items-center w-full mx-auto p-4 bg-slate-800 drop-shadow-xl drop-shadow-slate-700">
+            <section className="sticky bottom-0 z-10 flex justify-center items-center w-full mx-auto p-4 bg-slate-800">
                 <Form action="/todo-list" onSubmit={onSubmitHandler} className="flex w-3/4 bg-slate-700 p-4 rounded-md">
                     <input
                         type="text"
