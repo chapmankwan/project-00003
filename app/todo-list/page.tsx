@@ -94,7 +94,7 @@ export default function TaskList () {
             <h3 className="w-full text-2xl p-7 cursor-default select-none">Task list</h3>
 
             <div className="p-2">Tasks completed: {completedTasks} / {totalTasks} </div>
-            <button className="m-2 p-2 cursor-pointer" onClick={deleteAllTasks}>delete all</button>
+            <button className="m-3 py-1 px-2 rounded cursor-pointer bg-slate-400 hover:bg-slate-500" onClick={deleteAllTasks}>delete all</button>
 
             {
                 loading ? <Loader/> :

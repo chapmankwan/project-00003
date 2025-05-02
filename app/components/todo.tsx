@@ -27,7 +27,7 @@ export const Todo = ({
 
     return (
         <li 
-            className="flex items-center bg-slate-700 m-3 p-2 gap-3 rounded-sm cursor-pointer"
+            className="flex items-center bg-slate-700 hover:bg-slate-600 m-3 p-2 gap-3 rounded-sm cursor-pointer"
             key={index} 
             onClick={() => toggleTaskCompletion(index)}
             ref={ref} 
