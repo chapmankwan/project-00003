@@ -10,6 +10,7 @@ export default function TaskList () {
     const [loading, setLoading] = useState(true);
     const [input, setInput] = useState("");
     
+    const justAddedRef = useRef(false);
     const lastTaskRef = useRef<HTMLLIElement>(null);
 
     useEffect(() => {
@@ -26,9 +27,11 @@ export default function TaskList () {
     }, []);
     
     useEffect(() => {
-        // Scroll the last task into view
-        if (lastTaskRef.current) {
+        // Scroll to the latest task
+        if (justAddedRef.current && lastTaskRef.current) {
             lastTaskRef.current.scrollIntoView({ behavior: 'smooth' });
+            // Makes sure to reset the reference point for next task added
+            justAddedRef.current = false;
         }
     }, [tasks]);
     
@@ -69,6 +72,8 @@ export default function TaskList () {
             completed: false,
         };
         const updated = [...tasks, newTask];
+        // Flag this as a new task added
+        justAddedRef.current = true;
         setTasks(updated);
         saveTasks(updated);
         setInput('');
