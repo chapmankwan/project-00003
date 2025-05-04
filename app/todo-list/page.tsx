@@ -21,7 +21,7 @@ export default function TaskList () {
             const loaded = parsed[key] || [];
             setTasks(loaded);
             setLoading(false);
-        }, 300);
+        }, 500);
 
         return () => clearTimeout(timer);
     }, []);
@@ -95,9 +95,10 @@ export default function TaskList () {
 
             <div className="p-2">Tasks completed: {completedTasks} / {totalTasks} </div>
             <Modal  
+                mainButtonText="Delete all"
                 callback={deleteAllTasks}
-                cancelButtonText="Cancel"
-                approveButtonText="Delete all"
+                leftButtonText="Cancel"
+                rightButtonText="Delete all"
                 modalTitle="Delete all tasks"
                 modalDescription="This will permanently delete all your written tasks"
                 modalExtraDetails="Are you sure you want to delete all your tasks? Deleted tasks will not be retrievable."
@@ -106,7 +107,7 @@ export default function TaskList () {
             {
                 loading ? <Loader/> :
 
-                <ul className="space-y-2 w-[90%] md:w-2/3 mx-3 rounded-md flex-grow h-full overflow-y-auto">
+                <ul className="space-y-2 w-[90%] md:w-2/3 mx-3 rounded-md flex-grow h-full overflow-y-auto"> 
                 {
                     tasks.map((task, index) => {
                         const isLast = index === tasks.length - 1;
@@ -141,8 +142,9 @@ export default function TaskList () {
                         onChange={(e) => setInput(e.target.value)}
                         className="w-full border border-solid rounded p-2"
                         placeholder="Add a new task"
+                        required
                     />
-                    <button type="submit" className="ml-2 bg-soft-lavender-500 text-white p-2 rounded-lg hover:bg-soft-mint-green-500">
+                    <button type="submit" className="ml-2 bg-soft-lavender-500 text-white p-2 rounded-lg hover:text-lime-400 cursor-pointer">
                         Add
                     </button>
                 </Form>

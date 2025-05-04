@@ -62,6 +62,7 @@ export const Todo = ({
                 isEditing ?
                 <input 
                     autoFocus
+                    className="p-1 w-full"
                     value={editTaskInput}
                     onClick={stopPropagation}
                     onChange={(e) => {setEditTaskInput(e.target.value)}}

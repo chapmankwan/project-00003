@@ -4,18 +4,20 @@ import { useState } from "react"
 import { Description, Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
 
 interface ModalModel{
-    approveButtonText: string;
+    rightButtonText: string;
     callback: () => void;
-    cancelButtonText: string;
+    leftButtonText: string;
+    mainButtonText: string;
     modalDescription: string;
     modalExtraDetails: string;
     modalTitle: string;
 }
 
 export const Modal = ({
-    approveButtonText,
+    rightButtonText,
     callback,
-    cancelButtonText,
+    leftButtonText,
+    mainButtonText,
     modalDescription,
     modalExtraDetails,
     modalTitle,
@@ -33,7 +35,7 @@ export const Modal = ({
                 className="m-3 py-1 px-2 rounded cursor-pointer bg-slate-400 hover:bg-slate-500"
                 onClick={() => setIsOpen(true)}
             >
-                Delete all
+                {mainButtonText}
             </button>
             <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="relative z-50">
                 <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
@@ -42,8 +44,8 @@ export const Modal = ({
                     <Description>{modalDescription}</Description>
                     <p>{modalExtraDetails}</p>
                     <div className="flex gap-3">
-                        <button className="rounded cursor-pointer px-3 py-2 bg-slate-600" onClick={() => setIsOpen(false)}>{cancelButtonText}</button>
-                        <button className="rounded cursor-pointer px-3 py-2 bg-red-500" onClick={handleDeleteAll}>{approveButtonText}</button>
+                        <button className="rounded cursor-pointer px-3 py-2 bg-slate-600" onClick={() => setIsOpen(false)}>{leftButtonText}</button>
+                        <button className="rounded cursor-pointer px-3 py-2 bg-red-500" onClick={handleDeleteAll}>{rightButtonText}</button>
                     </div>
                 </DialogPanel>
                 </div>
