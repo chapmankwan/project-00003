@@ -2,12 +2,13 @@ import Link from "next/link";
 import Image from "next/image";
 
 export default function Home() {
-
+    const todaysDate = new Date().toISOString().split('T')[0];
 	const footerCss = "flex items-center gap-2 hover:underline hover:underline-offset-4"
 
   return (
-	<div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-		<main className="flex flex-col row-start-2 items-center justify-center gap-4">
+	<div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-[calc(100vh-56px)] p-8 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+		{todaysDate}
+		<main className="flex flex-col row-start-2 items-center justify-center">
 			<Image 
 				src="/monorail-logo.png"
 				alt="logo"
@@ -21,7 +22,20 @@ export default function Home() {
 			>
 				Get started
 			</Link> */}
-			<Link href="#" className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base sm:h-12 px-4 sm:px-5 sm:w-auto cursor-pointer">login here</Link>
+			<Link 
+				href="#" 
+				className="
+					rounded-full 
+					border border-solid border-transparent 
+					transition-colors 
+					flex items-center justify-center 
+					bg-foreground hover:bg-[#383838] dark:hover:bg-[#ccc] 
+					text-background text-sm h-12 px-5 
+					sm:w-auto cursor-pointer
+				"
+			>
+				login here
+			</Link>
 		</main>
 
 		<footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">

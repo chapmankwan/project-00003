@@ -104,8 +104,8 @@ export const TodoList = ({date}: { date: string}) => {
             </div>
 
             {
-                loading ? <Loader/> :
-
+                loading ? 
+                <Loader/> :
                 <ul className="space-y-2 w-[90%] md:w-2/3 mx-3 rounded-md flex-grow h-full overflow-y-auto"> 
                 {
                     tasks.map((task, index) => {
