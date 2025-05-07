@@ -8,7 +8,7 @@ export const Header = () => {
             <Link href="/">Home</Link>
             <section className="flex gap-10 *:cursor-pointer *:hover:underline *:hover:underline-offset-4">
                 <Link href="todo-list">Task list</Link>
-                <button>Tracker</button>
+                <Link href="/tracker">Tracker</Link>
                 {
                     !user ? 
                     <Link href="/account/login">Login</Link> :

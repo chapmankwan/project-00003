@@ -93,16 +93,18 @@ export default function TaskList () {
         <section className="flex-1 flex flex-col items-center h-[calc(100vh-56px)]">
             <h3 className="w-full text-2xl p-7 cursor-default select-none">Task list</h3>
 
-            <div className="p-2">Tasks completed: {completedTasks} / {totalTasks} </div>
-            <Modal  
-                mainButtonText="Delete all"
-                callback={deleteAllTasks}
-                leftButtonText="Cancel"
-                rightButtonText="Delete all"
-                modalTitle="Delete all tasks"
-                modalDescription="This will permanently delete all your written tasks"
-                modalExtraDetails="Are you sure you want to delete all your tasks? Deleted tasks will not be retrievable."
-            />
+            <div className="w-[90%] md:w-2/3 flex items-center justify-between bg-slate-500 rounded drop-shadow-lg mx-3">
+                <div className="p-2">Tasks completed: {completedTasks} / {totalTasks} </div>
+                <Modal  
+                    mainButtonText="Delete all"
+                    callback={deleteAllTasks}
+                    leftButtonText="Cancel"
+                    rightButtonText="Delete all"
+                    modalTitle="Delete all tasks"
+                    modalDescription="This will permanently delete all your written tasks"
+                    modalExtraDetails="Are you sure you want to delete all your tasks? Deleted tasks will not be retrievable."
+                />
+            </div>
 
             {
                 loading ? <Loader/> :
