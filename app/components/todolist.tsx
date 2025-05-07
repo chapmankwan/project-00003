@@ -5,7 +5,8 @@ import { Loader, Modal, Todo } from "@/app/components";
 import type { Task } from "@/app/models";
 import Form from "next/form";
 
-export default function TaskList () {
+export const TodoList = ({date}: { date: string}) => {
+
     const [tasks, setTasks] = useState<Task[]>([]);
     const [loading, setLoading] = useState(true);
     const [input, setInput] = useState("");
@@ -15,16 +16,15 @@ export default function TaskList () {
 
     useEffect(() => {
         const timer = setTimeout( () => {
-            const key = new Date().toISOString().split('T')[0];
             const data = localStorage.getItem('dailyTasks');
             const parsed = data ? JSON.parse(data) : {};
-            const loaded = parsed[key] || [];
+            const loaded = parsed[date] || [];
             setTasks(loaded);
             setLoading(false);
         }, 500);
 
         return () => clearTimeout(timer);
-    }, []);
+    }, [date]);
     
     useEffect(() => {
         // Scroll to the latest task
@@ -35,13 +35,10 @@ export default function TaskList () {
         }
     }, [tasks]);
     
-    const getTodayKey = () => new Date().toISOString().split('T')[0];
-    
     const saveTasks = (tasks: Task[]) => {
-        const key = getTodayKey();
         const existing = localStorage.getItem('dailyTasks');
         const parsed = existing ? JSON.parse(existing) : {};
-        parsed[key] = tasks;
+        parsed[date] = tasks;
         localStorage.setItem('dailyTasks', JSON.stringify(parsed));
       };
 
@@ -56,7 +53,6 @@ export default function TaskList () {
         setTasks(updatedTasks);
         saveTasks(updatedTasks);
     }
-
 
     const toggleTaskCompletion = (index: number) => {
         const updatedTasks = tasks.map( (task, i) => index === i ? { ...task, completed: !task.completed } : task);
@@ -90,7 +86,7 @@ export default function TaskList () {
     }
 
     return (
-        <section className="flex-1 flex flex-col items-center h-[calc(100vh-56px)]">
+        <div className="flex-1 flex flex-col items-center h-[calc(100vh-56px)]">
             <h3 className="w-full text-2xl p-7 cursor-default select-none">Task list</h3>
 
             <div className="w-[90%] md:w-2/3 flex items-center justify-between bg-slate-500 rounded drop-shadow-lg mx-3">
@@ -151,6 +147,6 @@ export default function TaskList () {
                     </button>
                 </Form>
             </section>
-        </section>
+        </div>
     );
 };
