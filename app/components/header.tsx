@@ -10,7 +10,7 @@ export const Header = () => {
             <Link href="/">Monorail</Link>
             <section className="flex gap-10 *:cursor-pointer *:hover:underline *:hover:underline-offset-4 text-xs">
                 <Link href={`/todo-lists/${todaysDate}`}>Tasks</Link>
-                <Link href="/tracker">Workspaces</Link>
+                <Link href="/workspaces">Workspaces</Link>
                 {
                     !user ? 
                     <Link href="/account/login">Login</Link> :

@@ -18,7 +18,12 @@ export const DailyCard = ({
             className="m-3 p-2 flex items-center justify-between cursor-pointer rounded-sm gap-3 bg-slate-700 hover:bg-slate-600"
         >
             <span>{date}</span>
-            <span>{tasks.filter( task => task.completed).length} / {tasks.length} tasks completed</span>
+            {
+                tasks.length > 0 ?
+                <span>{tasks.filter( task => task.completed).length} / {tasks.length} tasks completed</span>
+                :
+                <span>No tasks yet</span>
+            }
         </Link>
     )
 }
