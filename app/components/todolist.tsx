@@ -94,6 +94,7 @@ export const TodoList = ({date}: { date: string}) => {
                 <Modal  
                     mainButtonText="Delete all"
                     callback={deleteAllTasks}
+                    disabled={ totalTasks === 0 }
                     leftButtonText="Cancel"
                     rightButtonText="Delete all"
                     modalTitle="Delete all tasks"

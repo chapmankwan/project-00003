@@ -2,10 +2,12 @@
 import { useState } from "react"
 
 import { Description, Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
+import clsx from "clsx";
 
 interface ModalModel{
     rightButtonText: string;
     callback: () => void;
+    disabled: boolean;
     leftButtonText: string;
     mainButtonText: string;
     modalDescription: string;
@@ -16,6 +18,7 @@ interface ModalModel{
 export const Modal = ({
     rightButtonText,
     callback,
+    disabled,
     leftButtonText,
     mainButtonText,
     modalDescription,
@@ -32,13 +35,14 @@ export const Modal = ({
     return (
         <>
             <button 
-                className="m-3 py-1 px-2 rounded cursor-pointer bg-slate-400 hover:bg-slate-500"
+                disabled={disabled}
+                className={clsx("m-3 py-1 px-2 rounded cursor-pointer bg-slate-400 hover:bg-slate-700", disabled && "disabled:cursor-auto disabled:hover:bg-slate-400")}
                 onClick={() => setIsOpen(true)}
             >
                 {mainButtonText}
             </button>
             <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="relative z-50">
-                <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
+                <div className="fixed inset-0 flex w-screen items-center justify-center p-4 bg-black/50">
                 <DialogPanel className="max-w-lg space-y-4 border bg-slate-500 p-12 rounded">
                     <DialogTitle className="font-bold">{modalTitle}</DialogTitle>
                     <Description>{modalDescription}</Description>
