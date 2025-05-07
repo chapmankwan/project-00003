@@ -1,6 +1,7 @@
 export * from "./daily-card";
 export * from "./header";
 export * from "./loader";
+export * from "./menu";
 export * from "./message-box";
 export * from "./modal";
 export * from "./todo";
