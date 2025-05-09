@@ -1,7 +1,7 @@
 import { TodoList } from "@/app/components";
 
-export default async function TodoLists({ params }: { params: { date: string } }) {
-    const { date } = await params
+export default function TodoLists({ params }: { params: { date: string } }) {
+  const { date } = params;
 
-    return await <TodoList date={date} />;
-  }
+  return <TodoList date={date} />;
+}
