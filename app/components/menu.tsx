@@ -2,11 +2,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link"
 
+import { todaysDate } from "@/app/constants";
+
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import clsx from "clsx";
 
-const todaysDate = new Date().toISOString().split('T')[0];
 export const Menu = ({
 
 }) => {

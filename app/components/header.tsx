@@ -1,10 +1,12 @@
 import Image from "next/image";
 import Link from "next/link"
-import { Menu } from "./menu";
+
+import { Menu } from "@/app/components";
+import { todaysDate } from "@/app/constants";
+
 
 export const Header = () => {
     const user = false;
-    const todaysDate = new Date().toISOString().split('T')[0];
 
     return (
         <header className="sticky top-0 z-30 px-6 py-4 w-full flex items-center justify-between bg-slate-700">

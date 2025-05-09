@@ -1,8 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
 
+import { todaysDate } from "@/app/constants";
+
 export default function Home() {
-    const todaysDate = new Date().toISOString().split('T')[0];
+
 	const footerCss = "flex items-center gap-2 hover:underline hover:underline-offset-4"
 
   return (
