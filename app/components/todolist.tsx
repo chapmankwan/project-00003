@@ -80,8 +80,6 @@ export const TodoList = ({date}: { date: string}) => {
 
     const totalTasks = tasks.length;
 
-    console.log('+++ date', date);
-
     const onSubmitHandler = (event: React.FormEvent<HTMLFormElement>) => {
         // Prevent the form submission which causes a full page reload? Double check with Next JS
         event.preventDefault();
@@ -90,8 +88,10 @@ export const TodoList = ({date}: { date: string}) => {
 
     return (
         <div className="flex-1 flex flex-col items-center h-[calc(100vh-56px)]">
-            <h3 className="w-full text-2xl p-7 cursor-default select-none">Task list</h3>
-            <p>{todaysDate}</p>
+            <div className="flex justify-between items-center w-full">
+                <h3 className="text-2xl p-7 cursor-default select-none">Task list</h3>
+                <p className="p-7 text-purple-300">{date === todaysDate ? "Today" : date}</p>
+            </div>
 
             <div className="w-[90%] md:w-2/3 flex items-center justify-between bg-slate-500 rounded drop-shadow-lg mx-3">
                 <div className="p-2">Tasks completed: {completedTasks} / {totalTasks} </div>

@@ -38,15 +38,12 @@ export default function Tracker () {
                 <Loader /> :
                 <ul className="space-y-2 w-[90%] md:w-2/3 mx-3 rounded-md flex-grow h-full overflow-y-auto">
                     {
-                        allData.length > 0 ?
+                        allData.length > 0 &&
                         allData.map( (data, index) => {
                             return (
                                 <DailyCard key={index} date={data.date} tasks={data.tasks} />
                             )
                         })
-                        :
-                        <li>
-                        </li>
                     }
                 </ul>
             }
