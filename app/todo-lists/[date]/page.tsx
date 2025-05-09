@@ -1,14 +1,11 @@
-import { TodoList } from "@/app/components"; // must be a Client Component
-import { type FC } from "react";
+"use client";
+import { useParams } from 'next/navigation'
 
-interface PageProps {
-  params: { date: string };
-}
+import { TodoList } from "@/app/components";
 
-const TodoLists: FC<PageProps> = ({ params }) => {
-  const { date } = params;
-
-  return <TodoList date={date} />;
+const TodoLists = () => {
+	const params = useParams<{ date: string; }>()
+	return <TodoList date={params.date} />;
 };
 
 export default TodoLists;
