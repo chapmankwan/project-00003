@@ -4,7 +4,6 @@ import Link from "next/link"
 import { Menu } from "@/app/components";
 import { todaysDate } from "@/app/constants";
 
-
 export const Header = () => {
     const user = false;
 
