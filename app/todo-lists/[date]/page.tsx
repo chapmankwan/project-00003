@@ -1,7 +1,14 @@
-import { TodoList } from "@/app/components";
+import { TodoList } from "@/app/components"; // must be a Client Component
+import { type FC } from "react";
 
-export default function TodoLists({ params }: { params: { date: string } }) {
+interface PageProps {
+  params: { date: string };
+}
+
+const TodoLists: FC<PageProps> = ({ params }) => {
   const { date } = params;
 
   return <TodoList date={date} />;
-}
+};
+
+export default TodoLists;
