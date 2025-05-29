@@ -138,7 +138,7 @@ export const TodoList = ({date}: { date: string}) => {
             }
 
             <section className="sticky bottom-0 z-10 flex justify-center items-center w-full mx-auto p-4 bg-slate-800">
-                <Form action="/todo-list" onSubmit={onSubmitHandler} className="flex w-3/4 bg-slate-700 p-4 rounded-md">
+                <Form action="/todo-list" onSubmit={onSubmitHandler} className="flex w-full md:w-3/4 bg-slate-700 p-4 rounded-md">
                     <input
                         type="text"
                         value={input}
