@@ -5,6 +5,7 @@ import type {Task} from "@/app/models";
 
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
+import clsx from "clsx";
 
 
 interface TodoListModel {
@@ -62,6 +63,7 @@ export const Todo = ({
                 <input 
                     autoFocus
                     className="p-1 w-full"
+                    required
                     value={editTaskInput}
                     onClick={stopPropagation}
                     onChange={(e) => {setEditTaskInput(e.target.value)}}
@@ -75,10 +77,19 @@ export const Todo = ({
                     }}
                 />
                 :
-                <span className="w-full select-none">
+                <span className={clsx(["w-full select-none", task.completed && "line-through"])}>
                     {task.text}
                 </span>
             }
+
+            <span className="text-sm text-lime-400">
+                {task.edited ? "edited" : ""}
+            </span>
+
+            <div className="text-sm flex flex-col w-fit text-nowrap">
+                <span>created: {task.date}</span>
+                <span>completed on: {task.dateCompleted}</span>
+            </div>
 
             <div className="ml-auto">
                 <Menu>

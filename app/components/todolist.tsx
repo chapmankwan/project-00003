@@ -66,7 +66,7 @@ export const TodoList = ({title}: { title: string}) => {
 
     // sets the selected task's completion status
     const toggleTaskCompletion = (index: number) => {
-        const updatedTasks = tasks.map( (task, i) => index === i ? { ...task, completed: !task.completed, dateCompleted: todaysDate } : task);
+        const updatedTasks = tasks.map( (task, i) => index === i ? { ...task, completed: !task.completed, dateCompleted: !task.completed ? todaysDate : false } : task);
         setTasks(updatedTasks);
         saveTasks(updatedTasks);
     };
@@ -78,6 +78,7 @@ export const TodoList = ({title}: { title: string}) => {
             completed: false,
             date: todaysDate,
             dateCompleted: false,
+            edited: false,
             id: crypto.randomUUID(),
             text: input.trim(),
         };
@@ -135,7 +136,8 @@ export const TodoList = ({title}: { title: string}) => {
                                 updateTask={(id:string, editInput ) => {
                                     const updatedTasks: Task[] = [...tasks];
                                     const index = updatedTasks.findIndex(task => task.id === id);
-                                    updatedTasks[index].text = editInput
+                                    updatedTasks[index].text = editInput;
+                                    updatedTasks[index].edited = true;
                                     setTasks(updatedTasks);
                                     saveTasks(updatedTasks);
                                 }}
