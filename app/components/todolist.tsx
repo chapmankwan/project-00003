@@ -6,7 +6,7 @@ import { todaysDate } from "@/app/constants";
 import type { Task } from "@/app/models";
 import Form from "next/form";
 
-export const TodoList = ({date}: { date: string}) => {
+export const TodoList = ({title}: { title: string}) => {
 
     const [tasks, setTasks] = useState<Task[]>([]);
     const [loading, setLoading] = useState(true);
@@ -15,18 +15,24 @@ export const TodoList = ({date}: { date: string}) => {
     const justAddedRef = useRef(false);
     const lastTaskRef = useRef<HTMLLIElement>(null);
 
+    // vars
+    const completedTasks = tasks.filter( task => task.completed).length;
+    const totalTasks = tasks.length;
+
+    // initialize the todolist with data
     useEffect(() => {
         const timer = setTimeout( () => {
             const data = localStorage.getItem('dailyTasks');
             const parsed = data ? JSON.parse(data) : {};
-            const loaded = parsed[date] || [];
+            const loaded = parsed[title] || [];
             setTasks(loaded);
             setLoading(false);
         }, 500);
 
         return () => clearTimeout(timer);
-    }, [date]);
+    }, [title]);
     
+    // this hook allows user to scroll to latest task after adding
     useEffect(() => {
         // Scroll to the latest task
         if (justAddedRef.current && lastTaskRef.current) {
@@ -36,37 +42,45 @@ export const TodoList = ({date}: { date: string}) => {
         }
     }, [tasks]);
     
+    // saves the tasks to localstorage
     const saveTasks = (tasks: Task[]) => {
         const existing = localStorage.getItem('dailyTasks');
         const parsed = existing ? JSON.parse(existing) : {};
-        parsed[date] = tasks;
+        parsed[title] = tasks;
         localStorage.setItem('dailyTasks', JSON.stringify(parsed));
-      };
+    };
 
+    // remove selected task
     const deleteTask = (index: number) => {
         const updatedTasks = tasks.filter((_, i) => i !== index);
         setTasks(updatedTasks);
         saveTasks(updatedTasks);
     };
 
+    // deletes all tasks
     const deleteAllTasks = () => {
         const updatedTasks: Task[] = [];
         setTasks(updatedTasks);
         saveTasks(updatedTasks);
-    }
+    };
 
+    // sets the selected task's completion status
     const toggleTaskCompletion = (index: number) => {
-        const updatedTasks = tasks.map( (task, i) => index === i ? { ...task, completed: !task.completed } : task);
+        const updatedTasks = tasks.map( (task, i) => index === i ? { ...task, completed: !task.completed, dateCompleted: !task.completed ? todaysDate : false } : task);
         setTasks(updatedTasks);
         saveTasks(updatedTasks);
     };
 
+    // add new task
     const addTask = () => {
         if (!input.trim()) return;
-        const newTask = {
+        const newTask: Task = {
+            completed: false,
+            date: todaysDate,
+            dateCompleted: false,
+            edited: false,
             id: crypto.randomUUID(),
             text: input.trim(),
-            completed: false,
         };
         const updatedTasks = [...tasks, newTask];
         // Flag this as a new task added
@@ -76,12 +90,8 @@ export const TodoList = ({date}: { date: string}) => {
         setInput('');
     };
 
-    const completedTasks = tasks.filter( task => task.completed).length;
-
-    const totalTasks = tasks.length;
-
+    // Prevent the form submission which causes a full page reload? Double check with Next JS
     const onSubmitHandler = (event: React.FormEvent<HTMLFormElement>) => {
-        // Prevent the form submission which causes a full page reload? Double check with Next JS
         event.preventDefault();
         addTask();
     }
@@ -90,7 +100,7 @@ export const TodoList = ({date}: { date: string}) => {
         <div className="flex-1 flex flex-col items-center h-[calc(100vh-56px)]">
             <div className="flex justify-between items-center w-full">
                 <h3 className="text-2xl p-7 cursor-default select-none">Task list</h3>
-                <p className="p-7 text-purple-300">{date === todaysDate ? "Today" : date}</p>
+                <p className="p-7 text-purple-300">{title === todaysDate ? "Today" : title}</p>
             </div>
 
             <div className="w-[90%] md:w-2/3 flex items-center justify-between bg-slate-500 rounded drop-shadow-lg mx-3">
@@ -126,7 +136,8 @@ export const TodoList = ({date}: { date: string}) => {
                                 updateTask={(id:string, editInput ) => {
                                     const updatedTasks: Task[] = [...tasks];
                                     const index = updatedTasks.findIndex(task => task.id === id);
-                                    updatedTasks[index].text = editInput
+                                    updatedTasks[index].text = editInput;
+                                    updatedTasks[index].edited = true;
                                     setTasks(updatedTasks);
                                     saveTasks(updatedTasks);
                                 }}

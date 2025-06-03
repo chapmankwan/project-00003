@@ -5,6 +5,7 @@ import type {Task} from "@/app/models";
 
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
+import clsx from "clsx";
 
 
 interface TodoListModel {
@@ -44,7 +45,7 @@ export const Todo = ({
 
     return (
         <li 
-            className="flex items-center bg-slate-700 hover:bg-slate-600 m-3 p-2 gap-3 rounded-sm cursor-pointer"
+            className="flex items-center bg-slate-700 hover:bg-slate-600 m-3 p-4 gap-3 rounded-sm cursor-pointer"
             key={index} 
             onClick={() => toggleTaskCompletion(index)}
             ref={ref} 
@@ -62,6 +63,7 @@ export const Todo = ({
                 <input 
                     autoFocus
                     className="p-1 w-full"
+                    required
                     value={editTaskInput}
                     onClick={stopPropagation}
                     onChange={(e) => {setEditTaskInput(e.target.value)}}
@@ -75,15 +77,32 @@ export const Todo = ({
                     }}
                 />
                 :
-                <span className="w-full select-none">
+                <span className={clsx(["w-full select-none", task.completed && "line-through"])}>
                     {task.text}
                 </span>
             }
 
+            <span className="text-sm text-lime-400">
+                {task.edited ? "edited" : ""}
+            </span>
+
+            {/* Task detail section */}
+            <section>
+
+                <div className="text-sm flex flex-col w-fit text-nowrap">
+                    <span>created: {task.date}</span>
+                    {
+                        task.completed && 
+                        <span>completed: {task.dateCompleted}</span>
+                    }
+                </div>
+            </section>
+
+
             <div className="ml-auto">
                 <Menu>
                     <MenuButton 
-                        className="inline-flex p-2 rounded-full cursor-pointer hover:bg-slate-600" 
+                        className="inline-flex p-2 rounded cursor-pointer hover:bg-slate-600" 
                         onClick={stopPropagation}
                     >
                         <EllipsisVerticalIcon className="size-6"/>
