@@ -45,7 +45,7 @@ export const Todo = ({
 
     return (
         <li 
-            className="flex items-center bg-slate-700 hover:bg-slate-600 m-3 p-2 gap-3 rounded-sm cursor-pointer"
+            className="flex items-center bg-slate-700 hover:bg-slate-600 m-3 p-4 gap-3 rounded-sm cursor-pointer"
             key={index} 
             onClick={() => toggleTaskCompletion(index)}
             ref={ref} 
@@ -86,15 +86,23 @@ export const Todo = ({
                 {task.edited ? "edited" : ""}
             </span>
 
-            <div className="text-sm flex flex-col w-fit text-nowrap">
-                <span>created: {task.date}</span>
-                <span>completed on: {task.dateCompleted}</span>
-            </div>
+            {/* Task detail section */}
+            <section>
+
+                <div className="text-sm flex flex-col w-fit text-nowrap">
+                    <span>created: {task.date}</span>
+                    {
+                        task.completed && 
+                        <span>completed: {task.dateCompleted}</span>
+                    }
+                </div>
+            </section>
+
 
             <div className="ml-auto">
                 <Menu>
                     <MenuButton 
-                        className="inline-flex p-2 rounded-full cursor-pointer hover:bg-slate-600" 
+                        className="inline-flex p-2 rounded cursor-pointer hover:bg-slate-600" 
                         onClick={stopPropagation}
                     >
                         <EllipsisVerticalIcon className="size-6"/>
