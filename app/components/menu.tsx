@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link"
 
-import { todaysDate } from "@/app/constants";
+import { ClientHeaderLink } from "@/app/components";
 
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 
@@ -90,7 +90,8 @@ export const Menu = ({
                     <XMarkIcon className="size-6" />
                 </button>
 
-                <Link onClick={() => setIsMenuOpen(false)} className="m-2 p-2 hover:text-slate-400 hover:underline hover:underline-offset-2" href={`/todo-lists/${todaysDate}`}>Tasks</Link>
+                <ClientHeaderLink onClick={() => setIsMenuOpen(false)} className="m-2 p-2 hover:text-slate-400 hover:underline hover:underline-offset-2" />
+            
                 <Link onClick={() => setIsMenuOpen(false)} className="m-2 p-2 hover:text-slate-400 hover:underline hover:underline-offset-2" href="/workspaces">Workspaces</Link>
                 {
                     !user ? 

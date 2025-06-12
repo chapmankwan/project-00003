@@ -46,8 +46,16 @@ export const TodoList = ({slug}: { slug: string}) => {
     const saveTasks = (tasks: Task[]) => {
         const existing = localStorage.getItem('todoLists');
         const parsed = existing ? JSON.parse(existing) : {};
+        console.log("+++ happened");
+        console.log("+++parsed in saveTasks", parsed);
         parsed[slug] = tasks;
-        localStorage.setItem('dailyTasks', JSON.stringify(parsed));
+        console.log("+++ parsed[slug]", parsed[slug])
+
+        console.log("+++ tasks", tasks);
+        console.log("+++what is in existing", existing);
+        console.log("+++parsed2 in saveTasks", parsed);
+
+        localStorage.setItem('todoLists', JSON.stringify(parsed));
     };
 
     // remove selected task

@@ -5,7 +5,7 @@ import { DailyCard, Loader } from "@/app/components";
 import type { TodoListModel } from "@/app/models";
 
 export default function Workspaces () {
-    const [allData, setAllData] = useState<TodoListModel[]>([])
+    const [allTaskLists, setAllTaskLists] = useState<TodoListModel[]>([])
     const [loading, setLoading] = useState(true);
 
     useEffect( () => {
@@ -17,7 +17,7 @@ export default function Workspaces () {
                 new Date(a.dateCreated).getTime() - new Date(b.dateCreated).getTime()
             );
 
-            setAllData(taskList);
+            setAllTaskLists(taskList);
             setLoading(false);
         }, 500);
 
@@ -33,10 +33,10 @@ export default function Workspaces () {
                 <Loader /> :
                 <ul className="space-y-2 w-[90%] md:w-2/3 mx-3 rounded-md flex-grow h-full overflow-y-auto">
                     {
-                        allData.length > 0 &&
-                        allData.map( (data, index) => {
+                        allTaskLists.length > 0 &&
+                        allTaskLists.map( (taskList, index) => {
                             return (
-                                <DailyCard key={index} date={data.dateCreated} tasks={data.tasks} />
+                                <DailyCard key={index} taskList={taskList} />
                             )
                         })
                     }

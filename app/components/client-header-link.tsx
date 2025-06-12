@@ -4,7 +4,15 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { findOrCreateTodayList } from "@/app/utilities";
 
-export const ClientHeaderLink = () => {
+interface ClientHeaderLinkModel {
+  className?: string;
+  onClick?: () => void;
+}
+
+export const ClientHeaderLink = ({
+  className,
+  onClick
+}: ClientHeaderLinkModel) => {
   const [href, setHref] = useState<string | null>(null);
 
   useEffect(() => {
@@ -15,5 +23,5 @@ export const ClientHeaderLink = () => {
 
   if (!href) return null; // or a loading fallback like <span>Loading...</span>
 
-  return <Link href={href}>Tasks</Link>;
+  return <Link onClick={onClick} className={className} href={href}>Tasks</Link>;
 };
