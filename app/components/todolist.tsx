@@ -24,7 +24,7 @@ export const TodoList = ({slug}: { slug: string}) => {
         const timer = setTimeout( () => {
             const data = localStorage.getItem('todoLists');
             const parsed = data ? JSON.parse(data) : {};
-            const loaded = parsed[slug] || [];
+            const loaded = parsed[0].tasks || [];
             setTasks(loaded);
             setLoading(false);
         }, 500);
@@ -46,15 +46,7 @@ export const TodoList = ({slug}: { slug: string}) => {
     const saveTasks = (tasks: Task[]) => {
         const existing = localStorage.getItem('todoLists');
         const parsed = existing ? JSON.parse(existing) : {};
-        console.log("+++ happened");
-        console.log("+++parsed in saveTasks", parsed);
-        parsed[slug] = tasks;
-        console.log("+++ parsed[slug]", parsed[slug])
-
-        console.log("+++ tasks", tasks);
-        console.log("+++what is in existing", existing);
-        console.log("+++parsed2 in saveTasks", parsed);
-
+        parsed[0].tasks = tasks;
         localStorage.setItem('todoLists', JSON.stringify(parsed));
     };
 
