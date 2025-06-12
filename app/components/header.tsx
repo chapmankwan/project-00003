@@ -1,8 +1,7 @@
 import Image from "next/image";
 import Link from "next/link"
 
-import { Menu } from "@/app/components";
-import { todaysDate } from "@/app/constants";
+import { ClientHeaderLink, Menu } from "@/app/components";
 
 export const Header = () => {
     const user = false;
@@ -21,7 +20,7 @@ export const Header = () => {
             <Menu />
 
             <section className="hidden sm:flex gap-10 *:cursor-pointer *:hover:underline *:hover:underline-offset-4 text-xs">
-                <Link href={`/todo-lists/${todaysDate}`}>Tasks</Link>
+                <ClientHeaderLink />
                 <Link href="/workspaces">Workspaces</Link>
                 {
                     !user ? 

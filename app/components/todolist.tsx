@@ -6,7 +6,7 @@ import { todaysDate } from "@/app/constants";
 import type { Task } from "@/app/models";
 import Form from "next/form";
 
-export const TodoList = ({title}: { title: string}) => {
+export const TodoList = ({slug}: { slug: string}) => {
 
     const [tasks, setTasks] = useState<Task[]>([]);
     const [loading, setLoading] = useState(true);
@@ -22,15 +22,15 @@ export const TodoList = ({title}: { title: string}) => {
     // initialize the todolist with data
     useEffect(() => {
         const timer = setTimeout( () => {
-            const data = localStorage.getItem('dailyTasks');
+            const data = localStorage.getItem('todoLists');
             const parsed = data ? JSON.parse(data) : {};
-            const loaded = parsed[title] || [];
+            const loaded = parsed[slug] || [];
             setTasks(loaded);
             setLoading(false);
         }, 500);
 
         return () => clearTimeout(timer);
-    }, [title]);
+    }, [slug]);
     
     // this hook allows user to scroll to latest task after adding
     useEffect(() => {
@@ -44,9 +44,9 @@ export const TodoList = ({title}: { title: string}) => {
     
     // saves the tasks to localstorage
     const saveTasks = (tasks: Task[]) => {
-        const existing = localStorage.getItem('dailyTasks');
+        const existing = localStorage.getItem('todoLists');
         const parsed = existing ? JSON.parse(existing) : {};
-        parsed[title] = tasks;
+        parsed[slug] = tasks;
         localStorage.setItem('dailyTasks', JSON.stringify(parsed));
     };
 
@@ -100,7 +100,7 @@ export const TodoList = ({title}: { title: string}) => {
         <div className="flex-1 flex flex-col items-center h-[calc(100vh-56px)]">
             <div className="flex justify-between items-center w-full">
                 <h3 className="text-2xl p-7 cursor-default select-none">Task list</h3>
-                <p className="p-7 text-purple-300">{title === todaysDate ? "Today" : title}</p>
+                {/* <p className="p-7 text-purple-300">{slug === todaysDate ? "Today" : slug}</p> */}
             </div>
 
             <div className="w-[90%] md:w-2/3 flex items-center justify-between bg-slate-500 rounded drop-shadow-lg mx-3">

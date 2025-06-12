@@ -8,7 +8,7 @@ import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 
 
-interface TodoListModel {
+interface TodoModel {
     ref:  Ref<HTMLLIElement | null>; // fix
     index: number;
     task: Task;
@@ -24,7 +24,7 @@ export const Todo = ({
     deleteTask,
     toggleTaskCompletion,
     updateTask,
-}: TodoListModel) => {
+}: TodoModel) => {
     const [isEditing, setIsEditing] = useState(false);
     const [editTaskInput, setEditTaskInput] = useState("");
 
@@ -41,7 +41,6 @@ export const Todo = ({
         setIsEditing(false);
         setEditTaskInput("");
     };
-
 
     return (
         <li 
