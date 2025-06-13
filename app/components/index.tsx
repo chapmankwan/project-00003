@@ -1,3 +1,4 @@
+export * from "./client-header-link";
 export * from "./daily-card";
 export * from "./header";
 export * from "./loader";

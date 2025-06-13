@@ -2,27 +2,22 @@
 import { useEffect, useState } from "react";
 
 import { DailyCard, Loader } from "@/app/components";
-import type { Task } from "@/app/models";
+import type { TodoListModel } from "@/app/models";
 
-interface TaskDatabaseModel {
-    date: string;
-    tasks: Task[];
-}
-
-export default function Tracker () {
-    const [allData, setAllData] = useState<TaskDatabaseModel[]>([])
+export default function Workspaces () {
+    const [allTaskLists, setAllTaskLists] = useState<TodoListModel[]>([])
     const [loading, setLoading] = useState(true);
 
     useEffect( () => {
         const timer = setTimeout( () => {
-            const data = localStorage.getItem("dailyTasks");
-            const parsedData = data ? JSON.parse(data) : {}
-            const taskList:TaskDatabaseModel[] = Object.entries(parsedData).map(([date, tasks]) => ({
-                date,
-                tasks: tasks as Task[],
-            })).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()); // latest first
+            const data = localStorage.getItem("todoLists");
+            const parsedData: TodoListModel[] = data ? JSON.parse(data) : {}
 
-            setAllData(taskList);
+            const taskList:TodoListModel[] = parsedData.sort( (a: TodoListModel,b: TodoListModel) => 
+                new Date(a.dateCreated).getTime() - new Date(b.dateCreated).getTime()
+            );
+
+            setAllTaskLists(taskList);
             setLoading(false);
         }, 500);
 
@@ -38,10 +33,10 @@ export default function Tracker () {
                 <Loader /> :
                 <ul className="space-y-2 w-[90%] md:w-2/3 mx-3 rounded-md flex-grow h-full overflow-y-auto">
                     {
-                        allData.length > 0 &&
-                        allData.map( (data, index) => {
+                        allTaskLists.length > 0 &&
+                        allTaskLists.map( (taskList, index) => {
                             return (
-                                <DailyCard key={index} date={data.date} tasks={data.tasks} />
+                                <DailyCard key={index} taskList={taskList} />
                             )
                         })
                     }

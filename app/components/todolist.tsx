@@ -3,10 +3,10 @@ import { useEffect, useRef, useState } from "react";
 
 import { Loader, Modal, Todo } from "@/app/components";
 import { todaysDate } from "@/app/constants";
-import type { Task } from "@/app/models";
+import type { Task, TodoListModel } from "@/app/models";
 import Form from "next/form";
 
-export const TodoList = ({title}: { title: string}) => {
+export const TodoList = ({id}: { id:string}) => {
 
     const [tasks, setTasks] = useState<Task[]>([]);
     const [loading, setLoading] = useState(true);
@@ -21,16 +21,25 @@ export const TodoList = ({title}: { title: string}) => {
 
     // initialize the todolist with data
     useEffect(() => {
-        const timer = setTimeout( () => {
-            const data = localStorage.getItem('dailyTasks');
-            const parsed = data ? JSON.parse(data) : {};
-            const loaded = parsed[title] || [];
-            setTasks(loaded);
+        const timer = setTimeout(() => {
+            const raw = localStorage.getItem("todoLists");
+            const allLists: TodoListModel[] = raw ? JSON.parse(raw) : [];
+            console.log("+++ allLists", allLists);
+
+            console.log("+++id", id);
+
+            const currentList = allLists.find(list => list.id === id);
+            console.log("+++currentList", currentList);
+            const loadedTasks = currentList?.tasks || [];
+
+            console.log("+++loadedTasks", loadedTasks);
+
+            setTasks(loadedTasks);
             setLoading(false);
         }, 500);
 
         return () => clearTimeout(timer);
-    }, [title]);
+    }, [id]);
     
     // this hook allows user to scroll to latest task after adding
     useEffect(() => {
@@ -44,10 +53,14 @@ export const TodoList = ({title}: { title: string}) => {
     
     // saves the tasks to localstorage
     const saveTasks = (tasks: Task[]) => {
-        const existing = localStorage.getItem('dailyTasks');
-        const parsed = existing ? JSON.parse(existing) : {};
-        parsed[title] = tasks;
-        localStorage.setItem('dailyTasks', JSON.stringify(parsed));
+        const existing = localStorage.getItem('todoLists');
+        const parsed: TodoListModel[] = existing ? JSON.parse(existing) : [];
+
+        const updated = parsed.map((list) =>
+            list.id === id ? { ...list, tasks } : list
+        );
+
+        localStorage.setItem('todoLists', JSON.stringify(updated));
     };
 
     // remove selected task
@@ -100,7 +113,7 @@ export const TodoList = ({title}: { title: string}) => {
         <div className="flex-1 flex flex-col items-center h-[calc(100vh-56px)]">
             <div className="flex justify-between items-center w-full">
                 <h3 className="text-2xl p-7 cursor-default select-none">Task list</h3>
-                <p className="p-7 text-purple-300">{title === todaysDate ? "Today" : title}</p>
+                {/* <p className="p-7 text-purple-300">{slug === todaysDate ? "Today" : slug}</p> */}
             </div>
 
             <div className="w-[90%] md:w-2/3 flex items-center justify-between bg-slate-500 rounded drop-shadow-lg mx-3">

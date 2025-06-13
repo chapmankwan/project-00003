@@ -6,3 +6,11 @@ export interface Task {
     id: string;
     text: string;
 }
+
+export interface TodoListModel {
+  id: string;         // unique ID (UUID or nanoid)
+  title: string;      // editable title
+  slug: string;       // generated from title
+  dateCreated: string;
+  tasks: Task[];
+}
