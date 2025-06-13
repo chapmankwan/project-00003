@@ -21,6 +21,6 @@ export default function TodoLists () { // temp
   //   redirect(`/todo-lists/${params.id}/${canonicalSlug}`);
   // }
 
-	return <TodoList slug={params.slug} />;
+	return <TodoList id={params.id} />;
 
 };

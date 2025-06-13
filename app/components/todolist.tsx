@@ -3,10 +3,10 @@ import { useEffect, useRef, useState } from "react";
 
 import { Loader, Modal, Todo } from "@/app/components";
 import { todaysDate } from "@/app/constants";
-import type { Task } from "@/app/models";
+import type { Task, TodoListModel } from "@/app/models";
 import Form from "next/form";
 
-export const TodoList = ({slug}: { slug: string}) => {
+export const TodoList = ({id}: { id:string}) => {
 
     const [tasks, setTasks] = useState<Task[]>([]);
     const [loading, setLoading] = useState(true);
@@ -21,16 +21,25 @@ export const TodoList = ({slug}: { slug: string}) => {
 
     // initialize the todolist with data
     useEffect(() => {
-        const timer = setTimeout( () => {
-            const data = localStorage.getItem('todoLists');
-            const parsed = data ? JSON.parse(data) : {};
-            const loaded = parsed[0].tasks || [];
-            setTasks(loaded);
+        const timer = setTimeout(() => {
+            const raw = localStorage.getItem("todoLists");
+            const allLists: TodoListModel[] = raw ? JSON.parse(raw) : [];
+            console.log("+++ allLists", allLists);
+
+            console.log("+++id", id);
+
+            const currentList = allLists.find(list => list.id === id);
+            console.log("+++currentList", currentList);
+            const loadedTasks = currentList?.tasks || [];
+
+            console.log("+++loadedTasks", loadedTasks);
+
+            setTasks(loadedTasks);
             setLoading(false);
         }, 500);
 
         return () => clearTimeout(timer);
-    }, [slug]);
+    }, [id]);
     
     // this hook allows user to scroll to latest task after adding
     useEffect(() => {
@@ -45,9 +54,13 @@ export const TodoList = ({slug}: { slug: string}) => {
     // saves the tasks to localstorage
     const saveTasks = (tasks: Task[]) => {
         const existing = localStorage.getItem('todoLists');
-        const parsed = existing ? JSON.parse(existing) : {};
-        parsed[0].tasks = tasks;
-        localStorage.setItem('todoLists', JSON.stringify(parsed));
+        const parsed: TodoListModel[] = existing ? JSON.parse(existing) : [];
+
+        const updated = parsed.map((list) =>
+            list.id === id ? { ...list, tasks } : list
+        );
+
+        localStorage.setItem('todoLists', JSON.stringify(updated));
     };
 
     // remove selected task
