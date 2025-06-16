@@ -36,7 +36,7 @@ export const Modal = ({
         <>
             <button 
                 disabled={disabled}
-                className={clsx("m-3 py-1 px-2 rounded cursor-pointer bg-slate-400 hover:bg-slate-700", disabled && "disabled:cursor-auto disabled:hover:bg-slate-400")}
+                className={clsx("m-3 py-1 px-2 rounded cursor-pointer bg-slate-600 hover:bg-red-700", disabled && "disabled:cursor-auto disabled:hover:bg-slate-400")}
                 onClick={() => setIsOpen(true)}
             >
                 {mainButtonText}

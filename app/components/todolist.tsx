@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 
-import { Loader, Modal, Todo } from "@/app/components";
+import { Loader, Modal, PageHeader, Todo } from "@/app/components";
 import { todaysDate } from "@/app/constants";
 import type { Task, TodoListModel } from "@/app/models";
 import Form from "next/form";
@@ -112,22 +112,23 @@ export const TodoList = ({id}: { id:string}) => {
     return (
         <div className="flex-1 flex flex-col items-center h-[calc(100vh-56px)]">
             <div className="flex justify-between items-center w-full">
-                <h3 className="text-2xl p-7 cursor-default select-none">Task list</h3>
-                {/* <p className="p-7 text-purple-300">{slug === todaysDate ? "Today" : slug}</p> */}
+                <PageHeader title="Task list"/>
             </div>
 
-            <div className="w-[90%] md:w-2/3 flex items-center justify-between bg-slate-500 rounded drop-shadow-lg mx-3">
-                <div className="p-2">Tasks completed: {completedTasks} / {totalTasks} </div>
-                <Modal  
-                    mainButtonText="Delete all"
-                    callback={deleteAllTasks}
-                    disabled={ totalTasks === 0 }
-                    leftButtonText="Cancel"
-                    rightButtonText="Delete all"
-                    modalTitle="Delete all tasks"
-                    modalDescription="This will permanently delete all your written tasks"
-                    modalExtraDetails="Are you sure you want to delete all your tasks? Deleted tasks will not be retrievable."
-                />
+            <div className="w-[90%] md:w-2/3 flex items-center justify-between">
+                <div className="flex items-center justify-between bg-slate-700 rounded drop-shadow-lg mx-3 w-full h-16">
+                    <div className="p-2">Tasks completed: {completedTasks} / {totalTasks} </div>
+                    <Modal  
+                        mainButtonText="Delete all"
+                        callback={deleteAllTasks}
+                        disabled={ totalTasks === 0 }
+                        leftButtonText="Cancel"
+                        rightButtonText="Delete all"
+                        modalTitle="Delete all tasks"
+                        modalDescription="This will permanently delete all your written tasks"
+                        modalExtraDetails="Are you sure you want to delete all your tasks? Deleted tasks will not be retrievable."
+                    />
+                </div>
             </div>
 
             {

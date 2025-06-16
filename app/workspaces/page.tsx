@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useState } from "react";
 
-import { DailyCard, Loader } from "@/app/components";
+import { Card, PageHeader, Loader } from "@/app/components";
 import type { TodoListModel } from "@/app/models";
 
 export default function Workspaces () {
@@ -27,16 +27,16 @@ export default function Workspaces () {
 
     return (
         <section className="flex flex-1 flex-col items-center h-[calc(100vh-56px)]">
-            <h3 className="w-full text-2xl p-7 cursor-default select-none">Workspaces</h3>
+            <PageHeader title="Workspaces"/>
             {
                 loading ? 
                 <Loader /> :
-                <ul className="space-y-2 w-[90%] md:w-2/3 mx-3 rounded-md flex-grow h-full overflow-y-auto">
+                <ul className="space-y-2 w-[90%] lg:w-2/3 mx-3 rounded-md flex-grow h-full overflow-y-auto">
                     {
                         allTaskLists.length > 0 &&
                         allTaskLists.map( (taskList, index) => {
                             return (
-                                <DailyCard key={index} taskList={taskList} />
+                                <Card key={index} taskList={taskList} />
                             )
                         })
                     }
