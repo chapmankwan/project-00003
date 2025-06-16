@@ -9,6 +9,7 @@ import Form from "next/form";
 export const TodoList = ({id}: { id:string}) => {
 
     const [tasks, setTasks] = useState<Task[]>([]);
+    const [listTitle, setListTitle] = useState("")
     const [loading, setLoading] = useState(true);
     const [input, setInput] = useState("");
     
@@ -24,17 +25,12 @@ export const TodoList = ({id}: { id:string}) => {
         const timer = setTimeout(() => {
             const raw = localStorage.getItem("todoLists");
             const allLists: TodoListModel[] = raw ? JSON.parse(raw) : [];
-            console.log("+++ allLists", allLists);
-
-            console.log("+++id", id);
-
             const currentList = allLists.find(list => list.id === id);
-            console.log("+++currentList", currentList);
             const loadedTasks = currentList?.tasks || [];
-
-            console.log("+++loadedTasks", loadedTasks);
+            const loadedListTitle = currentList?.title || "";
 
             setTasks(loadedTasks);
+            setListTitle(loadedListTitle);
             setLoading(false);
         }, 500);
 
@@ -114,6 +110,8 @@ export const TodoList = ({id}: { id:string}) => {
             <div className="flex justify-between items-center w-full">
                 <PageHeader title="Task list"/>
             </div>
+
+            <p className="m-3 font-bold flex justify-center w-full">{listTitle}</p>
 
             <div className="w-[90%] md:w-2/3 flex items-center justify-between">
                 <div className="flex items-center justify-between bg-slate-700 rounded drop-shadow-lg mx-3 w-full h-16">
