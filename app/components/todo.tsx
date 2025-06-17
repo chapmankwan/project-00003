@@ -13,6 +13,7 @@ interface TodoModel {
     index: number;
     task: Task;
     deleteTask: (index: number) => void;
+    openDetails: (task: Task) => void;
     toggleTaskCompletion: (index: number) => void;
     updateTask: (id: string, text:string) => void;
 };
@@ -22,6 +23,7 @@ export const Todo = ({
     index,
     task,
     deleteTask,
+    openDetails,
     toggleTaskCompletion,
     updateTask,
 }: TodoModel) => {
@@ -85,19 +87,6 @@ export const Todo = ({
                 {task.edited ? "edited" : ""}
             </span>
 
-            {/* Task detail section */}
-            <section>
-
-                <div className="text-sm flex flex-col w-fit text-nowrap">
-                    <span>created: {task.date}</span>
-                    {
-                        task.completed && 
-                        <span>completed: {task.dateCompleted}</span>
-                    }
-                </div>
-            </section>
-
-
             <div className="ml-auto">
                 <Menu>
                     <MenuButton 
@@ -109,8 +98,8 @@ export const Todo = ({
 
                     <MenuItems
                         transition
-                        anchor="left"
-                        className="origin-top-right bg-slate-500 rounded-md"
+                        anchor="bottom"
+                        className="origin-top-right bg-slate-700 w-28 rounded-md"
                         onClick={stopPropagation}
                     >
                         <MenuItem>
@@ -119,6 +108,13 @@ export const Todo = ({
                                 onClick={editTaskHandler}
                             >
                                 Edit
+                            </button>
+                        </MenuItem>
+                        <MenuItem>
+                            <button 
+                                className="flex items-center gap-2 cursor-pointer p-2 hover:text-gray-400 w-full" 
+                                onClick={() => openDetails(task)}>
+                                Show details
                             </button>
                         </MenuItem>
                         <MenuItem>

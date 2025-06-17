@@ -1,18 +1,23 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 
-import { Loader, Modal, PageHeader, Todo } from "@/app/components";
+import { DetailPanel, Loader, Modal, PageHeader, Todo } from "@/app/components";
 import { todaysDate } from "@/app/constants";
 import type { Task, TodoListModel } from "@/app/models";
 import Form from "next/form";
 
 export const TodoList = ({id}: { id:string}) => {
-
+    // local states
     const [tasks, setTasks] = useState<Task[]>([]);
     const [listTitle, setListTitle] = useState("")
     const [loading, setLoading] = useState(true);
     const [input, setInput] = useState("");
-    
+    const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+
+    const openDetails = (task: Task) => setSelectedTask(task);
+    const closeDetails = () => setSelectedTask(null);
+
+    // references
     const justAddedRef = useRef(false);
     const lastTaskRef = useRef<HTMLLIElement>(null);
 
@@ -145,6 +150,7 @@ export const TodoList = ({id}: { id:string}) => {
                                 deleteTask={deleteTask}
                                 task={task} 
                                 toggleTaskCompletion={toggleTaskCompletion}
+                                openDetails={openDetails}
                                 updateTask={(id:string, editInput ) => {
                                     const updatedTasks: Task[] = [...tasks];
                                     const index = updatedTasks.findIndex(task => task.id === id);
@@ -159,6 +165,13 @@ export const TodoList = ({id}: { id:string}) => {
                 }
                 </ul>
             }
+
+            {selectedTask && (
+                <DetailPanel
+                    task={selectedTask}
+                    onClose={closeDetails}
+                />
+            )}
 
             <section className="sticky bottom-0 z-10 flex justify-center items-center w-full mx-auto p-4 bg-slate-800">
                 <Form action="/todo-list" onSubmit={onSubmitHandler} className="flex w-full md:w-3/4 bg-slate-700 p-4 rounded-md">
