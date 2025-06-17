@@ -1,5 +1,6 @@
 export * from "./client-header-link";
 export * from "./card";
+export * from "./detail-panel"
 export * from "./header";
 export * from "./loader";
 export * from "./menu";

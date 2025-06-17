@@ -10,6 +10,66 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  --color-lavender-50: #f9f7fc;
+  --color-lavender-100: #f0eafd;
+  --color-lavender-200: #e0d3fa;
+  --color-lavender-300: #cbb5f5;
+  --color-lavender-400: #b89ef0;
+  --color-lavender-500: #a27ae3;
+  --color-lavender-600: #8e64c9;
+  --color-lavender-700: #774fa6;
+  --color-lavender-800: #5d3d80;
+  --color-lavender-900: #3f2957;
+  --color-lavender-950: #27193b;
+
+  --color-mint-50: #f6fcfa;
+  --color-mint-100: #e2f9f4;
+  --color-mint-200: #c3f0e5;
+  --color-mint-300: #a0e1d5;
+  --color-mint-400: #7ad0c3;
+  --color-mint-500: #55bbae;
+  --color-mint-600: #3da299;
+  --color-mint-700: #2f807a;
+  --color-mint-800: #25655f;
+  --color-mint-900: #1b4641;
+  --color-mint-950: #102d29;
+
+  --color-blush-50: #fff8fa;
+  --color-blush-100: #ffeaf0;
+  --color-blush-200: #ffd3df;
+  --color-blush-300: #fbb8cb;
+  --color-blush-400: #f89cb6;
+  --color-blush-500: #f27fa0;
+  --color-blush-600: #db5f89;
+  --color-blush-700: #b5486d;
+  --color-blush-800: #8f3653;
+  --color-blush-900: #642638;
+  --color-blush-950: #3f151f;
+
+  --color-skyblue-50: #f5fcfe;
+  --color-skyblue-100: #e1f6fb;
+  --color-skyblue-200: #c3e9f4;
+  --color-skyblue-300: #a2d7ea;
+  --color-skyblue-400: #81c3dd;
+  --color-skyblue-500: #64accf;
+  --color-skyblue-600: #4e8fb5;
+  --color-skyblue-700: #3c7091;
+  --color-skyblue-800: #2d556f;
+  --color-skyblue-900: #1e394c;
+  --color-skyblue-950: #101f2a;
+
+  --color-pale-50: #fffcf2;
+  --color-pale-100: #fff6d7;
+  --color-pale-200: #ffeead;
+  --color-pale-300: #ffe17f;
+  --color-pale-400: #ffd456;
+  --color-pale-500: #ffbf29;
+  --color-pale-600: #d99f1e;
+  --color-pale-700: #b37f16;
+  --color-pale-800: #8f620f;
+  --color-pale-900: #6a4709;
+  --color-pale-950: #422d05;
 }
 
 @media (prefers-color-scheme: dark) {
