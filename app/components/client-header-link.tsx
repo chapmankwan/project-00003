@@ -1,27 +1,51 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { findOrCreateTodayList } from "@/app/utilities";
 
 interface ClientHeaderLinkModel {
-  className?: string;
-  onClick?: () => void;
+	className?: string;
+	onClick?: () => void;
 }
 
 export const ClientHeaderLink = ({
-  className,
-  onClick
+	className,
+	onClick
 }: ClientHeaderLinkModel) => {
-  const [href, setHref] = useState<string | null>(null);
+	const [href, setHref] = useState<string | null>(null);
+	const { status } = useSession();
 
-  useEffect(() => {
-    if (typeof window === "undefined") return; // <-- ensures client-only
-    const { id, slug } = findOrCreateTodayList();
-    setHref(`/todo-lists/${id}/${slug}`);
-  }, []);
+	useEffect(() => {
+		const loadList = async () => {
+			
+			try {
+				const postResponse = await fetch("/api/todo-lists", {
+					method: "POST",
+				});
+				if (!postResponse.ok) throw new Error("Failed to create a new list");
 
-  if (!href) return null; // or a loading fallback like <span>Loading...</span>
+				const newList = await postResponse.json();
+				setHref(`/todo-lists/${newList.id}/${newList.slug}`);
+			} catch (err) {
+				console.error("There was an error loading todolists, check logs", err);
+			}
+		}
 
-  return <Link onClick={onClick} className={className} href={href}>Tasks</Link>;
+		if ( status === "authenticated" ) {
+			setTimeout( () => {
+				loadList()
+			}, 1000)
+		}
+	}, [status]);
+
+	
+
+	if (!href) return <span className="text-gray-500">Loading...</span>;
+
+	if (status === "authenticated") {
+		return (
+			<Link onClick={onClick} className={className} href={href}>Create New</Link>
+		);
+	}
 };

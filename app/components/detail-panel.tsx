@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useState } from "react";
 
-import { Task } from "@/app/models";
+import { Task } from "@/models";
 
 import clsx from "clsx";
 

@@ -1,10 +1,13 @@
+"use client"
 import Image from "next/image";
 import Link from "next/link"
+
+import { useSession } from "next-auth/react";
 
 import { ClientHeaderLink, Menu } from "@/app/components";
 
 export const Header = () => {
-    const user = false;
+    const { status } = useSession();
 
     return (
         <header className="sticky top-0 z-30 px-6 py-4 w-full flex items-center justify-between bg-slate-700">
@@ -20,12 +23,14 @@ export const Header = () => {
             <Menu />
 
             <section className="hidden sm:flex gap-10 *:cursor-pointer *:hover:underline *:hover:underline-offset-4 text-xs">
-                <ClientHeaderLink />
-                <Link href="/workspaces">Workspaces</Link>
                 {
-                    !user ? 
+                    status === "unauthenticated" ? 
                     <Link href="/account/login">Login</Link> :
-                    <Link href="/account">Account</Link>
+                    <>
+                        <ClientHeaderLink />
+                        <Link href="/workspaces">Workspaces</Link>
+                        <Link href="/account">Account</Link>
+                    </>
                 }
             </section>
         </header>

@@ -1,0 +1,14 @@
+// app/todo-lists/page.tsx
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { redirect } from "next/navigation";
+
+export default async function Page() {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    redirect("/account/login");
+  }
+
+  return <div>Welcome, {session?.user?.email}</div>;
+}
