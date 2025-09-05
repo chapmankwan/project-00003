@@ -1,7 +1,8 @@
 "use client";
-import React, { Ref, useState } from "react";
+import React, { Ref } from "react";
 
-import type {Task} from "@/app/models";
+import type {Task} from "@/models";
+import { Types } from "mongoose";
 
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
@@ -12,9 +13,9 @@ interface TodoModel {
     ref:  Ref<HTMLLIElement | null>; // fix
     index: number;
     task: Task;
-    deleteTask: (index: number) => void;
+    deleteTask: (taskId: Types.ObjectId) => void;
     openDetails: (task: Task) => void;
-    toggleTaskCompletion: (index: number) => void;
+    toggleTaskCompletion: (task: Task) => void;
     updateTask: (id: string, text:string) => void;
 };
 
@@ -25,63 +26,30 @@ export const Todo = ({
     deleteTask,
     openDetails,
     toggleTaskCompletion,
-    updateTask,
 }: TodoModel) => {
-    const [isEditing, setIsEditing] = useState(false);
-    const [editTaskInput, setEditTaskInput] = useState("");
 
     const stopPropagation = (event: React.MouseEvent<HTMLButtonElement | HTMLDivElement | HTMLLabelElement>) => {
         event.stopPropagation();
-    };
-
-    const editTaskHandler = () => {
-        setIsEditing(true);
-        setEditTaskInput(task.text);
-    };
-      
-    const cancelEditing = () => {
-        setIsEditing(false);
-        setEditTaskInput("");
     };
 
     return (
         <li 
             className="flex items-center bg-slate-600 hover:bg-slate-500 m-3 p-4 gap-3 rounded-sm cursor-pointer"
             key={index} 
-            onClick={() => toggleTaskCompletion(index)}
+            onClick={() => toggleTaskCompletion(task)}
             ref={ref} 
         >
             <label className="*:cursor-pointer" onClick={stopPropagation}>
                 <input 
                     checked={task.completed} 
                     className="border-gray-300 rounded-sm bg-black"
-                    onChange={() => toggleTaskCompletion(index)}
+                    onChange={() => toggleTaskCompletion(task)}
                     type="checkbox" />
             </label>
 
-            {
-                isEditing ?
-                <input 
-                    autoFocus
-                    className="p-1 w-full"
-                    required
-                    value={editTaskInput}
-                    onClick={stopPropagation}
-                    onChange={(e) => {setEditTaskInput(e.target.value)}}
-                    onBlur={() => updateTask(task.id, editTaskInput)}
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                            updateTask(task.id, editTaskInput);
-                            setIsEditing(false);
-                        }
-                        if (e.key === 'Escape') cancelEditing();
-                    }}
-                />
-                :
-                <span className={clsx(["w-full select-none", task.completed && "line-through"])}>
-                    {task.text}
-                </span>
-            }
+            <span className={clsx(["w-full select-none", task.completed && "line-through"])}>
+                {task.text}
+            </span>
 
             <span className="text-sm text-lime-400">
                 {task.edited ? "edited" : ""}
@@ -105,7 +73,6 @@ export const Todo = ({
                         <MenuItem>
                             <button 
                                 className="flex items-center gap-2 cursor-pointer p-2 hover:text-gray-400 w-full"
-                                onClick={editTaskHandler}
                             >
                                 Edit
                             </button>
@@ -120,7 +87,7 @@ export const Todo = ({
                         <MenuItem>
                             <button 
                                 className="flex items-center gap-2 cursor-pointer p-2 hover:text-red-500 w-full" 
-                                onClick={() => {deleteTask(index)}}>
+                                onClick={() => deleteTask(task._id)}>
                                 Delete
                             </button>
                         </MenuItem>

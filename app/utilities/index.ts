@@ -1,6 +1,6 @@
 import { nanoid } from "nanoid";
 
-import { Task } from "@/app/models";
+import { Task } from "@/models";
 
 export interface TodoListModel {
   id: string;         // unique ID (UUID or nanoid)
@@ -37,6 +37,7 @@ export function createTodoList(title: string): TodoListModel {
 }
 
 export const findOrCreateTodayList = (): { id: string; slug: string } => {
+
   if (typeof window === "undefined") throw new Error("localStorage is not available on server");
 
   const today = new Date().toISOString().split("T")[0];

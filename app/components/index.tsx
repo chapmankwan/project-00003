@@ -7,5 +7,6 @@ export * from "./menu";
 export * from "./message-box";
 export * from "./modal";
 export * from "./page-header";
+export * from "./session-provider";
 export * from "./todo";
 export * from "./todolist";

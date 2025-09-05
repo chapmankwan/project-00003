@@ -1,18 +1,59 @@
 "use client";
+import { signIn, useSession } from "next-auth/react";
+import { useState } from "react";
+import { useRouter } from 'next/navigation';
 
-import Form from "next/form";
 
-export default function LoginPage () {
+export default function LoginPage() {
+  const { status } = useSession();
+  const router = useRouter();
+  if ( status === "authenticated" ) { router.push("/workspaces") };
+  
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-    return (
-        <section className="flex flex-col items-center min-h-[calc(100vh-56px)]">
-            <h3 className="w-full text-2xl p-7 cursor-default select-none">Login!</h3>
+  const handleLogin = async () => {
+    await signIn("credentials", {
+      email,
+      password,
+      callbackUrl: "/workspaces",
+    });
+  };
 
-            <Form action="/account" className="flex flex-col my-auto w-sm gap-2 *:p-3">
-                <input className="border-2 border-solid border-blue-400" type="text" placeholder="username" required/>
-                <input className="border-2 border-solid border-blue-400" type="text" placeholder="password" required/>
-                <button className="cursor-pointer hover:bg-slate-600">Login!</button>
-            </Form>
-        </section>
-    )
+  const onKeyDown = (event: { key: string; }) => {
+    if ( event.key === "Enter" && password.length && email.length ) {
+      handleLogin();
+    }
+  }
+
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-800 text-white">
+      {
+          <>
+            <h1 className="text-2xl mb-4">Login to Monorail</h1>
+            <input
+              className="p-2 m-2 w-3/4 sm:w-sm bg-slate-700 border border-slate-500 rounded-sm"
+              type="email"
+              placeholder="Email"
+              autoFocus={true}
+              required
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+            />
+            <input
+              className="p-2 m-2 w-3/4 sm:w-sm bg-slate-700 border border-slate-500 rounded-sm"
+              type="password"
+              placeholder="Password"
+              required
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+            />
+            <button className="bg-mint-500 text-slate-900 px-4 py-2 mt-4 w-3/4 sm:w-sm cursor-pointer rounded-sm hover:bg-mint-700 hover:text-slate-100" onClick={handleLogin} onKeyDown={onKeyDown}>
+              Sign In
+            </button>
+          </>
+      }
+
+    </div>
+  );
 }

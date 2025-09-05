@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link"
 
 import { ClientHeaderLink } from "@/app/components";
@@ -7,21 +8,27 @@ import { ClientHeaderLink } from "@/app/components";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import clsx from "clsx";
+import { redirect } from "next/navigation";
 
-export const Menu = ({
+const menuTailwindCss = "m-2 p-2 rounded-4xl hover:text-slate-400 hover:underline hover:underline-offset-2";
 
-}) => {
+export const Menu = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [user, setUser] = useState(false);
+    const { status } = useSession(); 
 
     const menuRef = useRef<HTMLDivElement | null>(null);
-
 
     const keyPress = (e: React.KeyboardEvent<HTMLButtonElement>) => {
         if (e.key === "Escape") {
             setIsMenuOpen(false);
         }
     };
+
+    const handleSignOut = () => {
+        signOut();
+        setIsMenuOpen(false);
+        redirect("/account/signout");
+    }
 
     // Hook for focus trap
     useEffect(() => {
@@ -61,7 +68,6 @@ export const Menu = ({
         };
     }, [isMenuOpen]);
     
-    
     return (
         <>
             <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="cursor-pointer">
@@ -83,24 +89,45 @@ export const Menu = ({
                 )}
             >
                 <button 
-                    className="absolute top-0 right-0 p-2 m-2 cursor-pointer"
+                    id="closeButton"
+                    className="absolute top-0 right-0 p-2 m-2 cursor-pointer hover:bg-gray-400 rounded-full"
                     onClick={() => setIsMenuOpen(false)}
                     onKeyDown={keyPress}
                 >
                     <XMarkIcon className="size-6" />
                 </button>
 
-                <ClientHeaderLink onClick={() => setIsMenuOpen(false)} className="m-2 p-2 hover:text-slate-400 hover:underline hover:underline-offset-2" />
-            
-                <Link onClick={() => setIsMenuOpen(false)} className="m-2 p-2 hover:text-slate-400 hover:underline hover:underline-offset-2" href="/workspaces">Workspaces</Link>
-                {
-                    !user ? 
-                    <button className="p-3 hover:text-slate-400 hover:underline hover:underline-offset-2" onClick={() => setUser(true)}>
-                        Login
-                    </button> :
-                    // <Link className="hover:text-slate-400 hover:underline hover:underline-offset-2" href="/account/login">Login</Link> :
-                    <Link onClick={() => setIsMenuOpen(false)} className="m-2 p-2 hover:text-slate-400 hover:underline hover:underline-offset-2" href="/account">Account</Link>
-                }
+                {/* Hidden menu for authenticated users */}
+                {status === "authenticated" ? (
+                    <>
+                        <ClientHeaderLink onClick={() => setIsMenuOpen(false)} className={menuTailwindCss} />
+                        <Link onClick={() => setIsMenuOpen(false)} className={menuTailwindCss} href="/workspaces">Workspaces</Link>
+                        <Link
+                            onClick={() => setIsMenuOpen(false)}
+                            className={menuTailwindCss}
+                            href="/account"
+                        >
+                            Account
+                        </Link>
+                        <button 
+                            className={menuTailwindCss}
+                            onClick={handleSignOut}
+                        >
+                            Sign Out
+                        </button>
+                    </>
+                    ) : (
+                        <>
+                        <Link
+                            onClick={() => setIsMenuOpen(false)}
+                            className={menuTailwindCss}
+                            href="/account/login"
+                        >
+                            Login
+                        </Link>
+                        <Link onClick={() => setIsMenuOpen(false)} className={menuTailwindCss} href="/account/signup">Sign up</Link>
+                    </>
+                )}
             </div>
 
         </>

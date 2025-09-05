@@ -2,11 +2,15 @@
 import { useEffect, useRef, useState } from "react";
 
 import { DetailPanel, Loader, Modal, PageHeader, Todo } from "@/app/components";
-import { todaysDate } from "@/app/constants";
-import type { Task, TodoListModel } from "@/app/models";
+import type { Task } from "@/models";
 import Form from "next/form";
 
+import { taskApiHooks } from "@/app/utilities/taskApiHooks";
+
 export const TodoList = ({id}: { id:string}) => {
+
+    const { saveTask, updateTask, deleteTask } = taskApiHooks(id);
+
     // local states
     const [tasks, setTasks] = useState<Task[]>([]);
     const [listTitle, setListTitle] = useState("")
@@ -21,22 +25,23 @@ export const TodoList = ({id}: { id:string}) => {
     const justAddedRef = useRef(false);
     const lastTaskRef = useRef<HTMLLIElement>(null);
 
-    // vars
-    const completedTasks = tasks.filter( task => task.completed).length;
-    const totalTasks = tasks.length;
-
     // initialize the todolist with data
     useEffect(() => {
-        const timer = setTimeout(() => {
-            const raw = localStorage.getItem("todoLists");
-            const allLists: TodoListModel[] = raw ? JSON.parse(raw) : [];
-            const currentList = allLists.find(list => list.id === id);
-            const loadedTasks = currentList?.tasks || [];
-            const loadedListTitle = currentList?.title || "";
+        const timer = setTimeout(async () => {
+            try {
+                const getResponse = await fetch(`/api/todo-lists/${id}`, {
+                    method: "GET",
+                });
+                if (!getResponse.ok) throw new Error("Failed to create list");
+                const list = await getResponse.json();
 
-            setTasks(loadedTasks);
-            setListTitle(loadedListTitle);
-            setLoading(false);
+                setTasks(list.tasks);
+                setListTitle(list.title);
+                setLoading(false);
+
+            } catch (err) {
+                console.error("There was an error loading the tasks, check logs", err);
+            }
         }, 500);
 
         return () => clearTimeout(timer);
@@ -51,64 +56,79 @@ export const TodoList = ({id}: { id:string}) => {
             justAddedRef.current = false;
         }
     }, [tasks]);
-    
-    // saves the tasks to localstorage
-    const saveTasks = (tasks: Task[]) => {
-        const existing = localStorage.getItem('todoLists');
-        const parsed: TodoListModel[] = existing ? JSON.parse(existing) : [];
 
-        const updated = parsed.map((list) =>
-            list.id === id ? { ...list, tasks } : list
-        );
+    const handleDeleteTask = async (task: Task) => {
+        if (!task?._id) return;
+        try {
+            await deleteTask(id, task._id); // API call to delete
 
-        localStorage.setItem('todoLists', JSON.stringify(updated));
+            // Remove task from local state
+            setTasks((prevTasks) => prevTasks.filter((t) => t._id?.toString() !== task._id?.toString()));
+
+        } catch (err) {
+            console.error("Error deleting task:", err);
+        }
     };
 
-    // remove selected task
-    const deleteTask = (index: number) => {
-        const updatedTasks = tasks.filter((_, i) => i !== index);
-        setTasks(updatedTasks);
-        saveTasks(updatedTasks);
+    const deleteAllTasks = async (listId: string) => {
+        const res = await fetch(`/api/todo-lists/${listId}/tasks`, {
+            method: "DELETE",
+        });
+
+        if (!res.ok) {
+            throw new Error("Failed to delete tasks");
+        }
+        // quick way to remove all tasks
+        setTasks([]);
+        return res.json();
     };
 
-    // deletes all tasks
-    const deleteAllTasks = () => {
-        const updatedTasks: Task[] = [];
-        setTasks(updatedTasks);
-        saveTasks(updatedTasks);
+    const toggleTaskCompletion = async (task: Task) => {
+        if (!task?._id) return;
+        try {
+            const updatedTaskRes = await updateTask(id, task._id, {
+                completed: !task.completed,
+                text: task.text,
+                edited: true,
+            });
+
+            setTasks((prevTasks) => {
+                return (
+                    prevTasks.map( (t) => {
+                        return (
+                            t._id?.toString() === updatedTaskRes.task._id?.toString() ? updatedTaskRes.task : t
+                        )
+                    })
+                )
+                
+            });
+
+        } catch (err) {
+            console.error(err);
+        }
     };
 
-    // sets the selected task's completion status
-    const toggleTaskCompletion = (index: number) => {
-        const updatedTasks = tasks.map( (task, i) => index === i ? { ...task, completed: !task.completed, dateCompleted: !task.completed ? todaysDate : false } : task);
-        setTasks(updatedTasks);
-        saveTasks(updatedTasks);
-    };
-
-    // add new task
-    const addTask = () => {
+    const addTask = async () => {
         if (!input.trim()) return;
-        const newTask: Task = {
-            completed: false,
-            date: todaysDate,
-            dateCompleted: false,
-            edited: false,
-            id: crypto.randomUUID(),
-            text: input.trim(),
-        };
-        const updatedTasks = [...tasks, newTask];
-        // Flag this as a new task added
-        justAddedRef.current = true;
-        setTasks(updatedTasks);
-        saveTasks(updatedTasks);
-        setInput('');
+
+        try {
+            const response = await saveTask(input);
+            const allTasks = response.tasks;
+            const savedTask: Task = allTasks[allTasks.length - 1];
+
+            justAddedRef.current = true;
+            setTasks([...tasks, savedTask]);
+            setInput('');
+        } catch (err) {
+            console.error("Failed to add task", err);
+        }
     };
 
     // Prevent the form submission which causes a full page reload? Double check with Next JS
-    const onSubmitHandler = (event: React.FormEvent<HTMLFormElement>) => {
+    const onSubmitHandler = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        addTask();
-    }
+        await addTask();
+    };
 
     return (
         <div className="flex-1 flex flex-col items-center h-[calc(100vh-56px)]">
@@ -120,11 +140,11 @@ export const TodoList = ({id}: { id:string}) => {
 
             <div className="w-[90%] md:w-2/3 flex items-center justify-between">
                 <div className="flex items-center justify-between bg-slate-700 rounded drop-shadow-lg mx-3 w-full h-16">
-                    <div className="p-2">Tasks completed: {completedTasks} / {totalTasks} </div>
+                    <div className="p-2">Tasks completed: {""} / {""} </div>
                     <Modal  
                         mainButtonText="Delete all"
-                        callback={deleteAllTasks}
-                        disabled={ totalTasks === 0 }
+                        callback={() => deleteAllTasks(id)}
+                        disabled={ false }
                         leftButtonText="Cancel"
                         rightButtonText="Delete all"
                         modalTitle="Delete all tasks"
@@ -145,20 +165,13 @@ export const TodoList = ({id}: { id:string}) => {
                         return (
                             <Todo 
                                 ref={isLast ? lastTaskRef : null}
-                                key={index}
+                                key={task._id?.toString()}
                                 index={index}
-                                deleteTask={deleteTask}
+                                deleteTask={() => handleDeleteTask(task)}
                                 task={task} 
                                 toggleTaskCompletion={toggleTaskCompletion}
                                 openDetails={openDetails}
-                                updateTask={(id:string, editInput ) => {
-                                    const updatedTasks: Task[] = [...tasks];
-                                    const index = updatedTasks.findIndex(task => task.id === id);
-                                    updatedTasks[index].text = editInput;
-                                    updatedTasks[index].edited = true;
-                                    setTasks(updatedTasks);
-                                    saveTasks(updatedTasks);
-                                }}
+                                updateTask={() => console.log("null")}
                             />
                         )
                     })
