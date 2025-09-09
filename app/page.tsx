@@ -35,6 +35,18 @@ export default async function Home() {
 						login here
 					</Link>
 				}
+				<Link
+					href="/account/signup"
+					className="
+						mt-2
+						text-xs
+						transition-colors
+						hover:underline
+						text-mint-300
+					"
+				>
+					or sign in here
+				</Link>
 			</main>
 
 			<footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center text-xs">
