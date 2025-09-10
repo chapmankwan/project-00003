@@ -1,17 +1,23 @@
 "use client";
 import { signIn, useSession } from "next-auth/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
 
 
 export default function LoginPage() {
   const { status } = useSession();
   const router = useRouter();
-  if ( status === "authenticated" ) { router.push("/workspaces") };
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.push("/workspaces");
+    }
+  }, [status, router]);
   
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   // Basic email validation for front-end, will update
   const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
@@ -21,12 +27,14 @@ export default function LoginPage() {
     if (!isValidEmail(email)) { setErrorMessage("Please enter a valid email address."); return; }; 
     if (!password.trim()) { setErrorMessage("Password cannot be empty."); return; };
 
+    setLoading(true);
     const res = await signIn("credentials", {
       redirect: false, // we handle redirect manually
       email,
       password,
       callbackUrl: "/workspaces",
     });
+    setLoading(false);
 
     if (res?.error) {
       setErrorMessage("Invalid email address or password."); // message from credentials provider
@@ -63,8 +71,14 @@ export default function LoginPage() {
           value={password}
           onChange={e => setPassword(e.target.value)}
         />
-        <button type="submit" className="bg-mint-500 text-slate-900 px-4 py-2 mt-4 w-3/4 sm:w-sm cursor-pointer rounded-sm transition-transform ease-in-out duration-300 active:scale-95 hover:bg-mint-700 hover:text-slate-100">
-          login
+        <button type="submit" className={`px-4 py-2 mt-4 w-3/4 sm:w-sm cursor-pointer rounded-sm transition-transform ease-in-out duration-300 active:scale-95"
+          ${
+              loading
+                ? "bg-gray-600 text-gray-300 cursor-not-allowed"
+                : "bg-mint-500 text-slate-900 hover:bg-mint-700 hover:text-slate-100"
+            }`}
+          >
+          {loading ? "Logging in..." : "Login"}
         </button>
         {errorMessage && (
           <p className="text-red-400 text-sm mt-2">{errorMessage}</p>

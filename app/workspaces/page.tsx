@@ -13,7 +13,6 @@ export default function Workspaces () {
     const [allTaskLists, setAllTaskLists] = useState<TodoListModel[]>([])
     const [loading, setLoading] = useState(true);
     
-
     if ( status === "unauthenticated" ) redirect("/");
     
     useEffect( () => {
