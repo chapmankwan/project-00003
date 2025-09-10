@@ -3,7 +3,6 @@ import { signIn, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
 
-
 export default function LoginPage() {
   const { status } = useSession();
   const router = useRouter();
@@ -16,32 +15,39 @@ export default function LoginPage() {
   
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   // Basic email validation for front-end, will update
-  const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  const validateEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (!isValidEmail(email)) { setErrorMessage("Please enter a valid email address."); return; }; 
-    if (!password.trim()) { setErrorMessage("Password cannot be empty."); return; };
+    if (!validateEmail(email)) { setError("Please enter a valid email address."); return; }; 
+    if (!password.trim()) { setError("Password cannot be empty."); return; };
 
     setLoading(true);
-    const res = await signIn("credentials", {
-      redirect: false, // we handle redirect manually
-      email,
-      password,
-      callbackUrl: "/workspaces",
-    });
-    setLoading(false);
+    try {
+      const res = await signIn("credentials", {
+        redirect: false, // we handle redirect manually
+        email,
+        password,
+        callbackUrl: "/workspaces",
+      });
 
-    if (res?.error) {
-      setErrorMessage("Invalid email address or password."); // message from credentials provider
-    } else if (res?.ok) {
-      router.push("/workspaces");
-    } else {
-      setErrorMessage("Something went wrong. Please try again.");
+      if (res?.error) {
+        setError("Invalid email address or password."); // message from credentials provider
+      } else {
+        setSuccess("Login successful! Redirecting...");
+
+        setTimeout(() => router.push("/workspaces"), 1000);
+      }
+    } catch (err) {
+      console.log("Error occurred:", err);
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -57,11 +63,11 @@ export default function LoginPage() {
           className="p-3 m-2 w-3/4 sm:w-sm bg-slate-700 border border-slate-500 rounded-sm transition-transform ease-in-out duration-300 active:scale-95 focus:outline-slate-500"
           type="email"
           placeholder="Email address"
-          autoFocus={true}
+          autoFocus
           required
           value={email}
           onChange={e => setEmail(e.target.value)}
-          
+          aria-invalid={!!error && !validateEmail(email)}
         />
         <input
           className="p-3 m-2 w-3/4 sm:w-sm bg-slate-700 border border-slate-500 rounded-sm transition-transform ease-in-out duration-300 active:scale-95 focus:outline-slate-500"
@@ -70,6 +76,7 @@ export default function LoginPage() {
           required
           value={password}
           onChange={e => setPassword(e.target.value)}
+          aria-invalid={!!error && !password}
         />
         <button type="submit" className={`px-4 py-2 mt-4 w-3/4 sm:w-sm cursor-pointer rounded-sm transition-transform ease-in-out duration-300 active:scale-95"
           ${
@@ -80,9 +87,10 @@ export default function LoginPage() {
           >
           {loading ? "Logging in..." : "Login"}
         </button>
-        {errorMessage && (
-          <p className="text-red-400 text-sm mt-2">{errorMessage}</p>
+        {error && (
+          <p className="text-red-400 text-sm mt-2">{error}</p>
         )}
+        {success && <p className="text-mint-400 text-sm mt-2">{success}</p>}
       </form>
     </div>
   );
