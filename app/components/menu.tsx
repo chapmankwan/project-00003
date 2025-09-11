@@ -28,7 +28,7 @@ export const Menu = () => {
         signOut();
         setIsMenuOpen(false);
         redirect("/account/signout");
-    }
+    };
 
     // Hook for focus trap
     useEffect(() => {
