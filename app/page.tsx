@@ -34,7 +34,7 @@ export default async function Home() {
 						:
 						<>
 							<Link 
-								href="/account/login" 
+								href="/account/signup" 
 								className="
 									rounded-full 
 									border border-solid border-transparent 
@@ -45,19 +45,19 @@ export default async function Home() {
 									sm:w-auto cursor-pointer
 								"
 							>
-								login here
+								sign up here
 							</Link>
 							<Link
 								href="/account/signup"
 								className="
-									mt-2
+									mt-4
 									text-xs
 									transition-colors
 									hover:underline
 									text-mint-300
 								"
 							>
-								or sign in here
+								or login in here
 							</Link>
 						</>
 				}

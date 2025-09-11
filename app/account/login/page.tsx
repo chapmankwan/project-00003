@@ -63,7 +63,7 @@ export default function LoginPage() {
           className="p-3 m-2 w-3/4 sm:w-sm bg-slate-700 border border-slate-500 rounded-sm transition-transform ease-in-out duration-300 active:scale-95 focus:outline-slate-500"
           type="email"
           placeholder="Email address"
-          autoFocus
+          autoFocus={true}
           required
           value={email}
           onChange={e => setEmail(e.target.value)}
