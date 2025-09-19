@@ -1,6 +1,8 @@
 "use client";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useState } from "react";
+import clsx from "clsx";
 
 export default function SignupPage() {
 const router = useRouter();
@@ -20,12 +22,13 @@ const handleSignup = async (event: React.FormEvent) => {
 		router.push("/account/login");
 	} else {
 		const { message } = await res.json();
+		console.log("+++ message", message);
 		setErrorMessage(message || "Signup failed.");
 	}
 };
 
 return (
-	<div className="min-h-screen flex flex-col items-center justify-center bg-slate-800 text-white">
+	<div className="min-h-[calc(100vh-56px)] flex flex-col items-center justify-center bg-slate-800 text-white">
 		<h1 className="text-2xl mb-4 select-none">Sign up and get on track!</h1>
 
       <form
@@ -53,9 +56,16 @@ return (
         <button type="submit" className="bg-mint-500 text-slate-900 px-4 py-2 mt-4 w-3/4 sm:w-sm cursor-pointer rounded-sm transition-transform ease-in-out duration-300 active:scale-95 hover:bg-mint-700 hover:text-slate-100">
 			Sign Up
         </button>
-        {errorMessage && (
-          <p className="text-red-400 text-sm mt-2">{errorMessage}</p>
-        )}
+
+		<div className="h-12 flex flex-col items-center justify-center">
+			<p className="text-red-400 text-sm mt-2 select-none">{errorMessage}</p>
+			<Link 
+				className={clsx("text-mint-300 text-sm hover:underline", errorMessage === "User already exists." ? "block" : "hidden")} 
+				href="/account/login"
+			>
+				login instead
+			</Link>
+		</div>
       </form>
 	</div>
 );
