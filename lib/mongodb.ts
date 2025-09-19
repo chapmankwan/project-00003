@@ -17,7 +17,7 @@ export async function connectToDatabase() {
   if (cached.conn) return cached.conn;
 
   if (!cached.promise) {
-    cached.promise = await mongoose.connect(MONGODB_URI, {
+    cached.promise = mongoose.connect(MONGODB_URI, {
       dbName: "monorail",
       bufferCommands: false,
     });
