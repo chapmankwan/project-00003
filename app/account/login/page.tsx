@@ -16,7 +16,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
   // Basic email validation for front-end, will update
@@ -24,8 +24,8 @@ export default function LoginPage() {
 
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (!validateEmail(email)) { setError("Please enter a valid email address."); return; }; 
-    if (!password.trim()) { setError("Password cannot be empty."); return; };
+    if (!validateEmail(email)) { setErrorMessage("Please enter a valid email address."); return; }; 
+    if (!password.trim()) { setErrorMessage("Password cannot be empty."); return; };
 
     setLoading(true);
     try {
@@ -37,7 +37,7 @@ export default function LoginPage() {
       });
 
       if (res?.error) {
-        setError("Invalid email address or password."); // message from credentials provider
+        setErrorMessage("Invalid email address or password."); // message from credentials provider
       } else {
         setSuccess("Login successful! Redirecting...");
 
@@ -45,7 +45,7 @@ export default function LoginPage() {
       }
     } catch (err) {
       console.log("Error occurred:", err);
-      setError("Something went wrong. Please try again.");
+      setErrorMessage("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -67,7 +67,7 @@ export default function LoginPage() {
           required
           value={email}
           onChange={e => setEmail(e.target.value)}
-          aria-invalid={!!error && !validateEmail(email)}
+          aria-invalid={!!errorMessage && !validateEmail(email)}
         />
         <input
           className="p-3 m-2 w-3/4 sm:w-sm bg-slate-700 border border-slate-500 rounded-sm transition-transform ease-in-out duration-300 active:scale-95 focus:outline-slate-500"
@@ -76,7 +76,7 @@ export default function LoginPage() {
           required
           value={password}
           onChange={e => setPassword(e.target.value)}
-          aria-invalid={!!error && !password}
+          aria-invalid={!!errorMessage && !password}
         />
         <button type="submit" className={`px-4 py-2 mt-4 w-3/4 sm:w-sm cursor-pointer rounded-sm transition-transform ease-in-out duration-300 active:scale-95"
           ${
@@ -87,10 +87,10 @@ export default function LoginPage() {
           >
           {loading ? "Logging in..." : "Login"}
         </button>
-        {error && (
-          <p className="text-red-400 text-sm mt-2">{error}</p>
-        )}
-        {success && <p className="text-mint-400 text-sm mt-2">{success}</p>}
+        <div className="h-12 flex flex-col items-center justify-center">
+          <p className="text-red-400 text-sm mt-2 select-none">{errorMessage}</p>
+          <p className="text-mint-400 text-sm mt-2">{success}</p>
+        </div>
       </form>
     </div>
   );
