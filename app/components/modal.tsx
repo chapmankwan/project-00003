@@ -43,15 +43,15 @@ export const Modal = ({
             </button>
             <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="relative z-50">
                 <div className="fixed inset-0 flex w-screen items-center justify-center p-4 bg-black/50">
-                <DialogPanel className="max-w-lg space-y-4 border bg-slate-500 p-12 rounded">
-                    <DialogTitle className="font-bold">{modalTitle}</DialogTitle>
-                    <Description>{modalDescription}</Description>
-                    <p>{modalExtraDetails}</p>
-                    <div className="flex gap-3">
-                        <button className="rounded cursor-pointer px-3 py-2 bg-slate-600" onClick={() => setIsOpen(false)}>{leftButtonText}</button>
-                        <button className="rounded cursor-pointer px-3 py-2 bg-red-500" onClick={handleDeleteAll}>{rightButtonText}</button>
-                    </div>
-                </DialogPanel>
+                    <DialogPanel className="max-w-lg space-y-4 border bg-slate-500 p-12 rounded">
+                        <DialogTitle className="font-bold">{modalTitle}</DialogTitle>
+                        <Description>{modalDescription}</Description>
+                        <p>{modalExtraDetails}</p>
+                        <div className="flex gap-3">
+                            <button className="rounded cursor-pointer px-3 py-2 bg-slate-600" onClick={() => setIsOpen(false)}>{leftButtonText}</button>
+                            <button className="rounded cursor-pointer px-3 py-2 bg-red-500" onClick={handleDeleteAll}>{rightButtonText}</button>
+                        </div>
+                    </DialogPanel>
                 </div>
             </Dialog>
         </>
