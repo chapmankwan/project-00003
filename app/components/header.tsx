@@ -5,12 +5,10 @@ import { redirect } from "next/navigation";
 
 import { signOut, useSession } from "next-auth/react";
 
-import { Menu } from "@/app/components";
+import { Menu, NewListInput } from "@/app/components";
 import { useState } from "react";
 
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
-
-import { NewListInput } from "./new-list-input";
 
 
 export const Header = () => {
