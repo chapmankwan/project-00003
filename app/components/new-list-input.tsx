@@ -5,9 +5,10 @@ import Form from "next/form"
 interface NewListInputProps {  
     isDialogOpen: boolean;
     setIsDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    fetchLists?: () => void;
 }
 
-export const NewListInput = ({ isDialogOpen, setIsDialogOpen }: NewListInputProps) => {
+export const NewListInput = ({ isDialogOpen, setIsDialogOpen, fetchLists }: NewListInputProps) => {
 
     const [inputText, setInputText] = useState<string>("");
 
@@ -36,7 +37,9 @@ export const NewListInput = ({ isDialogOpen, setIsDialogOpen }: NewListInputProp
             console.error("There was an error creating the todolist, check logs", err);
         };
         
-        setIsDialogOpen(false)
+        setIsDialogOpen(false);
+
+        fetchLists?.();
     };
 
     const handleCancelButton = (event: React.MouseEvent<HTMLButtonElement>) => {

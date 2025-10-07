@@ -9,7 +9,7 @@ import React from "react";
 
 interface CardModel {
     onDelete: (listId: string) => void;
-    taskList: TodoListModel
+    taskList: TodoListModel;
 }
 
 export const Card = ({
@@ -52,7 +52,7 @@ export const Card = ({
                             <p className="font-semibold">{completedTasks} / {totalNumberOfTasks}</p>
                         </>
                         :
-                        <p>no tracks</p>
+                        <p className="text-slate-400">no tracks</p>
                     }
                 </Link>
 
@@ -61,7 +61,7 @@ export const Card = ({
                     onClick={onDeleteHandler}
                     title="delete"
                 >
-                    <TrashIcon className="size-6" />
+                    <TrashIcon className="size-5" />
                 </button>
             </div>
         </div>

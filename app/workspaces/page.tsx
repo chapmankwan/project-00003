@@ -18,27 +18,28 @@ export default function Workspaces () {
     
     if ( status === "unauthenticated" ) redirect("/");
     
-    useEffect( () => {
-        const fetchLists = async () => {
-            const res = await fetch("/api/todo-lists");
-            if (!res.ok) {
-                console.error("Failed to fetch lists");
-                return;
-            }
-
-            const list = await res.json();
-            if (list.length) {
-                setAllTaskLists(list.reverse());
-            }
+    const fetchLists = async () => {
+        const res = await fetch("/api/todo-lists");
+        if (!res.ok) {
+            console.error("Failed to fetch lists");
+            return;
         }
-        
+
+        const list = await res.json();
+        if (list.length) {
+            setAllTaskLists(list.reverse());
+        }
+    };
+
+    useEffect( () => {
         fetchLists();
         setLoading(false);
-    },[]);
 
-    useEffect(() => {
-        if( createNewRef.current && !allTaskLists.length) createNewRef.current.focus();
-    },[allTaskLists])
+        // only focus on the create new button if there are no tasklists
+        if( createNewRef.current && !(allTaskLists.length > 0)) createNewRef.current.focus();
+
+
+    },[ ,allTaskLists]);
 
     const handleDelete = async (listId: string) => {
         try {
@@ -87,7 +88,7 @@ export default function Workspaces () {
             <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} className="relative z-50 duration-300 ease-out data-closed:opacity-0" transition>
                 <div className="fixed inset-0 flex w-screen items-center justify-center p-4 bg-black/50">
                     <DialogPanel className="max-w-lg min-w-xs sm:min-w-sm space-y-4 bg-slate-700 p-4 rounded backdrop-blur-2xl">
-                        <NewListInput isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} />
+                        <NewListInput isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} fetchLists={fetchLists} />
                     </DialogPanel>
                 </div>
             </Dialog>
