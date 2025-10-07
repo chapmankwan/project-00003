@@ -59,5 +59,33 @@ export async function POST(req: NextRequest) {
 
 	} catch (err) {
 		console.error(err);
-	}
+	};
+};
+
+export async function PATCH(req: NextRequest) {
+	try {
+		const session = await getServerSession(authOptions);
+		if (!session?.user?.email) return NextResponse.json( {error: "Unauthorized" }, { status: 401 });
+
+		const { taskListId, newTitle } = await req.json();
+
+		const userId = new mongoose.Types.ObjectId(session.user.id);
+
+		const updatedList = await TodoList.findOneAndUpdate(
+			{ _id: taskListId, userId: userId },
+			{ $set: { slug: toSlug(newTitle), title: newTitle }},
+			{ new: true },
+		);
+
+		if (!updatedList) return NextResponse.json( {message: "list or user not found"}, { status: 404} );
+
+		return NextResponse.json( {
+			message: "Title updated successfully",
+			updatedList,
+		}, { status: 200 } );
+
+	} catch (err) {
+		console.error("Error with updating the list name", err);
+		return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+	};
 };

@@ -19,10 +19,10 @@ export const Header = () => {
         redirect("/account/signout");
     };
 
-    const [isOpen, setIsOpen] = useState(false);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     const handleButton = () => {
-        setIsOpen(true);
+        setIsDialogOpen(true);
     };
 
     return (
@@ -57,11 +57,11 @@ export const Header = () => {
                 }
             </section>
 
-            <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="relative z-50">
+            <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} className="relative z-50">
                 <div className="fixed inset-0 flex w-screen items-center justify-center p-4 bg-black/50">
                     <DialogPanel className="max-w-lg min-w-xs sm:min-w-sm space-y-4 bg-slate-500 p-4 rounded">
                         <DialogTitle className="font-bold text-lg">Input a title</DialogTitle>
-                        <NewListInput setIsOpen={setIsOpen} />
+                        <NewListInput isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} />
                     </DialogPanel>
                 </div>
             </Dialog>

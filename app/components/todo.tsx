@@ -8,7 +8,6 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 
-
 interface TodoModel {
     ref:  Ref<HTMLLIElement | null>; // fix
     index: number;

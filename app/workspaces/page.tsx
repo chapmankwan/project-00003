@@ -1,19 +1,20 @@
 "use client"
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { redirect } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 import { Card, PageHeader, Loader, NewListInput } from "@/app/components";
 import type { TodoListModel } from "@/models";
-import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
+import { Dialog, DialogPanel } from '@headlessui/react';
 import { PlusIcon } from "@heroicons/react/24/outline";
-
 
 export default function Workspaces () {
     const { status } = useSession();
     const [allTaskLists, setAllTaskLists] = useState<TodoListModel[]>([])
     const [loading, setLoading] = useState(true);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+    const createNewRef = useRef<HTMLButtonElement>(null)
     
     if ( status === "unauthenticated" ) redirect("/");
     
@@ -28,12 +29,16 @@ export default function Workspaces () {
             const list = await res.json();
             if (list.length) {
                 setAllTaskLists(list.reverse());
-                setLoading(false);
             }
         }
-
+        
         fetchLists();
+        setLoading(false);
     },[]);
+
+    useEffect(() => {
+        if( createNewRef.current && !allTaskLists.length) createNewRef.current.focus();
+    },[allTaskLists])
 
     const handleDelete = async (listId: string) => {
         try {
@@ -51,8 +56,16 @@ export default function Workspaces () {
         <section className="flex flex-1 flex-col items-center h-[calc(100vh-72px)]">
             <PageHeader title="Workspaces"/>
             <button
+                ref={createNewRef}
                 onClick={() => setIsDialogOpen(true)} 
-                className="sm:hidden w-12 h-12 flex items-center justify-center absolute bottom-4 right-4 p-2 m-2 cursor-pointer rounded-full bg-mint-700 hover:bg-mint-800"
+                className="
+                    sm:hidden w-12 h-12 
+                    flex items-center justify-center 
+                    absolute bottom-4 right-4 p-2 m-2 
+                    cursor-pointer rounded-full 
+                    bg-mint-700 hover:bg-mint-800
+                    data-focus:outline data-focus:outline-white data-hover:bg-black/30
+                "
             >
                 <PlusIcon className="size-6"/>
             </button>
@@ -64,19 +77,17 @@ export default function Workspaces () {
                         allTaskLists.length > 0 &&
                         allTaskLists.map( (taskList, index) => {
                             return (
-                                <Card key={index} taskList={taskList} onDelete={handleDelete}/>
+                                <Card key={index} taskList={taskList} onDelete={handleDelete} />
                             )
                         })
                     }
                 </ul>
             }
-            
 
-            <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} className="relative z-50">
+            <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} className="relative z-50 duration-300 ease-out data-closed:opacity-0" transition>
                 <div className="fixed inset-0 flex w-screen items-center justify-center p-4 bg-black/50">
-                    <DialogPanel className="max-w-lg min-w-xs sm:min-w-sm space-y-4 bg-slate-500 p-4 rounded">
-                        <DialogTitle className="font-bold text-lg">Input a title</DialogTitle>
-                        <NewListInput setIsOpen={setIsDialogOpen} />
+                    <DialogPanel className="max-w-lg min-w-xs sm:min-w-sm space-y-4 bg-slate-700 p-4 rounded backdrop-blur-2xl">
+                        <NewListInput isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} />
                     </DialogPanel>
                 </div>
             </Dialog>
