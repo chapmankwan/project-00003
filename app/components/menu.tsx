@@ -3,8 +3,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link"
 
-import { ClientHeaderLink } from "@/app/components";
-
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import clsx from "clsx";
@@ -100,7 +98,6 @@ export const Menu = () => {
                 {/* Hidden menu for authenticated users */}
                 {status === "authenticated" ? (
                     <>
-                        <ClientHeaderLink onClick={() => setIsMenuOpen(false)} className={menuTailwindCss} />
                         <Link onClick={() => setIsMenuOpen(false)} className={menuTailwindCss} href="/workspaces">Workspaces</Link>
                         <Link
                             onClick={() => setIsMenuOpen(false)}

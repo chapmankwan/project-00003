@@ -1,15 +1,22 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 
-import { DetailPanel, Loader, Modal, PageHeader, Todo } from "@/app/components";
+import { DetailPanel, Loader, Modal, Todo } from "@/app/components";
 import type { Task } from "@/models";
 import Form from "next/form";
+import { useRouter } from 'next/navigation';
 
 import { taskApiHooks } from "@/app/utilities/taskApiHooks";
+import { toSlug } from "@/app/utilities";
+
+import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
+
 
 export const TodoList = ({id}: { id:string}) => {
 
     const { saveTask, updateTask, deleteTask } = taskApiHooks(id);
+
+    const router = useRouter();
 
     // local states
     const [tasks, setTasks] = useState<Task[]>([]);
@@ -17,6 +24,9 @@ export const TodoList = ({id}: { id:string}) => {
     const [loading, setLoading] = useState(true);
     const [input, setInput] = useState("");
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+
+    const [isEditingTitle, setIsEditingTitle] = useState(false);
+    const [editTitle, setEditTitle] = useState("");
 
     const openDetails = (task: Task) => setSelectedTask(task);
     const closeDetails = () => setSelectedTask(null);
@@ -38,6 +48,8 @@ export const TodoList = ({id}: { id:string}) => {
                 setTasks(list.tasks);
                 setListTitle(list.title);
                 setLoading(false);
+
+                setEditTitle(list.title)
 
             } catch (err) {
                 console.error("There was an error loading the tasks, check logs", err);
@@ -130,17 +142,62 @@ export const TodoList = ({id}: { id:string}) => {
         await addTask();
     };
 
+    const handleAcceptTitleChange = async () => {
+        try {
+            const update = {
+                taskListId: id,
+                newTitle: editTitle
+            };
+
+            const titleChangeResponse = await fetch("/api/todo-lists/", {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(update),
+            });
+
+            if (!titleChangeResponse.ok) throw new Error("There was an issue with changning the title");
+
+            // setListTitle(editTitle);
+            setIsEditingTitle(false);
+            router.push(`/todo-lists/${id}/${toSlug(editTitle)}`);
+
+
+        } catch (err) {
+            console.error("There was an error changing the title", err);
+        }
+    };
+
+    const handleCancelTitleChange = () => {
+        setIsEditingTitle(false);
+        setEditTitle(listTitle);
+    };
+
+    const totalTasksCount = tasks?.length;
+    const completedTasksCount = tasks?.filter( task => task.completed )?.length;
+
     return (
         <div className="flex-1 flex flex-col items-center h-[calc(100vh-56px)]">
-            <div className="flex justify-between items-center w-full">
-                <PageHeader title="Task list"/>
-            </div>
-
-            <p className="m-3 font-bold flex justify-center w-full">{listTitle}</p>
+            {
+                !isEditingTitle ?
+                <button onClick={() => setIsEditingTitle(true)} className="m-3 font-bold flex justify-center w-full">{listTitle}</button>
+                :
+                <div className="m-3 flex gap-2">
+                    <input 
+                        type="text" 
+                        value={editTitle} 
+                        onChange={e => setEditTitle(e.target.value)} 
+                        className="border border-solid border-mint-400 outline-0"
+                        placeholder="change title"
+                        required
+                    />
+                    <CheckIcon className="size-5 hover:text-mint-500 cursor-pointer" onClick={handleAcceptTitleChange}/>
+                    <XMarkIcon className="size-5 hover:text-red-400 cursor-pointer" onClick={handleCancelTitleChange}/>
+                </div>
+            }
 
             <div className="w-[90%] md:w-2/3 flex items-center justify-between">
                 <div className="flex items-center justify-between bg-slate-700 rounded drop-shadow-lg mx-3 w-full h-16">
-                    <div className="p-2">Tasks completed: {""} / {""} </div>
+                    <div className="m-3 text-sm">Completed: {completedTasksCount} / {totalTasksCount} </div>
                     <Modal  
                         mainButtonText="Delete all"
                         callback={() => deleteAllTasks(id)}

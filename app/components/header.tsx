@@ -5,7 +5,11 @@ import { redirect } from "next/navigation";
 
 import { signOut, useSession } from "next-auth/react";
 
-import { ClientHeaderLink, Menu } from "@/app/components";
+import { Menu, NewListInput } from "@/app/components";
+import { useState } from "react";
+
+import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
+
 
 export const Header = () => {
     const { status } = useSession();
@@ -13,6 +17,12 @@ export const Header = () => {
     const handleSignOut = () => {
         signOut();
         redirect("/account/signout");
+    };
+
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+    const handleButton = () => {
+        setIsDialogOpen(true);
     };
 
     return (
@@ -37,13 +47,24 @@ export const Header = () => {
                     </>
                     :
                     <>
-                        <ClientHeaderLink />
+                        <button onClick={handleButton}>
+                            Create new
+                        </button>
                         <Link href="/workspaces">Workspaces</Link>
                         <Link href="/account">Account</Link>
                         <button onClick={handleSignOut}>Sign out</button>
                     </>
                 }
             </section>
+
+            <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} className="relative z-50">
+                <div className="fixed inset-0 flex w-screen items-center justify-center p-4 bg-black/50">
+                    <DialogPanel className="max-w-lg min-w-xs sm:min-w-sm space-y-4 bg-slate-500 p-4 rounded">
+                        <DialogTitle className="font-bold text-lg">Input a title</DialogTitle>
+                        <NewListInput isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} />
+                    </DialogPanel>
+                </div>
+            </Dialog>
         </header>
     );
 }
