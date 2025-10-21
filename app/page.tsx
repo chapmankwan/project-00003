@@ -8,8 +8,8 @@ export default async function Home() {
 	const session = await getServerSession(authOptions);
 
   	return (
-		<div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-[calc(100vh-56px)] p-8 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-			<main className="flex flex-col row-start-2 items-center justify-center">
+		<div className="overflow-hidden flex flex-col justify-center items-center h-[calc(100vh-56px)] p-2 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+			<main className="flex flex-col row-start-2 items-center justify-center overflow-hidden">
 				<Image 
 					src="/monorail-logo.png"
 					alt="logo"
@@ -63,7 +63,7 @@ export default async function Home() {
 				}
 			</main>
 
-			<footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center text-xs">
+			<footer className="pt-4 px-4 flex gap-[24px] text-xs">
 				&#169; ck 2025
 			</footer>
 		</div>
