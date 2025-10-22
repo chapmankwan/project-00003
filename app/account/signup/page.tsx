@@ -28,7 +28,7 @@ const handleSignup = async (event: React.FormEvent) => {
 };
 
 return (
-	<div className="min-h-[calc(100vh-56px)] flex flex-col items-center justify-center bg-slate-800 text-white">
+	<div className="min-h-[calc(100dvh-56px)] flex flex-col items-center justify-center bg-slate-800 text-white">
 		<h1 className="text-2xl mb-4 select-none">Sign up and get on track!</h1>
 
       <form

@@ -54,7 +54,7 @@ export default function Workspaces () {
     };
 
     return (
-        <section className="flex flex-1 flex-col items-center h-[calc(100vh-72px)]">
+        <section className="flex flex-1 flex-col items-center h-[calc(100dvh-72px)]">
             <PageHeader title="Workspaces"/>
             <button
                 ref={createNewRef}

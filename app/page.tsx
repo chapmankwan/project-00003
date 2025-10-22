@@ -8,8 +8,8 @@ export default async function Home() {
 	const session = await getServerSession(authOptions);
 
   	return (
-		<div className="overflow-hidden flex flex-col justify-center items-center h-[calc(100vh-56px)] p-2 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-			<main className="flex flex-col row-start-2 items-center justify-center overflow-hidden">
+		<div className="overflow-hidden flex flex-col justify-center items-center h-[calc(100dvh-56px)] p-2 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+			<main className="flex flex-col row-start-2 items-center justify-center">
 				<Image 
 					src="/monorail-logo.png"
 					alt="logo"
