@@ -176,7 +176,7 @@ export const TodoList = ({id}: { id:string}) => {
     const completedTasksCount = tasks?.filter( task => task.completed )?.length;
 
     return (
-        <div className="flex-1 flex flex-col items-center h-[calc(100vh-56px)]">
+        <div className="flex-1 flex flex-col items-center h-[calc(100dvh-56px)]">
             {
                 !isEditingTitle ?
                 <button onClick={() => setIsEditingTitle(true)} className="m-3 font-bold flex justify-center w-full">{listTitle}</button>
@@ -214,7 +214,7 @@ export const TodoList = ({id}: { id:string}) => {
             {
                 loading ? 
                 <Loader/> :
-                <ul className="space-y-2 w-[90%] md:w-2/3 mx-3 rounded-md flex-grow h-full overflow-y-auto"> 
+                <ul className="space-y-2 w-[90%] md:w-2/3 mx-3 rounded-md flex-grow overflow-y-auto"> 
                 {
                     tasks.map((task, index) => {
                         const isLast = index === tasks.length - 1;

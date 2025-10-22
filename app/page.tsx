@@ -48,7 +48,7 @@ export default async function Home() {
 								sign up here
 							</Link>
 							<Link
-								href="/account/signup"
+								href="/account/login"
 								className="
 									mt-4
 									text-xs
