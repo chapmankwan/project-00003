@@ -34,6 +34,7 @@ export const TodoList = ({id}: { id:string}) => {
     // references
     const justAddedRef = useRef(false);
     const lastTaskRef = useRef<HTMLLIElement>(null);
+    const titleInputRef = useRef<HTMLInputElement>(null);
 
     // initialize the todolist with data
     useEffect(() => {
@@ -68,6 +69,10 @@ export const TodoList = ({id}: { id:string}) => {
             justAddedRef.current = false;
         }
     }, [tasks]);
+
+    useEffect(() => {
+        if( titleInputRef.current ) titleInputRef.current.focus();
+    },[isEditingTitle])
 
     const handleDeleteTask = async (task: Task) => {
         if (!task?._id) return;
@@ -143,6 +148,7 @@ export const TodoList = ({id}: { id:string}) => {
     };
 
     const handleAcceptTitleChange = async () => {
+        if (editTitle === listTitle) return setIsEditingTitle(false);
         try {
             const update = {
                 taskListId: id,
@@ -157,7 +163,6 @@ export const TodoList = ({id}: { id:string}) => {
 
             if (!titleChangeResponse.ok) throw new Error("There was an issue with changning the title");
 
-            // setListTitle(editTitle);
             setIsEditingTitle(false);
             router.push(`/todo-lists/${id}/${toSlug(editTitle)}`);
 
@@ -179,14 +184,15 @@ export const TodoList = ({id}: { id:string}) => {
         <div className="flex-1 flex flex-col items-center h-[calc(100dvh-56px)]">
             {
                 !isEditingTitle ?
-                <button onClick={() => setIsEditingTitle(true)} className="m-3 font-bold flex justify-center w-full">{listTitle}</button>
+                <button onClick={() => setIsEditingTitle(true)} className="p-4 font-bold flex w-[90%] md:w-2/3 cursor-text">{listTitle}</button>
                 :
-                <div className="m-3 flex gap-2">
+                <div className="p-3 flex gap-2 items-center w-[90%] md:w-2/3">
                     <input 
+                        ref={titleInputRef}
                         type="text" 
                         value={editTitle} 
                         onChange={e => setEditTitle(e.target.value)} 
-                        className="border border-solid border-mint-400 outline-0"
+                        className="border border-solid border-mint-400 rounded outline-0 p-1 w-full"
                         placeholder="change title"
                         required
                     />

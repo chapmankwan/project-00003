@@ -8,12 +8,14 @@ import clsx from "clsx";
 import React from "react";
 
 interface CardModel {
-    onDelete: (listId: string) => void;
+    setIsDeleteDialog: React.Dispatch<React.SetStateAction<boolean>>;
+    setSelectedTaskListId: React.Dispatch<React.SetStateAction<string>>;
     taskList: TodoListModel;
 }
 
 export const Card = ({
-    onDelete,
+    setIsDeleteDialog,
+    setSelectedTaskListId,
     taskList
 }: CardModel) => {
     
@@ -26,8 +28,8 @@ export const Card = ({
 
     const onDeleteHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
-        confirm("Delete this list and all its tasks? This cannot be undone.");
-        onDelete(taskList._id);
+        setIsDeleteDialog(true);
+        setSelectedTaskListId(taskList._id)
     };
 
     return (
