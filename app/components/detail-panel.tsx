@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 
 import { Task } from "@/models";
 
+// import { TrashIcon } from "@heroicons/react/24/outline";
+
 import clsx from "clsx";
 
 interface DetailPanelModel {
@@ -15,7 +17,7 @@ export const DetailPanel =({
     onClose,
 }: DetailPanelModel) => {
     const [isVisible, setIsVisible] = useState(false);
-
+    
     useEffect(() => {
         // Animate in after mount
         const timer = setTimeout(() => setIsVisible(true), 10);
@@ -33,7 +35,7 @@ export const DetailPanel =({
         {/* Backdrop */}
             <div
                 className={clsx(
-                "absolute inset-0 bg-black/50 transition-opacity duration-500 ease-in-out",
+                "absolute inset-0 bg-black/50 transition-opacity duration-300 ease-in-out",
                 isVisible ? "opacity-100" : "opacity-0"
                 )}
                 onClick={handleClose}
@@ -43,7 +45,7 @@ export const DetailPanel =({
             <div
                 className={clsx(
                 "absolute bottom-0 left-0 right-0 z-50 bg-slate-800 text-mint-300 shadow-2xl rounded-t-2xl",
-                "transform transition-transform duration-500 ease-out h-[75vh] overflow-y-auto",
+                "transform transition-transform duration-300 ease-out h-[50dvh] overflow-y-auto",
                 isVisible ? "translate-y-0" : "translate-y-full"
                 )}
             >
@@ -54,9 +56,15 @@ export const DetailPanel =({
                     </button>
                 </div>
 
-                <div className="p-4 space-y-2">
+                <div className="flex flex-col p-4 h-[calc(50dvh-61px)]">
                     <p><strong>Due:</strong> {task.date}</p>
                     <p><strong>Completed:</strong> {task.dateCompleted ?? "Not yet complete"}</p>
+                    <button 
+                        className="flex items-center w-fit cursor-pointer hover:text-red-500 border rounded p-2 mt-auto"
+                        onClick={() => console.log("+++ delete this")}
+                    >
+                        DELETE TASK
+                    </button>
                 </div>
             </div>
         </section>

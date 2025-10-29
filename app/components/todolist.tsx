@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 import { taskApiHooks } from "@/app/utilities/taskApiHooks";
 import { toSlug } from "@/app/utilities";
 
-import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { CheckIcon, PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 
 export const TodoList = ({id}: { id:string}) => {
@@ -249,7 +249,7 @@ export const TodoList = ({id}: { id:string}) => {
                 />
             )}
 
-            <section className="sticky bottom-0 z-10 flex justify-center items-center w-full mx-auto p-4 bg-slate-800">
+            <section className="sticky bottom-0 z-10 flex justify-center items-center w-full mx-auto py-2 bg-slate-800">
                 <Form action="/todo-list" onSubmit={onSubmitHandler} className="flex w-full md:w-3/4 bg-slate-700 p-4 rounded-md">
                     <input
                         type="text"
@@ -260,7 +260,7 @@ export const TodoList = ({id}: { id:string}) => {
                         required
                     />
                     <button type="submit" className="ml-2 bg-soft-lavender-500 text-white p-2 rounded-lg hover:text-lime-400 cursor-pointer">
-                        Add
+                        <PlusIcon className="size-6" />
                     </button>
                 </Form>
             </section>

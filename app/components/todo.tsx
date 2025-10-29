@@ -54,7 +54,16 @@ export const Todo = ({
                 {task.edited ? "edited" : ""}
             </span>
 
-            <div className="ml-auto">
+            <Menu>
+                <MenuButton 
+                    className="inline-flex p-2 rounded cursor-pointer hover:bg-slate-600 md:hidden" 
+                    onClick={() => openDetails(task)}
+                >
+                    <EllipsisVerticalIcon className="size-6"/>
+                </MenuButton>
+            </Menu>
+
+            <div className="ml-auto hidden md:block">
                 <Menu>
                     <MenuButton 
                         className="inline-flex p-2 rounded cursor-pointer hover:bg-slate-600" 
@@ -65,8 +74,8 @@ export const Todo = ({
 
                     <MenuItems
                         transition
-                        anchor="bottom"
-                        className="origin-top-right bg-slate-700 w-28 rounded-md"
+                        anchor="top"
+                        className="origin-top-right bg-slate-700 w-28 rounded-md hidden md:block"
                         onClick={stopPropagation}
                     >
                         <MenuItem>
