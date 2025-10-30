@@ -31,6 +31,11 @@ export const Todo = ({
         event.stopPropagation();
     };
 
+    const handleOpenDetails = (event: React.MouseEvent<HTMLButtonElement | HTMLDivElement | HTMLLabelElement>) => {
+        stopPropagation(event);
+        openDetails(task);
+    };
+
     return (
         <li 
             className="flex items-center bg-slate-600 hover:bg-slate-500 m-3 p-4 gap-3 rounded-sm cursor-pointer"
@@ -57,7 +62,7 @@ export const Todo = ({
             <Menu>
                 <MenuButton 
                     className="inline-flex p-2 rounded cursor-pointer hover:bg-slate-600 md:hidden" 
-                    onClick={() => openDetails(task)}
+                    onClick={handleOpenDetails}
                 >
                     <EllipsisVerticalIcon className="size-6"/>
                 </MenuButton>
@@ -76,7 +81,7 @@ export const Todo = ({
                         transition
                         anchor="top"
                         className="origin-top-right bg-slate-700 w-28 rounded-md hidden md:block"
-                        onClick={stopPropagation}
+                        onClick={(event: React.MouseEvent<HTMLButtonElement | HTMLDivElement | HTMLLabelElement>) => event.stopPropagation()}
                     >
                         <MenuItem>
                             <button 

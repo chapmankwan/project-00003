@@ -6,13 +6,16 @@ import { Task } from "@/models";
 // import { TrashIcon } from "@heroicons/react/24/outline";
 
 import clsx from "clsx";
+import { Types } from "mongoose";
 
 interface DetailPanelModel {
+    deleteTask: (taskId: Types.ObjectId) => void;
     task: Task;
     onClose: () => void;
 };
 
 export const DetailPanel =({
+    deleteTask,
     task,
     onClose,
 }: DetailPanelModel) => {
@@ -29,6 +32,11 @@ export const DetailPanel =({
         setIsVisible(false);
         setTimeout(onClose, 300); // match transition duration
     };
+
+    const handleDeleteTask = () => {
+        deleteTask(task._id);
+        handleClose();
+    }
 
     return (
         <section className="fixed inset-0 z-40">
@@ -51,17 +59,17 @@ export const DetailPanel =({
             >
                 <div className="p-4 flex justify-between items-center border-b border-mint-500/20">
                     <h2 className="text-lg font-semibold">Task Details</h2>
-                    <button onClick={handleClose} className="text-mint-400 hover:text-mint-200">
+                    <button onClick={handleClose} className="cursor-pointer text-mint-400 hover:text-mint-200">
                         close
                     </button>
                 </div>
 
                 <div className="flex flex-col p-4 h-[calc(50dvh-61px)]">
-                    <p><strong>Due:</strong> {task.date}</p>
-                    <p><strong>Completed:</strong> {task.dateCompleted ?? "Not yet complete"}</p>
+                    <p><strong>Date created:</strong>{task.date}</p>
+                    <p><strong>Completed:</strong> {task.completed ? "Finished" : "Not yet complete"}</p>
                     <button 
-                        className="flex items-center w-fit cursor-pointer hover:text-red-500 border rounded p-2 mt-auto"
-                        onClick={() => console.log("+++ delete this")}
+                        className="flex items-center w-fit cursor-pointer text-red-400 hover:text-red-500 border rounded p-2 mt-auto ml-auto"
+                        onClick={handleDeleteTask}
                     >
                         DELETE TASK
                     </button>

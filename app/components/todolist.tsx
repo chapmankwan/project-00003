@@ -246,10 +246,11 @@ export const TodoList = ({id}: { id:string}) => {
                 <DetailPanel
                     task={selectedTask}
                     onClose={closeDetails}
+                    deleteTask={() => handleDeleteTask(selectedTask)}
                 />
             )}
 
-            <section className="sticky bottom-0 z-10 flex justify-center items-center w-full mx-auto py-2 bg-slate-800">
+            <section className="sticky bottom-0 z-10 flex justify-center items-center w-full mx-auto p-2 bg-slate-800">
                 <Form action="/todo-list" onSubmit={onSubmitHandler} className="flex w-full md:w-3/4 bg-slate-700 p-4 rounded-md">
                     <input
                         type="text"
