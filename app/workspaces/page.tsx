@@ -13,6 +13,8 @@ export default function Workspaces () {
     const [allTaskLists, setAllTaskLists] = useState<TodoListModel[]>([])
     const [loading, setLoading] = useState(true);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [selectedTaskListId, setSelectedTaskListId] = useState("");
 
     const createNewRef = useRef<HTMLButtonElement>(null)
     
@@ -42,6 +44,7 @@ export default function Workspaces () {
     },[ ,allTaskLists]);
 
     const handleDelete = async (listId: string) => {
+        if (!listId.length) return;
         try {
             const res = await fetch(`/api/todo-lists/${listId}`, { method: "DELETE" });
             if (!res.ok) throw new Error("Failed to delete list");
@@ -50,11 +53,12 @@ export default function Workspaces () {
         } catch (err) {
             console.error(err);
             alert("Failed to delete list.");
-        }
+        };
+        setIsDeleteDialogOpen(false);
     };
 
     return (
-        <section className="flex flex-1 flex-col items-center h-[calc(100vh-72px)]">
+        <section className="flex flex-1 flex-col items-center h-[calc(100dvh-72px)]">
             <PageHeader title="Workspaces"/>
             <button
                 ref={createNewRef}
@@ -78,12 +82,25 @@ export default function Workspaces () {
                         allTaskLists.length > 0 &&
                         allTaskLists.map( (taskList, index) => {
                             return (
-                                <Card key={index} taskList={taskList} onDelete={handleDelete} />
+                                <Card key={index} taskList={taskList} setIsDeleteDialog={setIsDeleteDialogOpen} setSelectedTaskListId={setSelectedTaskListId} />
                             )
                         })
                     }
                 </ul>
             }
+
+            <Dialog open={isDeleteDialogOpen} onClose={() => setIsDeleteDialogOpen(false)} className="relative z-50 duration-300 ease-out data-closed:opacity-0" transition>
+                <div className="fixed inset-0 flex w-screen items-center justify-center p-4 bg-black/50">
+                    <DialogPanel className="max-w-lg min-w-xs sm:min-w-sm space-y-4 bg-slate-700 p-4 rounded backdrop-blur-2xl items-center">
+                        <p>Do you want to delete this todolist?</p>
+                        <div className="flex gap-2">
+                            <button onClick={() => setIsDeleteDialogOpen(false)} className="p-2 bg-mint-500 hover:bg-mint-700 rounded cursor-pointer">cancel</button>
+                            <button onClick={() => handleDelete(selectedTaskListId)}className="p-2 bg-red-500 hover:bg-red-700 rounded cursor-pointer">delete</button>
+                        </div>
+                    </DialogPanel>
+                </div>
+            </Dialog>
+
 
             <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} className="relative z-50 duration-300 ease-out data-closed:opacity-0" transition>
                 <div className="fixed inset-0 flex w-screen items-center justify-center p-4 bg-black/50">
