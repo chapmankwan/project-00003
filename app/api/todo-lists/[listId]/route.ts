@@ -47,8 +47,6 @@ export async function DELETE(
 
 		await connectToDatabase();
 
-        console.log("+++ listId", listId);
-
 		const result = await TodoList.findOneAndDelete({
 			_id: new mongoose.Types.ObjectId(listId),
 			userId: new mongoose.Types.ObjectId(session.user.id),

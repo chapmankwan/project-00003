@@ -127,9 +127,11 @@ export const TodoList = ({id}: { id:string}) => {
 
     const addTask = async () => {
         if (!input.trim()) return;
-
+        
         try {
-            const response = await saveTask(input);
+            const order = tasks.length; // next available index
+            console.log("+++ order", order);
+            const response = await saveTask(input, order);
             const allTasks = response.tasks;
             const savedTask: Task = allTasks[allTasks.length - 1];
 

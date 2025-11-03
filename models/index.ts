@@ -11,6 +11,7 @@ export interface Task {
     edited: boolean;
     _id: Types.ObjectId;
     text: string;
+    order: number;
 }
 
 export interface TodoListModel {
