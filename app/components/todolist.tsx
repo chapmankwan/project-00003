@@ -15,6 +15,7 @@ import {
     DndContext,
     closestCenter,
     PointerSensor,
+    TouchSensor,
     useSensor,
     useSensors,
 } from "@dnd-kit/core";
@@ -27,7 +28,7 @@ import {
 
 export const TodoList = ({id}: { id:string}) => {
     // drag and drop
-    const sensors = useSensors(useSensor(PointerSensor));
+    const sensors = useSensors(useSensor(PointerSensor),useSensor(PointerSensor),useSensor(TouchSensor));
     // ** FIX TYPESCRIPT **
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleDragEnd = (event: any) => {
