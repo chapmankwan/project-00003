@@ -8,6 +8,9 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+
 interface TodoModel {
     ref:  Ref<HTMLLIElement | null>; // fix
     index: number;
@@ -27,6 +30,8 @@ export const Todo = ({
     toggleTaskCompletion,
 }: TodoModel) => {
 
+    const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: task._id.toString() });
+
     const stopPropagation = (event: React.MouseEvent<HTMLButtonElement | HTMLDivElement | HTMLLabelElement>) => {
         event.stopPropagation();
     };
@@ -36,12 +41,20 @@ export const Todo = ({
         openDetails(task);
     };
 
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+    };
+
     return (
         <li 
-            className="flex items-center bg-slate-600 hover:bg-slate-500 m-3 p-4 gap-3 rounded-sm cursor-pointer"
             key={index} 
+            ref={setNodeRef}
+            style={style}
+            {...attributes}
+            {...listeners}
+            className="flex items-center bg-slate-600 hover:bg-slate-500 m-3 p-4 gap-3 rounded-sm cursor-pointer"
             onClick={() => toggleTaskCompletion(task)}
-            ref={ref} 
         >
             <label className="*:cursor-pointer" onClick={stopPropagation}>
                 <input 
@@ -51,7 +64,7 @@ export const Todo = ({
                     type="checkbox" />
             </label>
 
-            <span className={clsx(["w-full select-none", task.completed && "line-through"])}>
+            <span className={clsx(["w-full select-none", task.completed && "line-through"])} ref={ref}>
                 {task.text}
             </span>
 

@@ -11,8 +11,41 @@ import { toSlug } from "@/app/utilities";
 
 import { CheckIcon, PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
+import {
+    DndContext,
+    closestCenter,
+    PointerSensor,
+    useSensor,
+    useSensors,
+} from "@dnd-kit/core";
+
+import {
+    arrayMove,
+    SortableContext,
+    verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 
 export const TodoList = ({id}: { id:string}) => {
+    // drag and drop
+    const sensors = useSensors(useSensor(PointerSensor));
+    // ** FIX TYPESCRIPT **
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleDragEnd = (event: any) => {
+        const { active, over } = event;
+        if (active.id !== over.id) {
+            const oldIndex = tasks.findIndex(t => t._id.toString() === active.id);
+            const newIndex = tasks.findIndex(t => t._id.toString() === over.id);
+            const reordered = arrayMove(tasks, oldIndex, newIndex);
+            setTasks(reordered);
+
+            // sync to server
+            fetch(`/api/todo-lists/${id}/tasks/reorder`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ orderedIds: reordered.map(t => t._id.toString()) }),
+            });
+        }
+    }
 
     const { saveTask, updateTask, deleteTask } = taskApiHooks(id);
 
@@ -223,7 +256,7 @@ export const TodoList = ({id}: { id:string}) => {
                 loading ? 
                 <Loader/> :
                 <ul className="space-y-2 w-[90%] md:w-2/3 mx-3 rounded-md flex-grow overflow-y-auto"> 
-                {
+                {/* {
                     tasks.map((task, index) => {
                         const isLast = index === tasks.length - 1;
 
@@ -240,7 +273,30 @@ export const TodoList = ({id}: { id:string}) => {
                             />
                         )
                     })
-                }
+                } */}
+
+                    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                        <SortableContext items={tasks.map(t => t._id.toString())} strategy={verticalListSortingStrategy}>
+                            {
+                                tasks.map((task, index) => {
+                                    const isLast = index === tasks.length - 1;
+
+                                    return (
+                                        <Todo 
+                                            ref={isLast ? lastTaskRef : null}
+                                            key={task._id?.toString()}
+                                            index={index}
+                                            deleteTask={() => handleDeleteTask(task)}
+                                            task={task} 
+                                            toggleTaskCompletion={toggleTaskCompletion}
+                                            openDetails={openDetails}
+                                            updateTask={() => console.log("null")}
+                                        />
+                                    )
+                                })
+                            }
+                        </SortableContext>
+                    </DndContext>
                 </ul>
             }
 
