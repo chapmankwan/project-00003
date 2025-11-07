@@ -53,7 +53,7 @@ export const Todo = ({
             ref={setNodeRef}
             style={style}
             {...attributes}
-            className="flex items-center bg-slate-600 hover:bg-slate-500 m-3 p-4 gap-3 rounded-sm cursor-pointer"
+            className="flex items-center bg-slate-600 hover:bg-slate-500 mx-3 my-1.5 p-2 gap-2 rounded-sm cursor-pointer"
             onClick={() => toggleTaskCompletion(task)}
         >
             <button

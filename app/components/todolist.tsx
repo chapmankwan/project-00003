@@ -244,7 +244,7 @@ export const TodoList = ({id}: { id:string}) => {
             }
 
             <div className="w-[90%] md:w-2/3 flex items-center justify-between">
-                <div className="flex items-center justify-between bg-slate-700 rounded drop-shadow-lg mx-3 w-full h-16">
+                <div className="flex items-center justify-between bg-slate-700 rounded drop-shadow-lg mx-3 w-full h-14">
                     <div className="m-3 text-sm">Completed: {completedTasksCount} / {totalTasksCount} </div>
                     <Modal  
                         mainButtonText="Delete all"
@@ -262,7 +262,7 @@ export const TodoList = ({id}: { id:string}) => {
             {
                 loading ? 
                 <Loader/> :
-                <ul className="space-y-2 w-[90%] md:w-2/3 mx-3 rounded-md flex-grow overflow-y-auto overflow-x-hidden">
+                <ul className="w-[90%] md:w-2/3 flex-grow overflow-y-auto overflow-x-hidden">
                     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                         <SortableContext items={tasks.map(t => t._id.toString())} strategy={verticalListSortingStrategy}>
                             {
