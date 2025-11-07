@@ -29,10 +29,11 @@ export async function PATCH(
         }
 
         list.tasks.forEach((task: Task) => {task.order = orderedIds.indexOf(task._id.toString());});
+        list.tasks.sort((a: Task, b: Task) => a.order - b.order);
         await list.save();
 
         return NextResponse.json({ success: true });
-        
+
     } catch (err) {
         console.error("Error reordering tasks:", err);
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

@@ -5,7 +5,7 @@ import type {Task} from "@/models";
 import { Types } from "mongoose";
 
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
-import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
+import { EllipsisVerticalIcon, Squares2X2Icon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 
 import { useSortable } from "@dnd-kit/sortable";
@@ -30,7 +30,7 @@ export const Todo = ({
     toggleTaskCompletion,
 }: TodoModel) => {
 
-    const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: task._id.toString() });
+    const { attributes, isDragging, listeners, setNodeRef, transform, transition } = useSortable({ id: task._id.toString() });
 
     const stopPropagation = (event: React.MouseEvent<HTMLButtonElement | HTMLDivElement | HTMLLabelElement>) => {
         event.stopPropagation();
@@ -44,6 +44,7 @@ export const Todo = ({
     const style = {
         transform: CSS.Transform.toString(transform),
         transition,
+        opacity: isDragging ? 0.5 : 1,
     };
 
     return (
@@ -52,10 +53,16 @@ export const Todo = ({
             ref={setNodeRef}
             style={style}
             {...attributes}
-            {...listeners}
             className="flex items-center bg-slate-600 hover:bg-slate-500 m-3 p-4 gap-3 rounded-sm cursor-pointer"
             onClick={() => toggleTaskCompletion(task)}
         >
+            <button
+                {...listeners} // 👈 drag only starts when pressing this
+                className="cursor-grab active:cursor-grabbing touch-none"
+                aria-label="Reorder task"
+            >
+                <Squares2X2Icon className="size-4 text-slate-400" />
+            </button>
             <label className="*:cursor-pointer" onClick={stopPropagation}>
                 <input 
                     checked={task.completed} 

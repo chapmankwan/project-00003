@@ -22,7 +22,6 @@ const handleSignup = async (event: React.FormEvent) => {
 		router.push("/account/login");
 	} else {
 		const { message } = await res.json();
-		console.log("+++ message", message);
 		setErrorMessage(message || "Signup failed.");
 	}
 };

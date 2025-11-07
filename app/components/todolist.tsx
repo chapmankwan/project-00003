@@ -27,8 +27,29 @@ import {
 } from "@dnd-kit/sortable";
 
 export const TodoList = ({id}: { id:string}) => {
+    const { saveTask, updateTask, deleteTask } = taskApiHooks(id);
+
+    const router = useRouter();
+
+    // local states
+    const [tasks, setTasks] = useState<Task[]>([]);
+    const [listTitle, setListTitle] = useState("")
+    const [loading, setLoading] = useState(true);
+    const [input, setInput] = useState("");
+    const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+
+    const [isEditingTitle, setIsEditingTitle] = useState(false);
+    const [editTitle, setEditTitle] = useState("");
+
     // drag and drop
-    const sensors = useSensors(useSensor(PointerSensor),useSensor(PointerSensor),useSensor(TouchSensor));
+    const sensors = useSensors(
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                distance: 8,
+            },
+        }),
+        useSensor(TouchSensor),
+    );
     // ** FIX TYPESCRIPT **
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleDragEnd = (event: any) => {
@@ -47,20 +68,6 @@ export const TodoList = ({id}: { id:string}) => {
             });
         }
     }
-
-    const { saveTask, updateTask, deleteTask } = taskApiHooks(id);
-
-    const router = useRouter();
-
-    // local states
-    const [tasks, setTasks] = useState<Task[]>([]);
-    const [listTitle, setListTitle] = useState("")
-    const [loading, setLoading] = useState(true);
-    const [input, setInput] = useState("");
-    const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-
-    const [isEditingTitle, setIsEditingTitle] = useState(false);
-    const [editTitle, setEditTitle] = useState("");
 
     const openDetails = (task: Task) => setSelectedTask(task);
     const closeDetails = () => setSelectedTask(null);
@@ -163,8 +170,7 @@ export const TodoList = ({id}: { id:string}) => {
         if (!input.trim()) return;
         
         try {
-            const order = tasks.length; // next available index
-            console.log("+++ order", order);
+            const order = tasks.length;
             const response = await saveTask(input, order);
             const allTasks = response.tasks;
             const savedTask: Task = allTasks[allTasks.length - 1];
@@ -256,26 +262,7 @@ export const TodoList = ({id}: { id:string}) => {
             {
                 loading ? 
                 <Loader/> :
-                <ul className="space-y-2 w-[90%] md:w-2/3 mx-3 rounded-md flex-grow overflow-y-auto"> 
-                {/* {
-                    tasks.map((task, index) => {
-                        const isLast = index === tasks.length - 1;
-
-                        return (
-                            <Todo 
-                                ref={isLast ? lastTaskRef : null}
-                                key={task._id?.toString()}
-                                index={index}
-                                deleteTask={() => handleDeleteTask(task)}
-                                task={task} 
-                                toggleTaskCompletion={toggleTaskCompletion}
-                                openDetails={openDetails}
-                                updateTask={() => console.log("null")}
-                            />
-                        )
-                    })
-                } */}
-
+                <ul className="space-y-2 w-[90%] md:w-2/3 mx-3 rounded-md flex-grow overflow-y-auto overflow-x-hidden">
                     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                         <SortableContext items={tasks.map(t => t._id.toString())} strategy={verticalListSortingStrategy}>
                             {

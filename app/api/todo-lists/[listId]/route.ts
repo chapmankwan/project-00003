@@ -52,8 +52,6 @@ export async function DELETE(
 			userId: new mongoose.Types.ObjectId(session.user.id),
 		});
 
-        console.log("+++ result", result);
-
 		if (!result) return NextResponse.json({ error: "List not found" }, { status: 404 });
 
 		return NextResponse.json(

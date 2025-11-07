@@ -6,7 +6,6 @@ export const taskApiHooks = (listId: string) => {
     const api = `/api/todo-lists/${listId}/tasks`;
 
     const saveTask = async (text: string, order: number) => {
-        console.log("+++ order in hook", order);
         try {
             const response = await fetch(api, {
                 method: "POST",
