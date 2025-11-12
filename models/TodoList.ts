@@ -7,6 +7,7 @@ const TaskSchema = new mongoose.Schema({
   edited: { type: Boolean, default: false },
   date: { type: String },
   dateCompleted: { type: String },
+  order: { type: Number, required: true },
 }); 
 
 const TodoListSchema = new mongoose.Schema({

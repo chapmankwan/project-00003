@@ -5,8 +5,11 @@ import type {Task} from "@/models";
 import { Types } from "mongoose";
 
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
-import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
+import { ChevronUpDownIcon, EllipsisVerticalIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
+
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 interface TodoModel {
     ref:  Ref<HTMLLIElement | null>; // fix
@@ -27,6 +30,8 @@ export const Todo = ({
     toggleTaskCompletion,
 }: TodoModel) => {
 
+    const { attributes, isDragging, listeners, setNodeRef, transform, transition } = useSortable({ id: task._id.toString() });
+
     const stopPropagation = (event: React.MouseEvent<HTMLButtonElement | HTMLDivElement | HTMLLabelElement>) => {
         event.stopPropagation();
     };
@@ -36,13 +41,28 @@ export const Todo = ({
         openDetails(task);
     };
 
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.5 : 1,
+    };
+
     return (
         <li 
-            className="flex items-center bg-slate-600 hover:bg-slate-500 m-3 p-4 gap-3 rounded-sm cursor-pointer"
             key={index} 
+            ref={setNodeRef}
+            style={style}
+            {...attributes}
+            className="flex items-center bg-slate-600 hover:bg-slate-500 mx-3 my-1.5 p-2 gap-2 rounded-sm cursor-pointer"
             onClick={() => toggleTaskCompletion(task)}
-            ref={ref} 
         >
+            <button
+                {...listeners} // 👈 drag only starts when pressing this
+                className="cursor-grab active:cursor-grabbing touch-none"
+                aria-label="Reorder task"
+            >
+                <ChevronUpDownIcon className="size-4 text-slate-400" />
+            </button>
             <label className="*:cursor-pointer" onClick={stopPropagation}>
                 <input 
                     checked={task.completed} 
@@ -51,7 +71,7 @@ export const Todo = ({
                     type="checkbox" />
             </label>
 
-            <span className={clsx(["w-full select-none", task.completed && "line-through"])}>
+            <span className={clsx(["w-full select-none", task.completed && "line-through"])} ref={ref}>
                 {task.text}
             </span>
 
