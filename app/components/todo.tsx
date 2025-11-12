@@ -5,7 +5,7 @@ import type {Task} from "@/models";
 import { Types } from "mongoose";
 
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
-import { EllipsisVerticalIcon, Squares2X2Icon } from "@heroicons/react/24/outline";
+import { ChevronUpDownIcon, EllipsisVerticalIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 
 import { useSortable } from "@dnd-kit/sortable";
@@ -61,7 +61,7 @@ export const Todo = ({
                 className="cursor-grab active:cursor-grabbing touch-none"
                 aria-label="Reorder task"
             >
-                <Squares2X2Icon className="size-4 text-slate-400" />
+                <ChevronUpDownIcon className="size-4 text-slate-400" />
             </button>
             <label className="*:cursor-pointer" onClick={stopPropagation}>
                 <input 
