@@ -36,7 +36,7 @@ export const DetailPanel =({
     const handleDeleteTask = () => {
         deleteTask(task._id);
         handleClose();
-    }
+    };
 
     return (
         <section className="fixed inset-0 z-40">

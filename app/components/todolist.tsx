@@ -145,6 +145,7 @@ export const TodoList = ({id}: { id:string}) => {
         if (!task?._id) return;
         try {
             const updatedTaskRes = await updateTask(id, task._id, {
+                ...task,
                 completed: !task.completed,
                 text: task.text,
                 edited: true,
