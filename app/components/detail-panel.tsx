@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 
 import { Task } from "@/models";
 
-// import { TrashIcon } from "@heroicons/react/24/outline";
+import { Select } from '@headlessui/react'
+import { TrashIcon } from "@heroicons/react/24/outline";
 
 import clsx from "clsx";
 import { Types } from "mongoose";
@@ -20,6 +21,8 @@ export const DetailPanel =({
     onClose,
 }: DetailPanelModel) => {
     const [isVisible, setIsVisible] = useState(false);
+
+    // console.log("+++ DetailedPanel - task", task);
     
     useEffect(() => {
         // Animate in after mount
@@ -64,14 +67,50 @@ export const DetailPanel =({
                     </button>
                 </div>
 
-                <div className="flex flex-col p-4 h-[calc(50dvh-61px)]">
-                    <p><strong>Date created:</strong>{task.date}</p>
-                    <p><strong>Completed:</strong> {task.completed ? "Finished" : "Not yet complete"}</p>
+                <div className="flex flex-col p-4 h-[calc(50dvh-61px)] overflow-y-auto">
+                    <p>Date created: {task.date}</p>
+                    <p>Completed: {task.completed ? "Finished" : "Not yet complete"}</p>
+                    <div className="flex gap-2">
+                        <p>Urgency:</p>
+                        <Select name="urgency" aria-label="task urgency" className="border cursor-pointer data-focus:bg-blue-500 data-hover:shadow">
+                            <option value="minor">minor</option>
+                            <option value="moderate">moderate</option>
+                            <option value="major">major</option>
+                        </Select>
+                    </div>
+                    {task.edited ? "edited" : ""}
+                    <ul className="">
+                        <p className="font-bold">Subtasks: </p>
+                        <li className="flex gap-2 cursor-pointer hover:bg-slate-600 border border-solid border-slate-400 px-2 py-1">
+                            <input type="checkbox"/>
+                            <span>subtask a</span>
+                        </li>
+                        <li className="flex gap-2 cursor-pointer hover:bg-slate-600 bg-slate-800 border border-solid border-slate-400 px-2 py-1 border-t-0">
+                            <input type="checkbox"/>
+                            <span>subtask a</span>
+                        </li>
+                        <li className="flex gap-2 cursor-pointer hover:bg-slate-600 bg-slate-800 border border-solid border-slate-400 px-2 py-1 border-t-0">
+                            <input type="checkbox"/>
+                            <span>subtask a</span>
+                        </li>
+                        <li className="flex gap-2 cursor-pointer hover:bg-slate-600 bg-slate-800 border border-solid border-slate-400 px-2 py-1 border-t-0">
+                            <input type="checkbox"/>
+                            <span>subtask a</span>
+                        </li>
+                        <li className="flex gap-2 cursor-pointer hover:bg-slate-600 bg-slate-800 border border-solid border-slate-400 px-2 py-1 border-t-0">
+                            <input type="checkbox"/>
+                            <span>subtask a</span>
+                        </li>
+                        <li className="flex gap-2 cursor-pointer hover:bg-slate-600 bg-slate-800 border border-solid border-slate-400 px-2 py-1 border-t-0">
+                            <input type="checkbox"/>
+                            <span>subtask a</span>
+                        </li>
+                    </ul>
                     <button 
-                        className="flex items-center w-fit cursor-pointer text-red-400 hover:text-red-500 border rounded p-2 mt-auto ml-auto"
+                        className="absolute right-4 flex items-center w-fit cursor-pointer hover:text-red-600 rounded p-2 mt-auto ml-auto"
                         onClick={handleDeleteTask}
                     >
-                        DELETE TASK
+                        <TrashIcon className="size-6"/>
                     </button>
                 </div>
             </div>
