@@ -57,7 +57,7 @@ export const Todo = ({
             onClick={() => toggleTaskCompletion(task)}
         >
             <button
-                {...listeners} // 👈 drag only starts when pressing this
+                {...listeners}
                 className="cursor-grab active:cursor-grabbing touch-none"
                 aria-label="Reorder task"
             >
