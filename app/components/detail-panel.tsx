@@ -109,7 +109,7 @@ export const DetailPanel =({
             <div
                 className={clsx(
                 "absolute bottom-0 left-0 right-0 z-50 bg-slate-800 shadow-2xl rounded-t-2xl",
-                "transform transition-transform duration-300 ease-out h-[75dvh]",
+                "transform transition-transform duration-300 ease-out h-[75dvh] md:h-[50dvh]",
                 isVisible ? "translate-y-0" : "translate-y-full"
                 )}
             >
@@ -120,7 +120,7 @@ export const DetailPanel =({
                     </button>
                 </div>
 
-                <div className="flex flex-col p-4 h-[calc(75dvh-61px)] overflow-y-auto">
+                <div className="flex flex-col p-4 h-[calc(75dvh-61px)] md:h-[calc(50dvh-61px)] overflow-y-auto">
                     <div className="flex items-center justify-between">
                         <p className="m-0 pr-2 font-bold text-mint-500">Task: {task.text}</p>
 

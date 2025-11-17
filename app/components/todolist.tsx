@@ -159,13 +159,35 @@ export const TodoList = ({id}: { id:string}) => {
                         )
                     })
                 )
-                
             });
 
         } catch (err) {
             console.error(err);
         }
     };
+
+    const handleEditTask = async (task: Task, text:string) => {
+        if (!task?._id) return;
+        try {
+            const updatedTaskRes = await updateTask(id, task._id, {
+                ...task,
+                text,
+                edited: true,
+            });
+
+            setTasks((prevTasks) => {
+                return (
+                    prevTasks.map( (t) => {
+                        return (
+                            t._id?.toString() === updatedTaskRes.task._id?.toString() ? updatedTaskRes.task : t
+                        )
+                    })
+                )
+            });
+        } catch (err) {
+            console.log(err);
+        }
+    }
 
     const addTask = async () => {
         if (!input.trim()) return;
@@ -279,7 +301,7 @@ export const TodoList = ({id}: { id:string}) => {
                                             task={task} 
                                             toggleTaskCompletion={toggleTaskCompletion}
                                             openDetails={openDetails}
-                                            updateTask={() => console.log("null")}
+                                            updateTask={handleEditTask}
                                         />
                                     )
                                 })
