@@ -71,7 +71,7 @@ export const Todo = ({
                     type="checkbox" />
             </label>
 
-            <span className={clsx(["w-full select-none", task.completed && "line-through"])} ref={ref}>
+            <span className={clsx(["w-full select-none text-nowrap text-ellipsis overflow-hidden", task.completed && "line-through"])} ref={ref}>
                 {task.text}
             </span>
 

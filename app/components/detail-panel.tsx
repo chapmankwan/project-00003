@@ -1,5 +1,5 @@
 "use client"
-import { ChangeEvent, useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Task } from "@/models";
 
@@ -28,17 +28,37 @@ export const DetailPanel =({
         { _id: "temp3", text: "subtask c", completed: true },
         { _id: "temp4", text: "subtask d", completed: false },
         { _id: "temp5", text: "subtask e", completed: false },
-        { _id: "temp6", text: "subtask f", completed: false },
-        { _id: "temp7", text: "subtask g", completed: false },
-        { _id: "temp8", text: "subtask h", completed: false },
-        { _id: "temp9", text: "subtask i", completed: false },
-        { _id: "temp10", text: "subtask j", completed: false },
-        { _id: "temp11", text: "subtask k", completed: false },
-        { _id: "temp12", text: "subtask l", completed: false },
-        { _id: "temp13", text: "subtask m", completed: false },
-        { _id: "temp14", text: "subtask n", completed: false },
-        { _id: "temp15", text: "subtask o", completed: false },
     ]);
+    const [subTaskInput, setSubTaskInput] = useState("");
+
+    const subTaskInputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        if (subTaskInputRef.current) {
+            subTaskInputRef.current.scrollIntoView({ behavior: 'smooth'});
+            subTaskInputRef.current.focus();
+        }
+    },[addingSubTask])
+
+    const handleAddSubTask = () => {
+        if (subTaskInput.length > 0) {
+            const newSubTask = {
+                _id: `temp${subTaskList.length}`,
+                text: subTaskInput,
+                completed: false,
+            };
+
+            setSubTaskList([...subTaskList, newSubTask]);
+            // reset input after adding a subTask
+            setSubTaskInput("");
+        }
+    }
+
+    const keyDownHandler = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === "Enter" && subTaskInput.length > 0 ) {
+            handleAddSubTask();
+        };
+    };
     
     useEffect(() => {
         // Animate in after mount
@@ -57,12 +77,22 @@ export const DetailPanel =({
         handleClose();
     };
 
+    const handleUpdateSubtask = (subTaskId: string) => {
+        setSubTaskList( (prevList) => {
+            return (
+                prevList.map( subTask => {
+                    return (
+                        subTask._id === subTaskId ? {...subTask, completed: !subTask.completed} : subTask
+                    )
+                })
+            )
+        })
+    };
 
-    const toggleSubTaskCompletion = (event: ChangeEvent<HTMLInputElement>) => {
-        console.log("+++ toggled dat subtashk");
-        console.log("+++ event", event);
-        console.log("+++", setSubTaskList)
-    }
+    const handleRemoveSubTask = (event: React.MouseEvent<HTMLButtonElement>, subTaskId: string) => {
+        event.stopPropagation();
+        setSubTaskList(subTaskList.filter( subTask => subTask._id !== subTaskId));
+    };
 
     return (
         <section className="fixed inset-0 z-40">
@@ -84,14 +114,27 @@ export const DetailPanel =({
                 )}
             >
                 <div className="p-4 flex justify-between items-center border-b border-mint-500/20">
-                    <h2 className="text-lg font-semibold">Task Details</h2>
+                    <h2 className="text-lg font-semibold">Details</h2>
                     <button onClick={handleClose} className="cursor-pointer text-mint-400 hover:text-mint-200">
                         <XMarkIcon className="size-6" />
                     </button>
                 </div>
 
-                <div className="flex flex-col p-4 h-[calc(750dvh-61px)]">
+                <div className="flex flex-col p-4 h-[calc(75dvh-61px)] overflow-y-auto">
+                    <div className="flex items-center justify-between">
+                        <p className="m-0 pr-2 font-bold text-mint-500">Task: {task.text}</p>
+
+                        {/* Close details panel button */}
+                        <button 
+                            className="flex items-center w-fit border-0 cursor-pointer text-slate-50 bg-red-500 hover:bg-red-700 rounded p-2 gap-2"
+                            onClick={handleDeleteTask}
+                            title="delete"
+                        >
+                            <TrashIcon className="size-5"/>
+                        </button>
+                    </div>
                     <p className="m-0 py-2">Date created: {task.date}</p>
+
                     <p className="m-0 py-2">Completed: {task.completed ? "Finished" : "Not yet complete"}</p>
                     <div className="flex gap-2 py-2 items-center">
                         <p>Urgency:</p>
@@ -102,22 +145,28 @@ export const DetailPanel =({
                         </Select>
                     </div>
                     {/* {task.edited ? "edited" : ""} */}
-                    <p className="m-0 py-2">Edited</p>
                     <div className="subtask container">
-                        <ul className="">
+                        <ul className="overflow-y-visible">
                             <p className="">Subtasks: </p>
                             {
                                 subTaskList.map( (subTask, index) => (
                                     <li 
                                         key={index}
                                         className={clsx("flex gap-2 cursor-pointer hover:bg-slate-600 border border-solid border-slate-400 px-2 py-1", index !== 0 && "border-t-0")}
+                                        onClick={() => handleUpdateSubtask(subTask._id)}
                                     >
                                         <input 
                                             checked={subTask.completed}
-                                            onChange={(event) => toggleSubTaskCompletion(event)}
+                                            onChange={() => handleUpdateSubtask(subTask._id)}
                                             type="checkbox" 
                                         />
                                         <span>{subTask.text}</span>
+                                        <button 
+                                            onClick={(event) => handleRemoveSubTask(event, subTask._id)}
+                                            className="ml-auto text-red-500 cursor-pointer"
+                                        >
+                                            <XMarkIcon className="size-4"/>
+                                        </button>
                                     </li>
                                 ))
                             }
@@ -133,23 +182,28 @@ export const DetailPanel =({
                                 :
                                 <>
                                     <input 
-                                        className="border rounded w-full"
+                                        ref={subTaskInputRef}
+                                        className="border rounded w-full border-solid p-1"
                                         type="text"
+                                        value={subTaskInput}
+                                        onChange={e => setSubTaskInput(e.target.value)}
+                                        placeholder="Add a new subtask"
+
+                                        onKeyDown={keyDownHandler}
                                     />
-                                    <button className="cursor-pointer text-mint-500"><PlusIcon className="size-5"/></button>
+                                    <button 
+                                        onClick={handleAddSubTask}
+                                        className="cursor-pointer text-mint-500"
+                                    >
+                                        <PlusIcon className="size-5"/>
+                                    </button>
                                     <button className="cursor-pointer text-red-500" onClick={() => setAddingSubTask(false)}><XMarkIcon className="size-5"/></button>
                                 </>
                             }
                         </div>
                     </div>
 
-                    {/* Close details panel button */}
-                    <button 
-                        className="absolute right-4 flex items-center w-fit border cursor-pointer text-red-400 hover:text-red-700 rounded p-1 mt-auto ml-auto"
-                        onClick={handleDeleteTask}
-                    >
-                        <TrashIcon className="size-5"/>
-                    </button>
+                    
                 </div>
             </div>
         </section>
