@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 
-import { DetailPanel, Loader, Modal, Todo } from "@/app/components";
+import { DetailPanel, FlyoutPanel, Loader, Modal, Todo } from "@/app/components";
 import type { Task } from "@/models";
 import Form from "next/form";
 import { useRouter } from 'next/navigation';
@@ -40,6 +40,8 @@ export const TodoList = ({id}: { id:string}) => {
 
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [editTitle, setEditTitle] = useState("");
+
+    const [isFlyoutOpen, setIsFlyoutOpen] = useState(false);
 
     // drag and drop
     const sensors = useSensors(
@@ -319,7 +321,16 @@ export const TodoList = ({id}: { id:string}) => {
                 />
             )}
 
-            <section className="sticky bottom-0 z-10 flex justify-center items-center w-full mx-auto p-2 bg-slate-800">
+            {
+                isFlyoutOpen && 
+                <FlyoutPanel 
+                    onClose={() => setIsFlyoutOpen(false)}
+                    panelTitle="New Task"
+                    type="todo"
+                />
+            }
+
+            <section className="hidden md:flex sticky bottom-0 z-10 justify-center items-center w-full mx-auto p-2 bg-slate-800">
                 <Form action="/todo-list" onSubmit={onSubmitHandler} className="flex w-full md:w-3/4 bg-slate-700 p-4 rounded-md">
                     <input
                         type="text"
@@ -334,6 +345,21 @@ export const TodoList = ({id}: { id:string}) => {
                     </button>
                 </Form>
             </section>
+
+            <button
+                // ref={createNewRef}
+                onClick={() => setIsFlyoutOpen(!isFlyoutOpen)}
+                className="
+                    sm:hidden w-12 h-12 
+                    flex items-center justify-center 
+                    absolute bottom-4 right-4 p-2 m-2 
+                    cursor-pointer rounded-full 
+                    bg-mint-700 hover:bg-mint-800
+                    data-focus:outline data-focus:outline-white data-hover:bg-black/30
+                "
+            >
+                <PlusIcon className="size-6"/>
+            </button>
         </div>
     );
 };

@@ -98,6 +98,7 @@ export default function Workspaces () {
                     callback={fetchLists}
                     onClose={() => setIsFlyoutOpen(false)}
                     panelTitle="New Workspace"
+                    type="todolist"
                 />
             }
 

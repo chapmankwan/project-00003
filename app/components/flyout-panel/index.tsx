@@ -12,6 +12,7 @@ interface FlyoutPanelModel {
     callback?: () => void;
     onClose: () => void;
     panelTitle: string;
+    type: string;
 };
 
 export const FlyoutPanel =({
@@ -19,6 +20,7 @@ export const FlyoutPanel =({
     callback,
     onClose,
     panelTitle,
+    type="default",
 }: FlyoutPanelModel) => {
     const [isVisible, setIsVisible] = useState(false);
     const [titleInput, setTitleInput] = useState<string>("");
@@ -30,6 +32,37 @@ export const FlyoutPanel =({
         event.preventDefault();
         setSelectedPriority(priority);
     };
+
+    let panelType = {
+        cancelButton: "Cancel",
+        submitButton: "Submit",
+        panelTitle,
+        firstInput: "First",
+        description: "Description",
+        showPriority: false,
+    };
+
+    switch (type) {
+        case 'todolist':
+            panelType = {
+                ...panelType,
+                submitButton: "Create",
+                firstInput: "Todolist Name",
+                description: "",
+                showPriority: true,
+            };
+            break;
+        case 'todo':
+            panelType = {
+                ...panelType,
+                submitButton: 'Add',
+                firstInput: "Task",
+                showPriority: true,
+            };
+            break;
+        default:
+            break;
+    }
     
     useEffect(() => {
         // Animate in after mount
@@ -87,14 +120,14 @@ export const FlyoutPanel =({
                 )}
             >
                 <div className="flex items-center justify-between p-6">
-                    <button onClick={onClose} className="cursor-pointer text-blush-500">Cancel</button>
-                    <h1 className="cursor-default">{panelTitle}</h1>
-                    <button onClick={onSubmitHandler} className="cursor-pointer text-mint-500">Create</button>
+                    <button onClick={onClose} className="cursor-pointer text-blush-500">{panelType.cancelButton}</button>
+                    <h1 className="cursor-default">{panelType.panelTitle}</h1>
+                    <button onClick={onSubmitHandler} className="cursor-pointer text-mint-500">{panelType.submitButton}</button>
                 </div>
 
                 <Form action="/workspaces" onSubmit={onSubmitHandler} className="p-6 flex flex-col gap-3">
                     <div className="flex flex-col gap-1">
-                        <span className="text-sm">Title</span>
+                        <span className="text-sm">{panelType.firstInput}</span>
                         <input 
                             className="p-2 border border-solid border-lavender-400 rounded-md"
                             required 
@@ -103,16 +136,19 @@ export const FlyoutPanel =({
                             onChange={e => setTitleInput(e.target.value)}
                         />
                     </div>
-                    <div className="flex flex-col gap-1">
-                        <span className="text-sm">Description</span>
-                        <textarea rows={5} className="p-2 border border-solid border-lavender-400 rounded-md h-50"/>
-                    </div>
-                    <div className="flex flex-col gap-1">
+                    {
+                        panelType.description.length > 0 &&
+                        <div className="flex flex-col gap-1">
+                            <span className="text-sm">{panelType.description}</span>
+                            <textarea rows={5} className="p-2 border border-solid border-lavender-400 rounded-md h-50"/>
+                        </div>
+                    }
+                    {/* <div className="flex flex-col gap-1">
                         <span className="text-sm">Due date</span>
                         <div className="p-2 w-fit bg-mint-700 rounded-md text-xs">
                             coming soon&#8482;...
                         </div>
-                    </div>
+                    </div> */}
                     <div className="flex flex-col">
                         <span className="text-sm">Priority</span>
                         <span className="text-xs">coming soon&#8482;...</span>
@@ -127,22 +163,25 @@ export const FlyoutPanel =({
                                     left: `${priorityList.indexOf(selectedPriority) * (100 / priorityList.length) + (100 / priorityList.length) * 0.1}%`, 
                                 }}
                             />
-                            <ul className="relative flex items-center gap-2 w-full mx-auto bg-slate-600 px-2 py-2 rounded-md">
-                                {
-                                    priorityList.map( priority => (
-                                        <li 
-                                            className={clsx(
-                                                "cursor-pointer text-center px-2 py-1 rounded-md flex-1 relative z-40 select-none",
-                                                selectedPriority === priority ? "text-slate-700" : "text-slate-100"
-                                            )}
-                                            key={priority}
-                                            onClick={event => priorityButtonHandler(event, priority)}
-                                        >
-                                            {priority}
-                                        </li>
-                                    ))
-                                }
-                            </ul>
+                            {
+                                panelType.showPriority &&
+                                <ul className="relative flex items-center gap-2 w-full mx-auto bg-slate-600 px-2 py-2 rounded-md">
+                                    {
+                                        priorityList.map( priority => (
+                                            <li 
+                                                className={clsx(
+                                                    "cursor-pointer text-center px-2 py-1 rounded-md flex-1 relative z-40 select-none",
+                                                    selectedPriority === priority ? "text-slate-700" : "text-slate-100"
+                                                )}
+                                                key={priority}
+                                                onClick={event => priorityButtonHandler(event, priority)}
+                                            >
+                                                {priority}
+                                            </li>
+                                        ))
+                                    }
+                                </ul>
+                            }
 
                         </div>
                     </div>
