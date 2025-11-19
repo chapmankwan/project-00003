@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { redirect } from "next/navigation";
 import { useSession } from "next-auth/react";
 
-import { Card, PageHeader, Loader, NewListInput } from "@/app/components";
+import { Card, PageHeader, Loader, NewListInput, FlyoutPanel } from "@/app/components";
 import type { TodoListModel } from "@/models";
 import { Dialog, DialogPanel } from '@headlessui/react';
 import { PlusIcon } from "@heroicons/react/24/outline";
@@ -15,6 +15,8 @@ export default function Workspaces () {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [selectedTaskListId, setSelectedTaskListId] = useState("");
+
+    const [isFlyoutOpen, setIsFlyoutOpen] = useState(false);
 
     const createNewRef = useRef<HTMLButtonElement>(null)
     
@@ -62,7 +64,8 @@ export default function Workspaces () {
             <PageHeader title="Workspaces"/>
             <button
                 ref={createNewRef}
-                onClick={() => setIsDialogOpen(true)} 
+                // onClick={() => setIsDialogOpen(true)} 
+                onClick={() => setIsFlyoutOpen(!isFlyoutOpen)}
                 className="
                     sm:hidden w-12 h-12 
                     flex items-center justify-center 
@@ -87,6 +90,15 @@ export default function Workspaces () {
                         })
                     }
                 </ul>
+            }
+
+            {
+                isFlyoutOpen && 
+                <FlyoutPanel 
+                    callback={fetchLists}
+                    onClose={() => setIsFlyoutOpen(false)}
+                    panelTitle="New Workspace"
+                />
             }
 
             <Dialog open={isDeleteDialogOpen} onClose={() => setIsDeleteDialogOpen(false)} className="relative z-50 duration-300 ease-out data-closed:opacity-0" transition>
