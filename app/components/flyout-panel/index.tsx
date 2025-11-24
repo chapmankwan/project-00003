@@ -85,6 +85,7 @@ export const FlyoutPanel =({
         try {
             await onSubmit({
                 text: titleInput,
+                priority: selectedPriority
             });
         } catch (err) {
             console.error("There was an error with handling the submit in the panel", err)

@@ -325,7 +325,7 @@ export const TodoList = ({id}: { id:string}) => {
                 isFlyoutOpen && 
                 <FlyoutPanel 
                     onClose={() => setIsFlyoutOpen(false)}
-                    onSubmit={({ text, priority} ) => addTask(text, priority)}
+                    onSubmit={({text, priority} ) => addTask(text, priority)}
                     panelTitle="New Task"
                     type="todo"
                 />

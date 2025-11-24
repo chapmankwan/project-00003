@@ -8,6 +8,11 @@ const TaskSchema = new mongoose.Schema({
   date: { type: String },
   dateCompleted: { type: String },
   order: { type: Number, required: true },
+  priority: { 
+    type: String,
+    enum: ["minor", "moderate", "major"],
+    default: "moderate",
+   }
 }); 
 
 const TodoListSchema = new mongoose.Schema({

@@ -17,7 +17,8 @@ export async function POST(
 
         await connectToDatabase();
 
-        const { text, order } = await req.json();
+        const { text, priority, order } = await req.json();
+        console.log("+++ zeepers", text, priority);
         const { listId } = await context.params;
 
         const updatedList = await TodoList.findOneAndUpdate(
@@ -27,6 +28,7 @@ export async function POST(
                     tasks: {
                         id: crypto.randomUUID(),
                         text,
+                        priority: priority ?? "moderate",
                         completed: false,
                         edited: false,
                         date: new Date().toISOString(),

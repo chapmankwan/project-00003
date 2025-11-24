@@ -31,6 +31,8 @@ export async function PATCH(
 
         if (typeof body.completed === "boolean") updateFields.completed = body.completed;
         if (typeof body.text === "string") updateFields.text = body.text;
+        if (typeof body.priority === "string") updateFields.priority = body.priority;
+
 
         // Build dynamic $set for update object
         const setObject = Object.fromEntries(
