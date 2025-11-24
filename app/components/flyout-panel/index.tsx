@@ -8,17 +8,17 @@ import clsx from "clsx";
 import Form from "next/form";
 
 interface FlyoutPanelModel {
-    asyncCallBack?: () => void;
     callback?: () => void;
     onClose: () => void;
+    onSubmit?: (payload: { text: string, priority?: string }) => Promise<void>;
     panelTitle: string;
     type: string;
 };
 
 export const FlyoutPanel =({
-    asyncCallBack,
     callback,
     onClose,
+    onSubmit,
     panelTitle,
     type="default",
 }: FlyoutPanelModel) => {
@@ -78,25 +78,17 @@ export const FlyoutPanel =({
 
     const onSubmitHandler = async (event: React.FormEvent) => {
         event.preventDefault();
+        if (!titleInput.trim().length || !onSubmit) return;
 
         try {
-            // Don't fetch if theres no title
-            if (!titleInput.length) return;
-
-            const postResponse = await fetch("/api/todo-lists", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ title: titleInput }),
+            await onSubmit({
+                text: titleInput,
             });
-
-            if (!postResponse.ok) throw new Error("Failed to create a new list");
         } catch (err) {
-            console.error("There was an error creating the todolist, check logs", err);
-        };
+            console.error("There was an error with handling the submit in the panel", err)
+        }
 
-        asyncCallBack?.();
         callback?.();
-
         onClose();
     };
 
@@ -120,7 +112,7 @@ export const FlyoutPanel =({
                 )}
             >
                 <div className="flex items-center justify-between p-6">
-                    <button onClick={onClose} className="cursor-pointer text-blush-500">{panelType.cancelButton}</button>
+                    <button onClick={handleClose} className="cursor-pointer text-blush-500">{panelType.cancelButton}</button>
                     <h1 className="cursor-default">{panelType.panelTitle}</h1>
                     <button onClick={onSubmitHandler} className="cursor-pointer text-mint-500">{panelType.submitButton}</button>
                 </div>

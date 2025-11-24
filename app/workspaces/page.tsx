@@ -59,6 +59,24 @@ export default function Workspaces () {
         setIsDeleteDialogOpen(false);
     };
 
+    const handleCreateTodolist = async (text: string) => {
+
+        try {
+            // Don't fetch if theres no title
+            if (!text.length) return;
+
+            const postResponse = await fetch("/api/todo-lists", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ title: text }),
+            });
+
+            if (!postResponse.ok) throw new Error("Failed to create a new list");
+        } catch (err) {
+            console.error("There was an error creating the todolist, check logs", err);
+        };
+    }
+
     return (
         <section className="flex flex-1 flex-col items-center h-[calc(100dvh-72px)]">
             <PageHeader title="Workspaces"/>
@@ -95,8 +113,9 @@ export default function Workspaces () {
             {
                 isFlyoutOpen && 
                 <FlyoutPanel 
-                    callback={fetchLists}
+                    // callback={fetchLists}
                     onClose={() => setIsFlyoutOpen(false)}
+                    onSubmit={ ({ text }) => handleCreateTodolist( text )}
                     panelTitle="New Workspace"
                     type="todolist"
                 />
