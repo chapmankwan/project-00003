@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import type { TodoListModel } from "@/models"
 
-import { CheckCircleIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { TrashIcon } from "@heroicons/react/24/outline";
 
 import clsx from "clsx";
 import React from "react";
@@ -48,15 +48,20 @@ export const Card = ({
             </div>
 
             <div className="flex items-center gap-3">
-                {
-                    taskList.tasks.length > 0 ?
-                    <>
-                        {completedTasks === totalNumberOfTasks && <CheckCircleIcon className="size-5" />}
-                        <p className="font-semibold">{completedTasks} / {totalNumberOfTasks}</p>
-                    </>
-                    :
-                    <p className="text-slate-400">no tracks</p>
-                }
+                <div className="flex flex-col text-xs items-end">
+                    {
+                        taskList.tasks.length > 0 ?
+                        <div className="flex gap-1 items-center">
+                            <p className="font-semibold">{completedTasks} / {totalNumberOfTasks}</p>
+                        </div>
+                        :
+                        <p className="text-slate-400">no tracks</p>
+                    }
+                    <div className={clsx(
+                        taskList.priority === "minor" && "text-mint-400",
+                        taskList.priority === "major" && "text-red-700",
+                    )}>{taskList.priority}</div>
+                </div>
 
                 <button 
                     className="flex items-center justify-between cursor-pointer hover:text-red-500" 
