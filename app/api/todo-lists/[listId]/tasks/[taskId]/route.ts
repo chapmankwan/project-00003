@@ -1,5 +1,6 @@
 import { authOptions } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/mongodb";
+import { Task } from "@/models";
 import TodoList from "@/models/TodoList";
 import mongoose, { Types } from "mongoose";
 import { getServerSession } from "next-auth";
@@ -18,7 +19,6 @@ export async function PATCH(
         await connectToDatabase();
 
         const { listId, taskId } = await context.params;
-
         const body = await req.json();
 
         // Validate task ID
@@ -26,22 +26,18 @@ export async function PATCH(
 
         const objectTaskId = new Types.ObjectId(taskId);
 
-        // Only include valid updates
-        const updateFields: Partial<{
-            completed: boolean;
-            text: string;
-        }> = {};
+        // Collect valid update fields only
+        const updateFields: Record<string, boolean> = {};
 
         if (typeof body.completed === "boolean") updateFields.completed = body.completed;
         if (typeof body.text === "string") updateFields.text = body.text;
 
-        // Build $set object dynamically
-        const setObject = Object.entries(updateFields).reduce((acc, [key, value]) => {
-            acc[`tasks.$.${key}`] = value;
-            return acc;
-        }, {} as Record<string, unknown>);
+        // Build dynamic $set for update object
+        const setObject = Object.fromEntries(
+            Object.entries(updateFields).map( ([key, value]) => [`tasks.$.${key}`, value])
+        );
 
-        const list = await TodoList.findOneAndUpdate(
+        const updatedList = await TodoList.findOneAndUpdate(
             {
                 _id: listId,
                 userId: session.user.id,
@@ -51,13 +47,17 @@ export async function PATCH(
             { new: true }
         );
 
-        if (!list) {
+        if (!updatedList) {
             return NextResponse.json({ message: "List or task not found" }, { status: 404 });
         }
 
+        const updatedTask = updatedList.tasks.find( (task: Task) => task._id.toString() === taskId );
+
+        if (!updatedTask) return NextResponse.json({ message: "Task not found after update"}, { status: 404 });
+
         return NextResponse.json({
             message: "Task updated successfully",
-            task: { ...updateFields, _id: taskId },
+            task: updatedTask,
         }, { status: 200 });
 
     } catch (err) {

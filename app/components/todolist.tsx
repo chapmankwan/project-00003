@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 
-import { DetailPanel, Loader, Modal, Todo } from "@/app/components";
+import { DetailPanel, FlyoutPanel, Loader, Modal, Todo } from "@/app/components";
 import type { Task } from "@/models";
 import Form from "next/form";
 import { useRouter } from 'next/navigation';
@@ -40,6 +40,8 @@ export const TodoList = ({id}: { id:string}) => {
 
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [editTitle, setEditTitle] = useState("");
+
+    const [isFlyoutOpen, setIsFlyoutOpen] = useState(false);
 
     // drag and drop
     const sensors = useSensors(
@@ -145,6 +147,7 @@ export const TodoList = ({id}: { id:string}) => {
         if (!task?._id) return;
         try {
             const updatedTaskRes = await updateTask(id, task._id, {
+                ...task,
                 completed: !task.completed,
                 text: task.text,
                 edited: true,
@@ -158,7 +161,6 @@ export const TodoList = ({id}: { id:string}) => {
                         )
                     })
                 )
-                
             });
 
         } catch (err) {
@@ -166,12 +168,35 @@ export const TodoList = ({id}: { id:string}) => {
         }
     };
 
-    const addTask = async () => {
-        if (!input.trim()) return;
+    const handleEditTask = async (task: Task, text:string) => {
+        if (!task?._id) return;
+        try {
+            const updatedTaskRes = await updateTask(id, task._id, {
+                ...task,
+                text,
+                edited: true,
+            });
+
+            setTasks((prevTasks) => {
+                return (
+                    prevTasks.map( (t) => {
+                        return (
+                            t._id?.toString() === updatedTaskRes.task._id?.toString() ? updatedTaskRes.task : t
+                        )
+                    })
+                )
+            });
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    const addTask = async (text:string, priority: string = "moderate") => {
+        if (!text.trim()) return;
         
         try {
             const order = tasks.length;
-            const response = await saveTask(input, order);
+            const response = await saveTask(text, priority , order);
             const allTasks = response.tasks;
             const savedTask: Task = allTasks[allTasks.length - 1];
 
@@ -186,7 +211,7 @@ export const TodoList = ({id}: { id:string}) => {
     // Prevent the form submission which causes a full page reload? Double check with Next JS
     const onSubmitHandler = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        await addTask();
+        await addTask(input);
     };
 
     const handleAcceptTitleChange = async () => {
@@ -278,7 +303,7 @@ export const TodoList = ({id}: { id:string}) => {
                                             task={task} 
                                             toggleTaskCompletion={toggleTaskCompletion}
                                             openDetails={openDetails}
-                                            updateTask={() => console.log("null")}
+                                            updateTask={handleEditTask}
                                         />
                                     )
                                 })
@@ -296,8 +321,18 @@ export const TodoList = ({id}: { id:string}) => {
                 />
             )}
 
-            <section className="sticky bottom-0 z-10 flex justify-center items-center w-full mx-auto p-2 bg-slate-800">
-                <Form action="/todo-list" onSubmit={onSubmitHandler} className="flex w-full md:w-3/4 bg-slate-700 p-4 rounded-md">
+            {
+                isFlyoutOpen && 
+                <FlyoutPanel 
+                    onClose={() => setIsFlyoutOpen(false)}
+                    onSubmit={({ text, priority} ) => addTask(text, priority)}
+                    panelTitle="New Task"
+                    type="todo"
+                />
+            }
+
+            <section className="hidden md:flex sticky bottom-0 z-10 justify-center items-center w-full mx-auto p-2 bg-slate-800">
+                <Form action="/todo-list" onSubmit={(e) => onSubmitHandler(e)} className="flex w-full md:w-3/4 bg-slate-700 p-4 rounded-md">
                     <input
                         type="text"
                         value={input}
@@ -311,6 +346,21 @@ export const TodoList = ({id}: { id:string}) => {
                     </button>
                 </Form>
             </section>
+
+            <button
+                // ref={createNewRef}
+                onClick={() => setIsFlyoutOpen(!isFlyoutOpen)}
+                className="
+                    md:hidden w-12 h-12 
+                    flex items-center justify-center 
+                    absolute bottom-4 right-4 p-2 m-2 
+                    cursor-pointer rounded-full 
+                    bg-mint-700 hover:bg-mint-800
+                    data-focus:outline data-focus:outline-white data-hover:bg-black/30
+                "
+            >
+                <PlusIcon className="size-6"/>
+            </button>
         </div>
     );
 };

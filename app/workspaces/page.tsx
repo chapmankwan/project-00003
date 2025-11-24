@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { redirect } from "next/navigation";
 import { useSession } from "next-auth/react";
 
-import { Card, PageHeader, Loader, NewListInput } from "@/app/components";
+import { Card, PageHeader, Loader, NewListInput, FlyoutPanel } from "@/app/components";
 import type { TodoListModel } from "@/models";
 import { Dialog, DialogPanel } from '@headlessui/react';
 import { PlusIcon } from "@heroicons/react/24/outline";
@@ -15,6 +15,8 @@ export default function Workspaces () {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [selectedTaskListId, setSelectedTaskListId] = useState("");
+
+    const [isFlyoutOpen, setIsFlyoutOpen] = useState(false);
 
     const createNewRef = useRef<HTMLButtonElement>(null)
     
@@ -34,14 +36,14 @@ export default function Workspaces () {
     };
 
     useEffect( () => {
-        fetchLists();
-        setLoading(false);
-
+        // Only fetch for initial mount
+        fetchLists().finally(() => setLoading(false));
+    },[]);
+    
+    useEffect(() => {
         // only focus on the create new button if there are no tasklists
         if( createNewRef.current && !(allTaskLists.length > 0)) createNewRef.current.focus();
-
-
-    },[ ,allTaskLists]);
+    }, [allTaskLists])
 
     const handleDelete = async (listId: string) => {
         if (!listId.length) return;
@@ -57,12 +59,31 @@ export default function Workspaces () {
         setIsDeleteDialogOpen(false);
     };
 
+    const handleCreateTodolist = async (text: string) => {
+
+        try {
+            // Don't fetch if theres no title
+            if (!text.length) return;
+
+            const postResponse = await fetch("/api/todo-lists", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ title: text }),
+            });
+
+            if (!postResponse.ok) throw new Error("Failed to create a new list");
+        } catch (err) {
+            console.error("There was an error creating the todolist, check logs", err);
+        };
+    }
+
     return (
         <section className="flex flex-1 flex-col items-center h-[calc(100dvh-72px)]">
             <PageHeader title="Workspaces"/>
             <button
                 ref={createNewRef}
-                onClick={() => setIsDialogOpen(true)} 
+                // onClick={() => setIsDialogOpen(true)} 
+                onClick={() => setIsFlyoutOpen(!isFlyoutOpen)}
                 className="
                     sm:hidden w-12 h-12 
                     flex items-center justify-center 
@@ -87,6 +108,18 @@ export default function Workspaces () {
                         })
                     }
                 </ul>
+            }
+
+            {
+                isFlyoutOpen && 
+                <FlyoutPanel 
+                    // use this to refetch after creating a new list
+                    callback={fetchLists}
+                    onClose={() => setIsFlyoutOpen(false)}
+                    onSubmit={ ({ text }) => handleCreateTodolist( text )}
+                    panelTitle="New Workspace"
+                    type="todolist"
+                />
             }
 
             <Dialog open={isDeleteDialogOpen} onClose={() => setIsDeleteDialogOpen(false)} className="relative z-50 duration-300 ease-out data-closed:opacity-0" transition>

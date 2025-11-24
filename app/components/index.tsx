@@ -11,3 +11,4 @@ export * from "./page-header";
 export * from "./session-provider";
 export * from "./todo";
 export * from "./todolist";
+export * from "./flyout-panel";

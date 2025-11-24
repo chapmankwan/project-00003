@@ -33,30 +33,30 @@ export const Card = ({
     };
 
     return (
-        <div className={clsx((haveTasks && completedMatchesTotal) 
+        <Link
+            href={`/todo-lists/${taskList._id}/${taskList.slug}`}
+            className={clsx((haveTasks && completedMatchesTotal) 
             ? "bg-lime-900 hover:bg-lime-800" 
             : "bg-slate-700 hover:bg-slate-600",
             "flex items-center first:mt-0 last:mb-0 my-3 p-3 h-16 rounded-sm gap-3 cursor-pointer")}
         >
-            <Link 
-                href={`/todo-lists/${taskList._id}/${taskList.slug}`}
+            <div 
+                // href={`/todo-lists/${taskList._id}/${taskList.slug}`}
                 className="flex-1"
             >
                 <span>{taskList.title}</span>
-            </Link>
+            </div>
 
             <div className="flex items-center gap-3">
-                <Link href={`/todo-lists/${taskList._id}/${taskList.slug}`}>
-                    {
-                        taskList.tasks.length > 0 ?
-                        <>
-                            {completedTasks === totalNumberOfTasks && <CheckCircleIcon className="size-5" />}
-                            <p className="font-semibold">{completedTasks} / {totalNumberOfTasks}</p>
-                        </>
-                        :
-                        <p className="text-slate-400">no tracks</p>
-                    }
-                </Link>
+                {
+                    taskList.tasks.length > 0 ?
+                    <>
+                        {completedTasks === totalNumberOfTasks && <CheckCircleIcon className="size-5" />}
+                        <p className="font-semibold">{completedTasks} / {totalNumberOfTasks}</p>
+                    </>
+                    :
+                    <p className="text-slate-400">no tracks</p>
+                }
 
                 <button 
                     className="flex items-center justify-between cursor-pointer hover:text-red-500" 
@@ -66,6 +66,6 @@ export const Card = ({
                     <TrashIcon className="size-5" />
                 </button>
             </div>
-        </div>
+        </Link>
     )
 }

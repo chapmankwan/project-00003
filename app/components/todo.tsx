@@ -1,11 +1,11 @@
 "use client";
-import React, { Ref } from "react";
+import React, { Ref, useState } from "react";
 
 import type {Task} from "@/models";
 import { Types } from "mongoose";
 
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
-import { ChevronUpDownIcon, EllipsisVerticalIcon } from "@heroicons/react/24/outline";
+import { CheckIcon, ChevronUpDownIcon, EllipsisVerticalIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 
 import { useSortable } from "@dnd-kit/sortable";
@@ -18,7 +18,7 @@ interface TodoModel {
     deleteTask: (taskId: Types.ObjectId) => void;
     openDetails: (task: Task) => void;
     toggleTaskCompletion: (task: Task) => void;
-    updateTask: (id: string, text:string) => void;
+    updateTask: (task: Task, text: string) => void;
 };
 
 export const Todo = ({
@@ -28,9 +28,14 @@ export const Todo = ({
     deleteTask,
     openDetails,
     toggleTaskCompletion,
+    updateTask,
 }: TodoModel) => {
 
+    // For DnD
     const { attributes, isDragging, listeners, setNodeRef, transform, transition } = useSortable({ id: task._id.toString() });
+
+    const [isEditingTask, setIsEditingTask] = useState(false);
+    const [editingTaskInput, setEditingTaskInput] = useState(task.text);
 
     const stopPropagation = (event: React.MouseEvent<HTMLButtonElement | HTMLDivElement | HTMLLabelElement>) => {
         event.stopPropagation();
@@ -41,7 +46,16 @@ export const Todo = ({
         openDetails(task);
     };
 
-    const style = {
+    const handleUpdateSubtask = (event: React.MouseEvent<HTMLButtonElement | HTMLDivElement | HTMLLabelElement>) => {
+        stopPropagation(event);
+        if (editingTaskInput.length > 0 && isEditingTask) {
+            
+            updateTask(task, editingTaskInput)
+            setIsEditingTask(false);
+        };
+    };
+
+    const draggingStyle = {
         transform: CSS.Transform.toString(transform),
         transition,
         opacity: isDragging ? 0.5 : 1,
@@ -51,13 +65,13 @@ export const Todo = ({
         <li 
             key={index} 
             ref={setNodeRef}
-            style={style}
+            style={draggingStyle}
             {...attributes}
             className="flex items-center bg-slate-600 hover:bg-slate-500 mx-3 my-1.5 p-2 gap-2 rounded-sm cursor-pointer"
             onClick={() => toggleTaskCompletion(task)}
         >
             <button
-                {...listeners} // 👈 drag only starts when pressing this
+                {...listeners}
                 className="cursor-grab active:cursor-grabbing touch-none"
                 aria-label="Reorder task"
             >
@@ -71,9 +85,26 @@ export const Todo = ({
                     type="checkbox" />
             </label>
 
-            <span className={clsx(["w-full select-none", task.completed && "line-through"])} ref={ref}>
-                {task.text}
-            </span>
+            {
+                isEditingTask ? 
+                    <div className="flex w-full justify-between items-center">
+                        <input 
+                            className="border border-solid rounded p-1 w-full"
+                            type="text" 
+                            value={editingTaskInput} 
+                            onChange={e => setEditingTaskInput(e.target.value)} 
+                            onClick={stopPropagation}
+                        /> 
+                        <div className="flex items-center gap-2 ml-2">
+                            <button className="cursor-pointer text-mint-500" onClick={handleUpdateSubtask}><CheckIcon className="size-5"/></button>
+                            <button className="cursor-pointer text-red-500" onClick={() => {setIsEditingTask(false)}}><XMarkIcon className="size-5"/></button>
+                        </div>
+                    </div>
+                    :
+                    <span className={clsx(["w-full select-none text-nowrap text-ellipsis overflow-hidden", task.completed && "line-through"])} ref={ref}>
+                        {task.text}
+                    </span>
+            }
 
             <span className="text-sm text-lime-400">
                 {task.edited ? "edited" : ""}
@@ -106,6 +137,7 @@ export const Todo = ({
                         <MenuItem>
                             <button 
                                 className="flex items-center gap-2 cursor-pointer p-2 hover:text-gray-400 w-full"
+                                onClick={() => setIsEditingTask(true)}
                             >
                                 Edit
                             </button>
