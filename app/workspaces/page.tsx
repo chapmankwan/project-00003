@@ -36,14 +36,14 @@ export default function Workspaces () {
     };
 
     useEffect( () => {
-        fetchLists();
-        setLoading(false);
-
+        // Only fetch for initial mount
+        fetchLists().finally(() => setLoading(false));
+    },[]);
+    
+    useEffect(() => {
         // only focus on the create new button if there are no tasklists
         if( createNewRef.current && !(allTaskLists.length > 0)) createNewRef.current.focus();
-
-
-    },[ ,allTaskLists]);
+    }, [allTaskLists])
 
     const handleDelete = async (listId: string) => {
         if (!listId.length) return;
@@ -113,7 +113,8 @@ export default function Workspaces () {
             {
                 isFlyoutOpen && 
                 <FlyoutPanel 
-                    // callback={fetchLists}
+                    // use this to refetch after creating a new list
+                    callback={fetchLists}
                     onClose={() => setIsFlyoutOpen(false)}
                     onSubmit={ ({ text }) => handleCreateTodolist( text )}
                     panelTitle="New Workspace"
