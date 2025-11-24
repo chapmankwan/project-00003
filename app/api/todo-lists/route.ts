@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
 		const session = await getServerSession(authOptions);
 		if (!session?.user?.email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 		
-		const { title } = await req.json();
+		const { title, priority } = await req.json();
 		
 		if (!title || typeof title !== "string") NextResponse.json({ error: "Title is required" }, { status: 400 });
 		
@@ -45,6 +45,7 @@ export async function POST(req: NextRequest) {
 			userId: userId,
 			tasks: [],
 			dateCreated: new Date().toISOString(),
+			priority,
 		});
 
 		await list.save();

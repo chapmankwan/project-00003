@@ -21,6 +21,11 @@ const TodoListSchema = new mongoose.Schema({
   title: { type: String, required: true },
   slug: { type: String },
   tasks: [TaskSchema],
+  priority: { 
+    type: String,
+    enum: ["minor", "moderate", "major"],
+    default: "moderate",
+   },
   createdAt: { type: Date, default: Date.now },
 });
 

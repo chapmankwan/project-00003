@@ -21,4 +21,5 @@ export interface TodoListModel {
   slug: string;       // generated from title
   dateCreated: string;
   tasks: Task[];
+  priority: string,
 }
