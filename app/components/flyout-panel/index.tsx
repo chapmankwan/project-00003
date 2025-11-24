@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 // import { Select } from '@headlessui/react'
 // import { PlusIcon, TrashIcon, XMarkIcon } from "@heroicons/react/24/outline";
@@ -24,6 +24,7 @@ export const FlyoutPanel =({
 }: FlyoutPanelModel) => {
     const [isVisible, setIsVisible] = useState(false);
     const [titleInput, setTitleInput] = useState<string>("");
+    const titleInputRef = useRef<HTMLInputElement>(null);
 
     /* Priority List Selection */
     const priorityList = ["minor", "moderate", "major"];
@@ -67,6 +68,7 @@ export const FlyoutPanel =({
     useEffect(() => {
         // Animate in after mount
         const timer = setTimeout(() => setIsVisible(true), 10);
+        if (titleInputRef.current) titleInputRef.current.focus();
         return () => clearTimeout(timer);
     }, []);
 
@@ -117,7 +119,7 @@ export const FlyoutPanel =({
                     <button onClick={onSubmitHandler} className="cursor-pointer text-mint-500">{panelType.submitButton}</button>
                 </div>
 
-                <Form action="/workspaces" onSubmit={onSubmitHandler} className="p-6 flex flex-col gap-3">
+                <Form action="/workspaces" onSubmit={onSubmitHandler} className="p-6 pt-0 flex flex-col gap-3">
                     <div className="flex flex-col gap-1">
                         <span className="text-sm">{panelType.firstInput}</span>
                         <input 
@@ -126,6 +128,7 @@ export const FlyoutPanel =({
                             type="text"
                             value={titleInput}
                             onChange={e => setTitleInput(e.target.value)}
+                            ref={titleInputRef}
                         />
                     </div>
                     {

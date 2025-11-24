@@ -6,12 +6,6 @@ export const taskApiHooks = (listId: string) => {
     const api = `/api/todo-lists/${listId}/tasks`;
 
     const saveTask = async (text: string, priority: string, order: number) => {
-    //     return fetch(api, {
-    //     method: "POST",
-    //     headers: { "Content-Type": "application/json" },
-    //     body: JSON.stringify({ text, priority }),
-    // }).then(r => r.json());
-
         try {
             const response = await fetch(api, {
                 method: "POST",
