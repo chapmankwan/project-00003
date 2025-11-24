@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from "react";
 
 import { Task } from "@/models";
 
-import { Select } from '@headlessui/react'
 import { PlusIcon, TrashIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import clsx from "clsx";
@@ -138,11 +137,7 @@ export const DetailPanel =({
                     <p className="m-0 py-2">Completed: {task.completed ? "Finished" : "Not yet complete"}</p>
                     <div className="flex gap-2 py-2 items-center">
                         <p>Urgency:</p>
-                        <Select name="urgency" aria-label="task urgency" className="border cursor-pointer hover:bg-slate-600 data-focus:bg-blue-500 data-hover:shadow">
-                            <option value="minor">minor</option>
-                            <option value="moderate">moderate</option>
-                            <option value="major">major</option>
-                        </Select>
+                        {task.priority ? task.priority : "none"}
                     </div>
                     {/* {task.edited ? "edited" : ""} */}
                     <div className="subtask container">

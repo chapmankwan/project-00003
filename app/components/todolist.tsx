@@ -187,16 +187,16 @@ export const TodoList = ({id}: { id:string}) => {
                 )
             });
         } catch (err) {
-            console.log(err);
+            console.error(err);
         }
     }
 
-    const addTask = async (text:string, priority: string = "moderate") => {
+    const addTask = async (text:string, priority: string = "moderate", description?: string) => {
         if (!text.trim()) return;
         
         try {
             const order = tasks.length;
-            const response = await saveTask(text, priority , order);
+            const response = await saveTask(text, priority , order, description);
             const allTasks = response.tasks;
             const savedTask: Task = allTasks[allTasks.length - 1];
 
@@ -325,7 +325,7 @@ export const TodoList = ({id}: { id:string}) => {
                 isFlyoutOpen && 
                 <FlyoutPanel 
                     onClose={() => setIsFlyoutOpen(false)}
-                    onSubmit={({text, priority} ) => addTask(text, priority)}
+                    onSubmit={({text, priority, description} ) => addTask(text, priority, description)}
                     panelTitle="New Task"
                     type="todo"
                 />

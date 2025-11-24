@@ -12,7 +12,8 @@ const TaskSchema = new mongoose.Schema({
     type: String,
     enum: ["minor", "moderate", "major"],
     default: "moderate",
-   }
+   },
+   description: { type: String },
 }); 
 
 const TodoListSchema = new mongoose.Schema({

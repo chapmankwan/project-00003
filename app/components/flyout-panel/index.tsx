@@ -10,7 +10,7 @@ import Form from "next/form";
 interface FlyoutPanelModel {
     callback?: () => void;
     onClose: () => void;
-    onSubmit?: (payload: { text: string, priority?: string }) => Promise<void>;
+    onSubmit?: (payload: { text: string, priority: string, description?: string }) => Promise<void>;
     panelTitle: string;
     type: string;
 };
@@ -33,6 +33,8 @@ export const FlyoutPanel =({
         event.preventDefault();
         setSelectedPriority(priority);
     };
+
+    const [description, setDescription] = useState<string>("");
 
     let panelType = {
         cancelButton: "Cancel",
@@ -85,7 +87,8 @@ export const FlyoutPanel =({
         try {
             await onSubmit({
                 text: titleInput,
-                priority: selectedPriority
+                priority: selectedPriority,
+                description: description
             });
         } catch (err) {
             console.error("There was an error with handling the submit in the panel", err)
@@ -136,7 +139,7 @@ export const FlyoutPanel =({
                         panelType.description.length > 0 &&
                         <div className="flex flex-col gap-1">
                             <span className="text-sm">{panelType.description}</span>
-                            <textarea rows={5} className="p-2 border border-solid border-lavender-400 rounded-md h-50"/>
+                            <textarea rows={5} className="p-2 border border-solid border-lavender-400 rounded-md h-50" onChange={e => setDescription(e.target.value)}/>
                         </div>
                     }
                     {/* <div className="flex flex-col gap-1">
