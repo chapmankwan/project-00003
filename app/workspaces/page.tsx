@@ -124,7 +124,7 @@ export default function Workspaces () {
 
             <Dialog open={isDeleteDialogOpen} onClose={() => setIsDeleteDialogOpen(false)} className="relative z-50 duration-300 ease-out data-closed:opacity-0" transition>
                 <div className="fixed inset-0 flex w-screen items-center justify-center p-4 bg-black/50">
-                    <DialogPanel className="max-w-lg min-w-xs sm:min-w-sm space-y-4 bg-slate-700 p-4 rounded backdrop-blur-2xl items-center">
+                    <DialogPanel className="max-w-lg min-w-xs sm:min-w-sm space-y-4 bg-mono-700 p-4 rounded backdrop-blur-2xl items-center">
                         <p>Do you want to delete this todolist?</p>
                         <div className="flex gap-2">
                             <button onClick={() => setIsDeleteDialogOpen(false)} className="p-2 bg-mint-500 hover:bg-mint-700 rounded cursor-pointer">cancel</button>
@@ -137,7 +137,7 @@ export default function Workspaces () {
 
             <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} className="relative z-50 duration-300 ease-out data-closed:opacity-0" transition>
                 <div className="fixed inset-0 flex w-screen items-center justify-center p-4 bg-black/50">
-                    <DialogPanel className="max-w-lg min-w-xs sm:min-w-sm space-y-4 bg-slate-700 p-4 rounded backdrop-blur-2xl">
+                    <DialogPanel className="max-w-lg min-w-xs sm:min-w-sm space-y-4 bg-mono-700 p-4 rounded backdrop-blur-2xl">
                         <NewListInput isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} fetchLists={fetchLists} />
                     </DialogPanel>
                 </div>

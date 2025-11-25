@@ -26,7 +26,7 @@ export const Header = () => {
     };
 
     return (
-        <header className="sticky top-0 z-30 px-6 py-4 w-full flex items-center justify-between bg-slate-700">
+        <header className="sticky top-0 z-30 px-6 py-4 w-full flex items-center justify-between bg-mono-700">
             <Link href="/" className="font-semibold">
                 <Image 
                     src="/monorail-logo-raw.png"
@@ -59,7 +59,7 @@ export const Header = () => {
 
             <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} className="relative z-50">
                 <div className="fixed inset-0 flex w-screen items-center justify-center p-4 bg-black/50">
-                    <DialogPanel className="max-w-lg min-w-xs sm:min-w-sm space-y-4 bg-slate-500 p-4 rounded">
+                    <DialogPanel className="max-w-lg min-w-xs sm:min-w-sm space-y-4 bg-mono-500 p-4 rounded">
                         <DialogTitle className="font-bold text-lg">Input a title</DialogTitle>
                         <NewListInput isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} />
                     </DialogPanel>

@@ -18,7 +18,7 @@ export const MessageBox = ({
 
     return (
         <section className="sticky bottom-0 z-10 flex justify-center items-center w-full mx-auto p-4">
-            <Form action="/todo-list" className="flex flex-col w-3/4 bg-slate-700 p-4 rounded-md">
+            <Form action="/todo-list" className="flex flex-col w-3/4 bg-mono-700 p-4 rounded-md">
                 <input 
                     className="w-full border border-solid rounded"
                     name="messageBox"

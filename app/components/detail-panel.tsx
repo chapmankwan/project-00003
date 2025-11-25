@@ -107,7 +107,7 @@ export const DetailPanel =({
             {/* Flyout Panel */}
             <div
                 className={clsx(
-                "absolute bottom-0 left-0 right-0 z-50 bg-slate-800 shadow-2xl rounded-t-2xl",
+                "absolute bottom-0 left-0 right-0 z-50 bg-mono-800 shadow-2xl rounded-t-2xl",
                 "transform transition-transform duration-300 ease-out h-[75dvh] md:h-[50dvh]",
                 isVisible ? "translate-y-0" : "translate-y-full"
                 )}
@@ -125,7 +125,7 @@ export const DetailPanel =({
 
                         {/* Close details panel button */}
                         <button 
-                            className="flex items-center w-fit border-0 cursor-pointer text-slate-50 bg-red-500 hover:bg-red-700 rounded p-2 gap-2"
+                            className="flex items-center w-fit border-0 cursor-pointer text-mono-50 bg-red-500 hover:bg-red-700 rounded p-2 gap-2"
                             onClick={handleDeleteTask}
                             title="delete"
                         >
@@ -147,7 +147,7 @@ export const DetailPanel =({
                                 subTaskList.map( (subTask, index) => (
                                     <li 
                                         key={index}
-                                        className={clsx("flex gap-2 cursor-pointer hover:bg-slate-600 border border-solid border-slate-400 px-2 py-1", index !== 0 && "border-t-0")}
+                                        className={clsx("flex gap-2 cursor-pointer hover:bg-mono-600 border border-solid border-mono-400 px-2 py-1", index !== 0 && "border-t-0")}
                                         onClick={() => handleUpdateSubtask(subTask._id)}
                                     >
                                         <input 
