@@ -16,7 +16,7 @@ export const ClientHeaderLink = ({
 	const [href, ] = useState<string | null>(null);
 	const { status } = useSession();
 
-	if (!href) return <span className="text-gray-500 cursor-not-allowed">Loading...</span>;
+	if (!href) return <span className="text-mono-500 cursor-not-allowed">Loading...</span>;
 
 	if (status === "authenticated") {
 		return (

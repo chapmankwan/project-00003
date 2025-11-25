@@ -337,7 +337,7 @@ export const TodoList = ({id}: { id:string}) => {
                     flex items-center justify-center 
                     absolute bottom-4 right-4 p-2 m-2 
                     cursor-pointer rounded-full 
-                    bg-mint-700 hover:bg-mint-800
+                    bg-mint-500 hover:bg-mint-600
                     data-focus:outline data-focus:outline-white data-hover:bg-black/30
                 "
             >

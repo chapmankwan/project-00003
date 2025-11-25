@@ -81,7 +81,7 @@ export const Todo = ({
             <label className="*:cursor-pointer" onClick={stopPropagation}>
                 <input 
                     checked={task.completed} 
-                    className="border-gray-300 rounded-sm bg-black"
+                    className="border-mono-300 rounded-sm bg-black"
                     onChange={() => toggleTaskCompletion(task)}
                     type="checkbox" />
             </label>
@@ -143,7 +143,7 @@ export const Todo = ({
                     >
                         <MenuItem>
                             <button 
-                                className="flex items-center gap-2 cursor-pointer p-2 hover:text-gray-400 w-full"
+                                className="flex items-center gap-2 cursor-pointer p-2 hover:text-mono-400 w-full"
                                 onClick={() => setIsEditingTask(true)}
                             >
                                 Edit
@@ -151,7 +151,7 @@ export const Todo = ({
                         </MenuItem>
                         <MenuItem>
                             <button 
-                                className="flex items-center gap-2 cursor-pointer p-2 hover:text-gray-400 w-full" 
+                                className="flex items-center gap-2 cursor-pointer p-2 hover:text-mono-400 w-full" 
                                 onClick={() => openDetails(task)}>
                                 Show details
                             </button>

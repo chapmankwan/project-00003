@@ -88,7 +88,7 @@ export const Menu = () => {
             >
                 <button 
                     id="closeButton"
-                    className="absolute top-0 right-0 p-2 m-2 cursor-pointer hover:bg-gray-400 rounded-full"
+                    className="absolute top-0 right-0 p-2 m-2 cursor-pointer hover:bg-mono-400 rounded-full"
                     onClick={() => setIsMenuOpen(false)}
                     onKeyDown={keyPress}
                 >

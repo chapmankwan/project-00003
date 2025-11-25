@@ -81,7 +81,7 @@ export default function LoginPage() {
         <button type="submit" className={`px-4 py-2 mt-4 w-3/4 sm:w-sm cursor-pointer rounded-sm transition-transform ease-in-out duration-300 active:scale-95"
           ${
               loading
-                ? "bg-gray-600 text-gray-300 cursor-not-allowed"
+                ? "bg-mono-600 text-mono-300 cursor-not-allowed"
                 : "bg-mint-500 text-mono-900 hover:bg-mint-700 hover:text-mono-100"
             }`}
           >
