@@ -121,7 +121,7 @@ export const FlyoutPanel =({
             {/* Flyout Panel */}
             <div
                 className={clsx(
-                "absolute z-50 bg-slate-800 shadow-2xl",
+                "absolute z-50 bg-mono-800 shadow-2xl",
                 // Mobile
                 "bottom-0 right-0 left-0 rounded-t-2xl",
                 "transform transition-transform duration-300 ease-out",
@@ -177,13 +177,13 @@ export const FlyoutPanel =({
                             />
                             {
                                 panelType.showPriority &&
-                                <ul className="relative flex items-center gap-2 w-full mx-auto bg-slate-600 px-2 py-2 rounded-md">
+                                <ul className="relative flex items-center gap-2 w-full mx-auto bg-mono-600 px-2 py-2 rounded-md">
                                     {
                                         priorityList.map( priority => (
                                             <li 
                                                 className={clsx(
                                                     "cursor-pointer text-center px-2 py-1 rounded-md flex-1 relative z-40 select-none",
-                                                    selectedPriority === priority ? "text-slate-700" : "text-slate-100"
+                                                    selectedPriority === priority ? "text-mono-700" : "text-mono-100"
                                                 )}
                                                 key={priority}
                                                 onClick={event => priorityButtonHandler(event, priority)}

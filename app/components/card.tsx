@@ -36,8 +36,8 @@ export const Card = ({
         <Link
             href={`/todo-lists/${taskList._id}/${taskList.slug}`}
             className={clsx((haveTasks && completedMatchesTotal) 
-            ? "bg-lime-900 hover:bg-lime-800" 
-            : "bg-slate-700 hover:bg-slate-600",
+            ? "bg-mint-900 hover:bg-mint-800" 
+            : "bg-mono-700 hover:bg-mono-600",
             "flex items-center first:mt-0 last:mb-0 my-3 p-3 h-16 rounded-sm gap-3 cursor-pointer")}
         >
             <div 
@@ -55,7 +55,7 @@ export const Card = ({
                             <p className="font-semibold">{completedTasks} / {totalNumberOfTasks}</p>
                         </div>
                         :
-                        <p className="text-slate-400">no tracks</p>
+                        <p className="text-mono-400">no tracks</p>
                     }
                     <div className={clsx(
                         taskList.priority === "minor" && "text-mint-400",

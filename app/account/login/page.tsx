@@ -52,7 +52,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-800 text-white">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-mono-800 text-white">
       <h1 className="text-2xl mb-4 select-none">Login to Monorail</h1>
 
       <form
@@ -60,7 +60,7 @@ export default function LoginPage() {
         onSubmit={handleLogin}
       >
         <input
-          className="p-3 m-2 w-3/4 sm:w-sm bg-slate-700 border border-slate-500 rounded-sm transition-transform ease-in-out duration-300 active:scale-95 focus:outline-slate-500"
+          className="p-3 m-2 w-3/4 sm:w-sm bg-mono-700 border border-mono-500 rounded-sm transition-transform ease-in-out duration-300 active:scale-95 focus:outline-mono-500"
           type="email"
           placeholder="Email address"
           autoFocus={true}
@@ -70,7 +70,7 @@ export default function LoginPage() {
           aria-invalid={!!errorMessage && !validateEmail(email)}
         />
         <input
-          className="p-3 m-2 w-3/4 sm:w-sm bg-slate-700 border border-slate-500 rounded-sm transition-transform ease-in-out duration-300 active:scale-95 focus:outline-slate-500"
+          className="p-3 m-2 w-3/4 sm:w-sm bg-mono-700 border border-mono-500 rounded-sm transition-transform ease-in-out duration-300 active:scale-95 focus:outline-mono-500"
           type="password"
           placeholder="Password"
           required
@@ -81,8 +81,8 @@ export default function LoginPage() {
         <button type="submit" className={`px-4 py-2 mt-4 w-3/4 sm:w-sm cursor-pointer rounded-sm transition-transform ease-in-out duration-300 active:scale-95"
           ${
               loading
-                ? "bg-gray-600 text-gray-300 cursor-not-allowed"
-                : "bg-mint-500 text-slate-900 hover:bg-mint-700 hover:text-slate-100"
+                ? "bg-mono-600 text-mono-300 cursor-not-allowed"
+                : "bg-mint-500 text-mono-900 hover:bg-mint-700 hover:text-mono-100"
             }`}
           >
           {loading ? "Logging in..." : "Login"}

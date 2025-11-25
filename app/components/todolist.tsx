@@ -267,7 +267,7 @@ export const TodoList = ({id}: { id:string}) => {
             }
 
             <div className="w-[90%] md:w-2/3 flex items-center justify-between">
-                <div className="flex items-center justify-between bg-slate-700 rounded drop-shadow-lg mx-3 w-full h-14">
+                <div className="flex items-center justify-between bg-mono-700 rounded drop-shadow-lg mx-3 w-full h-14">
                     <div className="m-3 text-sm">Completed: {completedTasksCount} / {totalTasksCount} </div>
                     <Modal  
                         mainButtonText="Delete all"
@@ -337,7 +337,7 @@ export const TodoList = ({id}: { id:string}) => {
                     flex items-center justify-center 
                     absolute bottom-4 right-4 p-2 m-2 
                     cursor-pointer rounded-full 
-                    bg-mint-700 hover:bg-mint-800
+                    bg-mint-500 hover:bg-mint-600
                     data-focus:outline data-focus:outline-white data-hover:bg-black/30
                 "
             >

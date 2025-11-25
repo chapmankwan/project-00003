@@ -8,7 +8,7 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { redirect } from "next/navigation";
 
-const menuTailwindCss = "m-2 p-2 rounded-4xl hover:text-slate-400 hover:underline hover:underline-offset-2";
+const menuTailwindCss = "m-2 p-2 rounded-4xl hover:text-mono-400 hover:underline hover:underline-offset-2";
 
 export const Menu = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -74,7 +74,7 @@ export const Menu = () => {
 
             <div
                 className={clsx(
-                    "fixed inset-0 z-40 bg-slate-900/60 backdrop-blur-sm transition-opacity duration-300",
+                    "fixed inset-0 z-40 bg-mono-900/60 backdrop-blur-sm transition-opacity duration-300",
                     isMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
                 )}
                 onClick={() => setIsMenuOpen(false)}
@@ -82,13 +82,13 @@ export const Menu = () => {
 
             <div
                 className={clsx(
-                    "fixed inset-0 z-50 h-full bg-slate-700 transition-transform duration-300 transform flex flex-col items-center justify-center gap-8 text-lg",
+                    "fixed inset-0 z-50 h-full bg-mono-700 transition-transform duration-300 transform flex flex-col items-center justify-center gap-8 text-lg",
                     isMenuOpen ? "translate-x-0" : "translate-x-full",
                 )}
             >
                 <button 
                     id="closeButton"
-                    className="absolute top-0 right-0 p-2 m-2 cursor-pointer hover:bg-gray-400 rounded-full"
+                    className="absolute top-0 right-0 p-2 m-2 cursor-pointer hover:bg-mono-400 rounded-full"
                     onClick={() => setIsMenuOpen(false)}
                     onKeyDown={keyPress}
                 >

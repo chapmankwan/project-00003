@@ -61,7 +61,7 @@ export const NewListInput = ({ isDialogOpen, setIsDialogOpen, fetchLists }: NewL
             />
 
             <div className="flex gap-2 items-center justify-end">
-                <button className="mt-4 p-2 text-sm bg-mint-700 hover:bg-mint-800 rounded cursor-pointer" onClick={onSubmitHandler}>
+                <button className="mt-4 p-2 text-sm bg-mint-600 hover:bg-mint-700 rounded cursor-pointer" onClick={onSubmitHandler}>
                     create
                 </button>
                 <button className="mt-4 p-2 text-sm bg-blush-600 hover:bg-blush-700 rounded cursor-pointer" onClick={handleCancelButton}>

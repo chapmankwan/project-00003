@@ -67,7 +67,7 @@ export const Todo = ({
             ref={setNodeRef}
             style={draggingStyle}
             {...attributes}
-            className="flex items-center bg-slate-600 hover:bg-slate-500 mx-3 my-1.5 p-2 gap-2 rounded-sm cursor-pointer"
+            className="flex items-center bg-mono-600 hover:bg-mono-500 mx-3 my-1.5 p-2 gap-2 rounded-sm cursor-pointer"
             onClick={() => toggleTaskCompletion(task)}
             title={task.text}
         >
@@ -76,12 +76,12 @@ export const Todo = ({
                 className="cursor-grab active:cursor-grabbing touch-none"
                 aria-label="Reorder task"
             >
-                <ChevronUpDownIcon className="size-4 text-slate-400" />
+                <ChevronUpDownIcon className="size-4 text-mono-400" />
             </button>
             <label className="*:cursor-pointer" onClick={stopPropagation}>
                 <input 
                     checked={task.completed} 
-                    className="border-gray-300 rounded-sm bg-black"
+                    className="border-mono-300 rounded-sm bg-black"
                     onChange={() => toggleTaskCompletion(task)}
                     type="checkbox" />
             </label>
@@ -107,7 +107,7 @@ export const Todo = ({
                     </span>
             }
 
-            {/* <span className="text-sm text-lime-400">
+            {/* <span className="text-sm text-mint-400">
                 {task.edited ? "edited" : ""}
             </span> */}
 
@@ -119,7 +119,7 @@ export const Todo = ({
 
             <Menu>
                 <MenuButton 
-                    className="inline-flex p-2 rounded cursor-pointer hover:bg-slate-600 md:hidden" 
+                    className="inline-flex p-2 rounded cursor-pointer hover:bg-mono-600 md:hidden" 
                     onClick={handleOpenDetails}
                 >
                     <EllipsisVerticalIcon className="size-6"/>
@@ -129,7 +129,7 @@ export const Todo = ({
             <div className="ml-auto hidden md:block">
                 <Menu>
                     <MenuButton 
-                        className="inline-flex p-2 rounded cursor-pointer hover:bg-slate-600" 
+                        className="inline-flex p-2 rounded cursor-pointer hover:bg-mono-600" 
                         onClick={stopPropagation}
                     >
                         <EllipsisVerticalIcon className="size-6"/>
@@ -138,12 +138,12 @@ export const Todo = ({
                     <MenuItems
                         transition
                         anchor="top"
-                        className="origin-top-right bg-slate-700 w-28 rounded-md hidden md:block"
+                        className="origin-top-right bg-mono-700 w-28 rounded-md hidden md:block"
                         onClick={(event: React.MouseEvent<HTMLButtonElement | HTMLDivElement | HTMLLabelElement>) => event.stopPropagation()}
                     >
                         <MenuItem>
                             <button 
-                                className="flex items-center gap-2 cursor-pointer p-2 hover:text-gray-400 w-full"
+                                className="flex items-center gap-2 cursor-pointer p-2 hover:text-mono-400 w-full"
                                 onClick={() => setIsEditingTask(true)}
                             >
                                 Edit
@@ -151,7 +151,7 @@ export const Todo = ({
                         </MenuItem>
                         <MenuItem>
                             <button 
-                                className="flex items-center gap-2 cursor-pointer p-2 hover:text-gray-400 w-full" 
+                                className="flex items-center gap-2 cursor-pointer p-2 hover:text-mono-400 w-full" 
                                 onClick={() => openDetails(task)}>
                                 Show details
                             </button>
