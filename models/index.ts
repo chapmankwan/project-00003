@@ -11,6 +11,7 @@ export interface Task {
     edited: boolean;
     _id: Types.ObjectId;
     text: string;
+    priority: "minor" | "moderate" | "major";
     order: number;
 }
 
@@ -20,4 +21,5 @@ export interface TodoListModel {
   slug: string;       // generated from title
   dateCreated: string;
   tasks: Task[];
+  priority: string,
 }

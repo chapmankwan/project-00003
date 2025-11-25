@@ -10,7 +10,7 @@ import Form from "next/form";
 interface FlyoutPanelModel {
     callback?: () => void;
     onClose: () => void;
-    onSubmit?: (payload: { text: string, priority?: string }) => Promise<void>;
+    onSubmit?: (payload: { text: string, priority: string, description?: string }) => Promise<void>;
     panelTitle: string;
     type: string;
 };
@@ -33,6 +33,9 @@ export const FlyoutPanel =({
         event.preventDefault();
         setSelectedPriority(priority);
     };
+
+    const [description, setDescription] = useState<string>("");
+    const [isAddMoreSelected, setIsAddMoreSelected] = useState(false);
 
     let panelType = {
         cancelButton: "Cancel",
@@ -78,6 +81,12 @@ export const FlyoutPanel =({
         setTimeout(onClose, 300); // match transition duration
     };
 
+	const handleResetAllStates = () => {
+		setDescription("");
+		setSelectedPriority("moderate");
+		setTitleInput("");
+	};
+
     const onSubmitHandler = async (event: React.FormEvent) => {
         event.preventDefault();
         if (!titleInput.trim().length || !onSubmit) return;
@@ -85,13 +94,17 @@ export const FlyoutPanel =({
         try {
             await onSubmit({
                 text: titleInput,
+                priority: selectedPriority,
+                description: description
             });
         } catch (err) {
             console.error("There was an error with handling the submit in the panel", err)
         }
 
         callback?.();
-        onClose();
+		handleResetAllStates();
+        if (titleInputRef.current) titleInputRef.current.focus();
+		if (!isAddMoreSelected) return handleClose();
     };
 
     return (
@@ -108,9 +121,15 @@ export const FlyoutPanel =({
             {/* Flyout Panel */}
             <div
                 className={clsx(
-                "absolute bottom-0 left-0 right-0 z-50 bg-slate-800 shadow-2xl rounded-t-2xl",
-                "transform transition-transform duration-300 ease-out h-fit",
-                isVisible ? "translate-y-0" : "translate-y-full"
+                "absolute z-50 bg-slate-800 shadow-2xl",
+                // Mobile
+                "bottom-0 right-0 left-0 rounded-t-2xl",
+                "transform transition-transform duration-300 ease-out",
+                // Desktop
+                "md:top-0 md:bottom-0 md:right-0 md:left-auto md:w-[400px] md:rounded-none md:h-full",
+                // Translation
+                !isVisible ? "translate-y-full md:translate-y-0 md:translate-x-full"
+                : "translate-y-0 md:translate-y-0 md:translate-x-0"
                 )}
             >
                 <div className="flex items-center justify-between p-6">
@@ -135,7 +154,7 @@ export const FlyoutPanel =({
                         panelType.description.length > 0 &&
                         <div className="flex flex-col gap-1">
                             <span className="text-sm">{panelType.description}</span>
-                            <textarea rows={5} className="p-2 border border-solid border-lavender-400 rounded-md h-50"/>
+                            <textarea rows={5} className="p-2 border border-solid border-lavender-400 rounded-md h-50" onChange={e => setDescription(e.target.value)}/>
                         </div>
                     }
                     {/* <div className="flex flex-col gap-1">
@@ -144,10 +163,8 @@ export const FlyoutPanel =({
                             coming soon&#8482;...
                         </div>
                     </div> */}
-                    <div className="flex flex-col">
+                    <div className="flex flex-col gap-1">
                         <span className="text-sm">Priority</span>
-                        <span className="text-xs">coming soon&#8482;...</span>
-
                         <div className="w-full relative">
                             <div
                                 className={clsx(
@@ -180,7 +197,21 @@ export const FlyoutPanel =({
 
                         </div>
                     </div>
+					{
+						type === "todo" &&
+						<div className="flex gap-2 items-center text-sm">
+							<input 
+								className=""
+								type="checkbox" 
+								checked={isAddMoreSelected} 
+								onChange={() => setIsAddMoreSelected(!isAddMoreSelected)}
+							/>
+							<span>Add additional tasks?</span>
+						</div>
+					}
                 </Form>
+            
+                
             </div>
         </section>
     );

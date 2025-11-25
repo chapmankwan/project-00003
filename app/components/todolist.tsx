@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { DetailPanel, FlyoutPanel, Loader, Modal, Todo } from "@/app/components";
 import type { Task } from "@/models";
-import Form from "next/form";
+
 import { useRouter } from 'next/navigation';
 
 import { taskApiHooks } from "@/app/utilities/taskApiHooks";
@@ -35,7 +35,6 @@ export const TodoList = ({id}: { id:string}) => {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [listTitle, setListTitle] = useState("")
     const [loading, setLoading] = useState(true);
-    const [input, setInput] = useState("");
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
     const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -187,32 +186,31 @@ export const TodoList = ({id}: { id:string}) => {
                 )
             });
         } catch (err) {
-            console.log(err);
+            console.error(err);
         }
     }
 
-    const addTask = async (text:string, priority: string = "moderate") => {
+    const addTask = async (text:string, priority: string = "moderate", description?: string) => {
         if (!text.trim()) return;
         
         try {
             const order = tasks.length;
-            const response = await saveTask(text, priority , order);
+            const response = await saveTask(text, priority , order, description);
             const allTasks = response.tasks;
             const savedTask: Task = allTasks[allTasks.length - 1];
 
             justAddedRef.current = true;
             setTasks([...tasks, savedTask]);
-            setInput('');
         } catch (err) {
             console.error("Failed to add task", err);
         }
     };
 
-    // Prevent the form submission which causes a full page reload? Double check with Next JS
-    const onSubmitHandler = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        await addTask(input);
-    };
+    // // Prevent the form submission which causes a full page reload? Double check with Next JS
+    // const onSubmitHandler = async (event: React.FormEvent<HTMLFormElement>) => {
+    //     event.preventDefault();
+    //     await addTask(input);
+    // };
 
     const handleAcceptTitleChange = async () => {
         if (editTitle === listTitle) return setIsEditingTitle(false);
@@ -325,33 +323,17 @@ export const TodoList = ({id}: { id:string}) => {
                 isFlyoutOpen && 
                 <FlyoutPanel 
                     onClose={() => setIsFlyoutOpen(false)}
-                    onSubmit={({ text, priority} ) => addTask(text, priority)}
+                    onSubmit={({text, priority, description} ) => addTask(text, priority, description)}
                     panelTitle="New Task"
                     type="todo"
                 />
             }
 
-            <section className="hidden md:flex sticky bottom-0 z-10 justify-center items-center w-full mx-auto p-2 bg-slate-800">
-                <Form action="/todo-list" onSubmit={(e) => onSubmitHandler(e)} className="flex w-full md:w-3/4 bg-slate-700 p-4 rounded-md">
-                    <input
-                        type="text"
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        className="w-full border border-solid rounded p-2"
-                        placeholder="Add a new task"
-                        required
-                    />
-                    <button type="submit" className="ml-2 bg-soft-lavender-500 text-white p-2 rounded-lg hover:text-lime-400 cursor-pointer">
-                        <PlusIcon className="size-6" />
-                    </button>
-                </Form>
-            </section>
-
             <button
                 // ref={createNewRef}
                 onClick={() => setIsFlyoutOpen(!isFlyoutOpen)}
                 className="
-                    md:hidden w-12 h-12 
+                    w-12 h-12 
                     flex items-center justify-center 
                     absolute bottom-4 right-4 p-2 m-2 
                     cursor-pointer rounded-full 

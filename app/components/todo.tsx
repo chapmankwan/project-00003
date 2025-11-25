@@ -69,6 +69,7 @@ export const Todo = ({
             {...attributes}
             className="flex items-center bg-slate-600 hover:bg-slate-500 mx-3 my-1.5 p-2 gap-2 rounded-sm cursor-pointer"
             onClick={() => toggleTaskCompletion(task)}
+            title={task.text}
         >
             <button
                 {...listeners}
@@ -106,9 +107,15 @@ export const Todo = ({
                     </span>
             }
 
-            <span className="text-sm text-lime-400">
+            {/* <span className="text-sm text-lime-400">
                 {task.edited ? "edited" : ""}
-            </span>
+            </span> */}
+
+            <div className={clsx(
+                "text-xs",
+                task.priority === "minor" && "text-mint-400",
+                task.priority === "major" && "text-red-700",
+            )}>{task.priority}</div>
 
             <Menu>
                 <MenuButton 

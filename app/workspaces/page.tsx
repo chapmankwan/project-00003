@@ -59,7 +59,7 @@ export default function Workspaces () {
         setIsDeleteDialogOpen(false);
     };
 
-    const handleCreateTodolist = async (text: string) => {
+    const handleCreateTodolist = async (text: string, priority: string = "moderate") => {
 
         try {
             // Don't fetch if theres no title
@@ -68,7 +68,7 @@ export default function Workspaces () {
             const postResponse = await fetch("/api/todo-lists", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ title: text }),
+                body: JSON.stringify({ title: text, priority }),
             });
 
             if (!postResponse.ok) throw new Error("Failed to create a new list");
@@ -116,7 +116,7 @@ export default function Workspaces () {
                     // use this to refetch after creating a new list
                     callback={fetchLists}
                     onClose={() => setIsFlyoutOpen(false)}
-                    onSubmit={ ({ text }) => handleCreateTodolist( text )}
+                    onSubmit={ ({ text, priority }) => handleCreateTodolist( text, priority )}
                     panelTitle="New Workspace"
                     type="todolist"
                 />
