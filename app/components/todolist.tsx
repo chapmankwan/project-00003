@@ -144,14 +144,25 @@ export const TodoList = ({id}: { id:string}) => {
 
     const toggleTaskCompletion = async (task: Task) => {
         if (!task?._id) return;
+
+        // Optimistic update visually
+        setTasks((prev) =>
+            prev.map((t) =>
+                t._id === task._id
+                    ? { ...t, completed: !task.completed, edited: true }
+                    : t
+            )
+        );
+
         try {
+            // send update to server
             const updatedTaskRes = await updateTask(id, task._id, {
                 ...task,
                 completed: !task.completed,
                 text: task.text,
                 edited: true,
             });
-
+            // finalize from backend if necessary
             setTasks((prevTasks) => {
                 return (
                     prevTasks.map( (t) => {
@@ -206,12 +217,6 @@ export const TodoList = ({id}: { id:string}) => {
         }
     };
 
-    // // Prevent the form submission which causes a full page reload? Double check with Next JS
-    // const onSubmitHandler = async (event: React.FormEvent<HTMLFormElement>) => {
-    //     event.preventDefault();
-    //     await addTask(input);
-    // };
-
     const handleAcceptTitleChange = async () => {
         if (editTitle === listTitle) return setIsEditingTitle(false);
         try {
@@ -244,6 +249,27 @@ export const TodoList = ({id}: { id:string}) => {
 
     const totalTasksCount = tasks?.length;
     const completedTasksCount = tasks?.filter( task => task.completed )?.length;
+
+    const handleUpdateTask = async (task: Task, payload: { text: string, priority: string, description?: string}) => {
+        const { text, priority, description } = payload
+        const updatedTaskRes = await updateTask(id, task._id, {
+            ...task,
+            text: text,
+            edited: true,
+            description: description,
+            priority: priority
+        });
+
+        setTasks((prevTasks) => {
+            return (
+                prevTasks.map( (t) => {
+                    return (
+                        t._id?.toString() === updatedTaskRes.task._id?.toString() ? updatedTaskRes.task : t
+                    )
+                })
+            )
+        });
+    };
 
     return (
         <div className="flex-1 flex flex-col items-center h-[calc(100dvh-56px)]">
@@ -285,7 +311,14 @@ export const TodoList = ({id}: { id:string}) => {
             {
                 loading ? 
                 <Loader/> :
-                <ul className="w-[90%] md:w-2/3 flex-grow overflow-y-auto overflow-x-hidden">
+                <ul className="
+                    w-[90%] md:w-2/3 flex-grow overflow-y-auto overflow-x-hidden
+                    [&::-webkit-scrollbar]:w-2
+                    [&::-webkit-scrollbar-track]:rounded-full
+                    [&::-webkit-scrollbar-thumb]:rounded-full
+                    [&::-webkit-scrollbar-track]:bg-mono-300
+                    [&::-webkit-scrollbar-thumb]:bg-mono-600
+                ">
                     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                         <SortableContext items={tasks.map(t => t._id.toString())} strategy={verticalListSortingStrategy}>
                             {
@@ -313,9 +346,10 @@ export const TodoList = ({id}: { id:string}) => {
 
             {selectedTask && (
                 <DetailPanel
-                    task={selectedTask}
+                    task={tasks.find( t => t._id === selectedTask._id ) || selectedTask}
                     onClose={closeDetails}
                     deleteTask={() => handleDeleteTask(selectedTask)}
+                    updateTask={({text, priority, description}) => handleUpdateTask(selectedTask, {text, priority, description})}
                 />
             )}
 

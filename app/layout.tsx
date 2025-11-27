@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Project-00003",
+  title: "monorail",
   description: "Built with NextJS",
 };
 

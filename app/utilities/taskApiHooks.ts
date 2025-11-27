@@ -42,8 +42,14 @@ export const taskApiHooks = (listId: string) => {
         const res = await fetch(`/api/todo-lists/${listId}/tasks/${taskId}`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(update),
+            body: JSON.stringify({
+                ...update,
+                edited: true,
+            }),
         });
+
+        console.log("+++ res", res);
+        console.log("+++ update", update);
 
         if (!res.ok) throw new Error("Failed to update task");
 
