@@ -48,9 +48,6 @@ export const taskApiHooks = (listId: string) => {
             }),
         });
 
-        console.log("+++ res", res);
-        console.log("+++ update", update);
-
         if (!res.ok) throw new Error("Failed to update task");
 
         return res.json();

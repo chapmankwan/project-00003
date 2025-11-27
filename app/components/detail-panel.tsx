@@ -52,8 +52,6 @@ export const DetailPanel =({
         }
     },[addingSubTask]);
 
-    console.log("+++ task", task);
-
     const handleAddSubTask = () => {
         if (subTaskInput.length > 0) {
             const newSubTask = {
