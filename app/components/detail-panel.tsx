@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { Task } from "@/models";
 
-import { PlusIcon, TrashIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { CheckIcon, PlusIcon, TrashIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import clsx from "clsx";
 import { Types } from "mongoose";
@@ -12,23 +12,36 @@ interface DetailPanelModel {
     deleteTask: (taskId: Types.ObjectId) => void;
     task: Task;
     onClose: () => void;
+    updateTask: (payload: {
+        text: string,
+        priority: string,
+        description?: string
+    }) => Promise<void>;
 };
 
 export const DetailPanel =({
     deleteTask,
     task,
     onClose,
+    updateTask,
 }: DetailPanelModel) => {
+
     const [isVisible, setIsVisible] = useState(false);
     const [addingSubTask, setAddingSubTask] = useState(false);
-    const [subTaskList, setSubTaskList] = useState([
-        { _id: "temp1", text: "subtask a", completed: false },
-        { _id: "temp2", text: "subtask b", completed: false },
-        { _id: "temp3", text: "subtask c", completed: true },
-        { _id: "temp4", text: "subtask d", completed: false },
-        { _id: "temp5", text: "subtask e", completed: false },
-    ]);
+    const [taskTitle, setTaskTitle] = useState(task.text);
+
+    const [subTaskList, setSubTaskList] = useState<{ _id: string; text: string; completed: boolean; }[]>([]);
     const [subTaskInput, setSubTaskInput] = useState("");
+
+    const [isEditingTask, setIsEditingTask] = useState(false);
+    const [editTaskInput, setEditTaskInput] = useState("");
+
+        /* Priority List Selection */
+    const priorityList = ["minor", "moderate", "major"];
+    const [selectedPriority, setSelectedPriority] = useState<string>(task.priority);
+    const priorityButtonHandler = (priority: string) => {
+        setSelectedPriority(priority);
+    };
 
     const subTaskInputRef = useRef<HTMLInputElement>(null);
 
@@ -37,12 +50,12 @@ export const DetailPanel =({
             subTaskInputRef.current.scrollIntoView({ behavior: 'smooth'});
             subTaskInputRef.current.focus();
         }
-    },[addingSubTask])
+    },[addingSubTask]);
 
     const handleAddSubTask = () => {
         if (subTaskInput.length > 0) {
             const newSubTask = {
-                _id: `temp${subTaskList.length}`,
+                _id: `${subTaskInput}`,
                 text: subTaskInput,
                 completed: false,
             };
@@ -51,7 +64,7 @@ export const DetailPanel =({
             // reset input after adding a subTask
             setSubTaskInput("");
         }
-    }
+    };
 
     const keyDownHandler = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === "Enter" && subTaskInput.length > 0 ) {
@@ -64,6 +77,10 @@ export const DetailPanel =({
         const timer = setTimeout(() => setIsVisible(true), 10);
         return () => clearTimeout(timer);
     }, []);
+
+    useEffect(() => {
+        setEditTaskInput(task.text);
+    }, [task])
 
     const handleClose = () => {
         // Animate out first, then unmount
@@ -93,6 +110,12 @@ export const DetailPanel =({
         setSubTaskList(subTaskList.filter( subTask => subTask._id !== subTaskId));
     };
 
+    const handleEditTask = () => {
+        updateTask({text: editTaskInput, priority: selectedPriority})
+        setTaskTitle(task.text);
+        setIsEditingTask(false);
+    }
+
     return (
         <section className="fixed inset-0 z-40">
         {/* Backdrop */}
@@ -108,7 +131,7 @@ export const DetailPanel =({
             <div
                 className={clsx(
                 "absolute bottom-0 left-0 right-0 z-50 bg-mono-800 shadow-2xl rounded-t-2xl",
-                "transform transition-transform duration-300 ease-out h-[75dvh] md:h-[50dvh]",
+                "transform transition-transform duration-300 ease-out max-h-[75dvh]",
                 isVisible ? "translate-y-0" : "translate-y-full"
                 )}
             >
@@ -119,9 +142,28 @@ export const DetailPanel =({
                     </button>
                 </div>
 
-                <div className="flex flex-col p-4 h-[calc(75dvh-61px)] md:h-[calc(50dvh-61px)] overflow-y-auto">
+                <div className="flex flex-col p-4 max-h-[calc(75dvh-61px)] overflow-y-auto">
                     <div className="flex items-center justify-between">
-                        <p className="m-0 pr-2 font-bold text-mint-500">Task: {task.text}</p>
+                        {
+                            !isEditingTask ?
+                            <button 
+                                onClick={() => setIsEditingTask(!isEditingTask)} 
+                                className="m-0 h-[50px] pr-2 font-bold text-lavender-400 flex-wrap items-start cursor-text hover:text-lavender-500"
+                            >
+                                Task: {taskTitle}
+                            </button>
+                            :
+                            <div className="flex p-2 gap-2 items-center w-11/12">
+                                <input 
+                                    className="w-full border border-solid border-mono-400 rounded p-1"
+                                    type="text" 
+                                    value={editTaskInput} 
+                                    onChange={e => setEditTaskInput(e.target.value)}
+                                />
+                                <CheckIcon onClick={handleEditTask} className="size-5 hover:text-mint-500 cursor-pointer"/>
+                                <XMarkIcon onClick={() => setIsEditingTask(false) } className="size-5 hover:text-red-400 cursor-pointer"/>
+                            </div>
+                        }
 
                         {/* Close details panel button */}
                         <button 
@@ -139,9 +181,9 @@ export const DetailPanel =({
                         <p>Urgency:</p>
                         {task.priority ? task.priority : "none"}
                     </div>
-                    {/* {task.edited ? "edited" : ""} */}
+                    {task.edited ? "edited" : ""}
                     <div className="subtask container">
-                        <ul className="overflow-y-visible">
+                        <ul className="overflow-y-auto h-fit">
                             <p className="">Subtasks: </p>
                             {
                                 subTaskList.map( (subTask, index) => (
@@ -198,7 +240,36 @@ export const DetailPanel =({
                         </div>
                     </div>
 
-                    
+                    <div className="flex flex-col gap-1">
+                        <span className="text-sm">Priority</span>
+                        <div className="w-full relative">
+                            <div
+                                className={clsx(
+                                    "absolute z-40 top-1/2 -translate-y-1/2 h-[70%] w-[80%] rounded-md bg-lavender-400 transition-all duration-300 ease-out",
+                                )}
+                                style={{
+                                    width: `${(100 / priorityList.length) * 0.8}%`,
+                                    left: `${priorityList.indexOf(selectedPriority) * (100 / priorityList.length) + (100 / priorityList.length) * 0.1}%`, 
+                                }}
+                            />
+                            <ul className="relative flex items-center gap-2 w-full mx-auto bg-mono-600 px-2 py-2 rounded-md">
+                                {
+                                    priorityList.map( priority => (
+                                        <li 
+                                            className={clsx(
+                                                "cursor-pointer text-center px-2 py-1 rounded-md flex-1 relative z-40 select-none",
+                                                selectedPriority === priority ? "text-mono-700" : "text-mono-100"
+                                            )}
+                                            key={priority}
+                                            onClick={()=> priorityButtonHandler(priority)}
+                                        >
+                                            {priority}
+                                        </li>
+                                    ))
+                                }
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>

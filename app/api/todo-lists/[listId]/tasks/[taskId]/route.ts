@@ -33,7 +33,7 @@ export async function PATCH(
         if (typeof body.text === "string") updateFields.text = body.text;
         if (typeof body.priority === "string") updateFields.priority = body.priority;
         if (typeof body.description === "string") updateFields.description = body.description;
-
+        if (typeof body.edited === "boolean") updateFields.edited = body.edited;
 
         // Build dynamic $set for update object
         const setObject = Object.fromEntries(

@@ -44,7 +44,7 @@ export default function LoginPage() {
         setTimeout(() => router.push("/workspaces"), 1000);
       }
     } catch (err) {
-      console.log("Error occurred:", err);
+      console.error("Error occurred:", err);
       setErrorMessage("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
