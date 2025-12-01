@@ -51,6 +51,7 @@ export const TodoList = ({id}: { id:string}) => {
         }),
         useSensor(TouchSensor),
     );
+
     // ** FIX TYPESCRIPT **
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleDragEnd = (event: any) => {
@@ -65,7 +66,7 @@ export const TodoList = ({id}: { id:string}) => {
             fetch(`/api/todo-lists/${id}/tasks/reorder`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ orderedIds: reordered.map(t => t._id.toString()) }),
+                body: JSON.stringify({ orderedIds: reordered?.map(t => t._id.toString()) }),
             });
         }
     }

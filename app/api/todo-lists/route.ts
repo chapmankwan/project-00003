@@ -5,23 +5,37 @@ import TodoList from "@/models/TodoList";
 import { NextRequest, NextResponse } from "next/server";
 import { toSlug } from "@/app/utilities";
 import mongoose from "mongoose";
+import Collection from "@/models/Collection";
 
-export async function GET() {
+export async function GET( req: NextRequest ) {
 
 	try {
 		const session = await getServerSession( authOptions );
 		if (!session?.user?.email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+		const { searchParams } = new URL(req.url);
+		const collectionId = searchParams.get("collectionId");
+
 		await connectToDatabase();
 
-		const lists = await TodoList.find({
-			userId: new mongoose.Types.ObjectId(session.user.id),
-		});
+		let lists;
+		if (!collectionId) {
+			lists = await TodoList.find({
+				userId: new mongoose.Types.ObjectId(session.user.id)
+			})
+		} else {
+			// Temp so we are able to grab all the todolists in /workspaces
+			lists = await TodoList.find({
+				userId: new mongoose.Types.ObjectId(session.user.id),
+				collectionId,
+			});
+		};
 
 		return NextResponse.json(lists, { status: 200 });
 		
 	} catch (err) {
 		console.error( "GET /api/todo-lists error", err );
+		return new NextResponse("Internal Server Error", { status: 500 });
 	}
 
 };
@@ -31,7 +45,7 @@ export async function POST(req: NextRequest) {
 		const session = await getServerSession(authOptions);
 		if (!session?.user?.email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 		
-		const { title, priority } = await req.json();
+		const { title, priority, collectionId } = await req.json();
 		
 		if (!title || typeof title !== "string") NextResponse.json({ error: "Title is required" }, { status: 400 });
 		
@@ -46,14 +60,22 @@ export async function POST(req: NextRequest) {
 			tasks: [],
 			dateCreated: new Date().toISOString(),
 			priority,
+			collectionId,
 		});
+
+		const updateCollection = await Collection.findByIdAndUpdate(
+			collectionId,
+			{ $push: { todoLists: list._id } },
+			{ new: true },
+		).populate("todoLists");
 
 		await list.save();
 
 		return NextResponse.json(
 			{ 
 				id: list._id.toString(), 
-				slug: list.slug 
+				slug: list.slug,
+				collection: updateCollection,
 			},
 			{ status: 201 }
 		);

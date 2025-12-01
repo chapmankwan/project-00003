@@ -98,6 +98,7 @@ export const Menu = () => {
                 {/* Hidden menu for authenticated users */}
                 {status === "authenticated" ? (
                     <>
+                        <Link onClick={() => setIsMenuOpen(false)} className={menuTailwindCss} href="/collections">Collections</Link>
                         <Link onClick={() => setIsMenuOpen(false)} className={menuTailwindCss} href="/workspaces">Workspaces</Link>
                         <Link
                             onClick={() => setIsMenuOpen(false)}
