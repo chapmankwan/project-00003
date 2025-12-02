@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { redirect, useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 
@@ -23,7 +23,7 @@ export default function Collections () {
     
     if ( status === "unauthenticated" ) redirect("/");
     
-    const fetchLists = async () => {
+    const fetchLists = useCallback(async () => {
         const res = await fetch(`/api/todo-lists?collectionId=${params.id}`);
         if (!res.ok) {
             console.error("Failed to fetch lists");
@@ -34,12 +34,13 @@ export default function Collections () {
         if (list.length) {
             setAllTaskLists(list.reverse());
         }
-    };
+    }, [params.id]);
 
     useEffect( () => {
         // Only fetch for initial mount
-        fetchLists().finally(() => setLoading(false));
-    },[]);
+        fetchLists();
+        setLoading(false);
+    },[fetchLists]);
     
     useEffect(() => {
         // only focus on the create new button if there are no tasklists
