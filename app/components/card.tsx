@@ -38,14 +38,9 @@ export const Card = ({
             className={clsx((haveTasks && completedMatchesTotal) 
             ? "bg-mint-900 hover:bg-mint-800" 
             : "bg-mono-700 hover:bg-mono-600",
-            "flex items-center first:mt-0 last:mb-0 my-3 p-3 h-16 rounded-sm gap-3 cursor-pointer")}
+            "flex items-center first:mt-0 last:mb-0 p-3 h-16 rounded-sm gap-3 cursor-pointer")}
         >
-            <div 
-                // href={`/todo-lists/${taskList._id}/${taskList.slug}`}
-                className="flex-1"
-            >
-                <span>{taskList.title}</span>
-            </div>
+            <span className="flex-1">{taskList.title}</span>
 
             <div className="flex items-center gap-3">
                 <div className="flex flex-col text-xs items-end">

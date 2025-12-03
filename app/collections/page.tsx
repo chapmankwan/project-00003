@@ -3,20 +3,20 @@ import { useEffect, useRef, useState } from "react";
 import { redirect } from "next/navigation";
 import { useSession } from "next-auth/react";
 
-import { PageHeader, Loader } from "@/app/components";
+import { FlyoutPanel, PageHeader, Loader } from "@/app/components";
 import { useCollectionsApi } from "@/app/utilities/collectionApiHooks";
-import Form from "next/form";
+
+import { TrashIcon } from "@heroicons/react/24/outline";
+
 import Link from "next/link";
 
 export default function Collections () {
     const { collections, loading, fetchCollections, createCollection } = useCollectionsApi();
     const { status } = useSession();
 
-    // const [isFlyoutOpen, setIsFlyoutOpen] = useState(false);
+    const [isFlyoutOpen, setIsFlyoutOpen] = useState(false);
 
     const createNewRef = useRef<HTMLButtonElement>(null)
-
-    const [newCollectionInput, setNewCollectionInput] = useState<string>("");
     
     if ( status === "unauthenticated" ) redirect("/");
 
@@ -30,20 +30,79 @@ export default function Collections () {
         if( createNewRef.current && !(collections.length > 0)) createNewRef.current.focus();
     }, [collections])
 
+    const handleCreateCollection = async (text: string) => {
+        createCollection({name: text});
+        await fetchCollections();
+    }
+
     return (
         <section className="flex flex-1 flex-col items-center h-[calc(100dvh-72px)]">
-            <PageHeader title="Collections"/>
-            <Form action="/collections" onSubmit={() => createCollection({
-                name: newCollectionInput
-            })}>
-                <input 
-                    className="border border-solid border-mint-500 p-2 rounded"
-                    placeholder="new collection input" 
-                    value={newCollectionInput} 
-                    onChange={(e) => setNewCollectionInput(e.target.value)}/>
-            </Form>
+            <PageHeader title="Stations"/>
+            {
+                loading ? 
+                <Loader /> :
+                <ul className="
+                    w-[90%] md:w-2/3 flex-grow overflow-y-auto overflow-x-hidden mb-4 flex flex-col gap-1.5
+                    [&::-webkit-scrollbar]:w-2
+                    [&::-webkit-scrollbar-track]:rounded-full
+                    [&::-webkit-scrollbar-track]:bg-mono-300
+                    [&::-webkit-scrollbar-thumb]:rounded-full
+                    [&::-webkit-scrollbar-thumb]:bg-mint-600
+                ">
+                    {
+                        collections.map( (collection, index) => (
+                            <Link 
+                                key={index} 
+                                href={`/collections/${collection._id}/${collection.name}`}
+                                className="
+                                    bg-mono-700 hover:bg-mono-600
+                                    flex items-center first:mt-0 last:mb-0 p-3 rounded-sm gap-3 cursor-pointer"
+                            >
+                                <span className="flex-1">{collection.name}</span>
+
+                                <div className="flex items-center gap-3">
+                                    <div className="flex flex-col text-xs items-end">
+                                        <p className="text-mono-400">
+                                            { 
+                                                collection?.todoLists?.length && collection.todoLists.length > 0 ? 
+                                                `${collection.todoLists.length} trains` :
+                                                "no trains"
+                                            }   
+                                        </p>
+                                        {/* <div className={clsx(
+                                            collection.priority === "minor" && "text-mint-400",
+                                            collection.priority === "major" && "text-red-700",
+                                        )}>{collection.priority}</div> */}
+                                    </div>
+
+                                    <button 
+                                        className="flex items-center justify-between cursor-pointer hover:text-red-500" 
+                                        // onClick={onDeleteHandler}
+                                        title="delete"
+                                    >
+                                        <TrashIcon className="size-5" />
+                                    </button>
+                                </div>
+                            </Link>
+                        ))
+                    }
+                </ul>
+            }
+            {
+                isFlyoutOpen && 
+                <FlyoutPanel 
+                    // use this to refetch after creating a new list
+                    // callback={fetchCollections}
+                    onClose={() => setIsFlyoutOpen(false)}
+                    onSubmit={ ({ text }) => handleCreateCollection(text)}
+                    panelTitle="New Collection"
+                    type="collection"
+                />
+            }
+
             <button
                 ref={createNewRef}
+                onClick={() => setIsFlyoutOpen(!isFlyoutOpen)}
                 className="
                     sm:hidden
                     flex items-center justify-center 
@@ -53,34 +112,8 @@ export default function Collections () {
                     data-focus:outline data-focus:outline-white data-hover:bg-black/30
                 "
             >
-                CREATE NEW COLLECTION
-                {/* <PlusIcon className="size-6"/> */}
+                new collection
             </button>
-            {
-                loading ? 
-                <Loader /> :
-                <ul className="space-y-2 w-[90%] lg:w-2/3 mx-3 rounded-md flex-grow h-full overflow-y-auto">
-                    {
-                        collections.map( (collection, index) => (
-                            <Link key={index} href={`/collections/${collection._id}/${collection.name}`}>
-                                {collection.name}
-                            </Link>
-                        ))
-                    }
-                </ul>
-            }
-
-            {/* {
-                isFlyoutOpen && 
-                <FlyoutPanel 
-                    // use this to refetch after creating a new list
-                    callback={fetchLists}
-                    onClose={() => setIsFlyoutOpen(false)}
-                    onSubmit={ ({ text, priority }) => handleCreateTodolist( text, priority )}
-                    panelTitle="New Workspace"
-                    type="todolist"
-                />
-            } */}
         </section>
     )
 }
