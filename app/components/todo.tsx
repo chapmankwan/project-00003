@@ -67,7 +67,7 @@ export const Todo = ({
             ref={setNodeRef}
             style={draggingStyle}
             {...attributes}
-            className="flex items-center bg-mono-600 hover:bg-mono-500 mx-3 my-1.5 p-2 gap-2 rounded-sm cursor-pointer"
+            className="flex items-center bg-mono-600 hover:bg-mono-500 mx-3 p-2 gap-2 rounded-sm cursor-pointer"
             onClick={() => toggleTaskCompletion(task)}
             title={task.text}
         >

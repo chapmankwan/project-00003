@@ -1,6 +1,6 @@
 "use client"
-import { useEffect, useRef, useState } from "react";
-import { redirect } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { redirect, useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 import { Card, PageHeader, Loader, NewListInput, FlyoutPanel } from "@/app/components";
@@ -8,7 +8,8 @@ import type { TodoListModel } from "@/models";
 import { Dialog, DialogPanel } from '@headlessui/react';
 import { PlusIcon } from "@heroicons/react/24/outline";
 
-export default function Workspaces () {
+export default function Collections () {
+    const params = useParams<{id: string, name: string}>();
     const { status } = useSession();
     const [allTaskLists, setAllTaskLists] = useState<TodoListModel[]>([])
     const [loading, setLoading] = useState(true);
@@ -22,8 +23,8 @@ export default function Workspaces () {
     
     if ( status === "unauthenticated" ) redirect("/");
     
-    const fetchLists = async () => {
-        const res = await fetch("/api/todo-lists");
+    const fetchLists = useCallback(async () => {
+        const res = await fetch(`/api/todo-lists?collectionId=${params.id}`);
         if (!res.ok) {
             console.error("Failed to fetch lists");
             return;
@@ -33,12 +34,13 @@ export default function Workspaces () {
         if (list.length) {
             setAllTaskLists(list.reverse());
         }
-    };
+    }, [params.id]);
 
     useEffect( () => {
         // Only fetch for initial mount
-        fetchLists().finally(() => setLoading(false));
-    },[]);
+        fetchLists();
+        setLoading(false);
+    },[fetchLists]);
     
     useEffect(() => {
         // only focus on the create new button if there are no tasklists
@@ -68,7 +70,7 @@ export default function Workspaces () {
             const postResponse = await fetch("/api/todo-lists", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ title: text, priority }),
+                body: JSON.stringify({ title: text, priority, collectionId: params.id }),
             });
 
             if (!postResponse.ok) throw new Error("Failed to create a new list");
@@ -79,7 +81,8 @@ export default function Workspaces () {
 
     return (
         <section className="flex flex-1 flex-col items-center h-[calc(100dvh-72px)]">
-            <PageHeader title="Workspaces"/>
+            <PageHeader title={`Collection: ${params.name}`}/>
+
             <button
                 ref={createNewRef}
                 // onClick={() => setIsDialogOpen(true)} 

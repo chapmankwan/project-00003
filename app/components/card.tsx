@@ -19,8 +19,8 @@ export const Card = ({
     taskList
 }: CardModel) => {
     
-    const completedTasks = taskList.tasks.filter( task => task.completed).length;
-    const totalNumberOfTasks = taskList.tasks.length;
+    const completedTasks = taskList.tasks?.filter( task => task.completed).length;
+    const totalNumberOfTasks = taskList.tasks?.length;
 
     const completedMatchesTotal = completedTasks === totalNumberOfTasks;
     const haveTasks = totalNumberOfTasks > 0;
@@ -50,7 +50,7 @@ export const Card = ({
             <div className="flex items-center gap-3">
                 <div className="flex flex-col text-xs items-end">
                     {
-                        taskList.tasks.length > 0 ?
+                        taskList.tasks?.length > 0 ?
                         <div className="flex gap-1 items-center">
                             <p className="font-semibold">{completedTasks} / {totalNumberOfTasks}</p>
                         </div>

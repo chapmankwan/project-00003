@@ -51,6 +51,7 @@ export const TodoList = ({id}: { id:string}) => {
         }),
         useSensor(TouchSensor),
     );
+
     // ** FIX TYPESCRIPT **
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleDragEnd = (event: any) => {
@@ -65,7 +66,7 @@ export const TodoList = ({id}: { id:string}) => {
             fetch(`/api/todo-lists/${id}/tasks/reorder`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ orderedIds: reordered.map(t => t._id.toString()) }),
+                body: JSON.stringify({ orderedIds: reordered?.map(t => t._id.toString()) }),
             });
         }
     }
@@ -312,12 +313,12 @@ export const TodoList = ({id}: { id:string}) => {
                 loading ? 
                 <Loader/> :
                 <ul className="
-                    w-[90%] md:w-2/3 flex-grow overflow-y-auto overflow-x-hidden
+                    w-[90%] md:w-2/3 flex-grow overflow-y-auto overflow-x-hidden mb-4 flex flex-col gap-1.5
                     [&::-webkit-scrollbar]:w-2
                     [&::-webkit-scrollbar-track]:rounded-full
-                    [&::-webkit-scrollbar-thumb]:rounded-full
                     [&::-webkit-scrollbar-track]:bg-mono-300
-                    [&::-webkit-scrollbar-thumb]:bg-mono-600
+                    [&::-webkit-scrollbar-thumb]:rounded-full
+                    [&::-webkit-scrollbar-thumb]:bg-mint-600
                 ">
                     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                         <SortableContext items={tasks.map(t => t._id.toString())} strategy={verticalListSortingStrategy}>
@@ -372,6 +373,7 @@ export const TodoList = ({id}: { id:string}) => {
                     absolute bottom-4 right-4 p-2 m-2 
                     cursor-pointer rounded-full 
                     bg-mint-500 hover:bg-mint-600
+                    drop-shadow-lg
                     data-focus:outline data-focus:outline-white data-hover:bg-black/30
                 "
             >

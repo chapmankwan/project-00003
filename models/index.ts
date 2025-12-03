@@ -16,10 +16,20 @@ export interface Task {
 }
 
 export interface TodoListModel {
-  _id: string;         // unique ID (UUID or nanoid)
-  title: string;      // editable title
-  slug: string;       // generated from title
-  dateCreated: string;
+  _id: string;
+  title: string;
+  slug: string;
+  dateCreated: Date;
+  dateUpdated: Date;
   tasks: Task[];
   priority: string,
+  collectionId: string;
+}
+
+export interface Collection {
+  _id: string;
+  userId: string;
+  name: string;
+  description?: string;
+  dateCreated: Date;
 }
