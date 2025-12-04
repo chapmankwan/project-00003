@@ -50,6 +50,7 @@ export const Header = () => {
                         <button onClick={handleButton}>
                             Create new
                         </button>
+                        <Link href="/collections">Collections</Link>
                         <Link href="/workspaces">Workspaces</Link>
                         <Link href="/account">Account</Link>
                         <button onClick={handleSignOut}>Sign out</button>

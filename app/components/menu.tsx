@@ -99,7 +99,7 @@ export const Menu = () => {
                 {status === "authenticated" ? (
                     <>
                         <Link onClick={() => setIsMenuOpen(false)} className={menuTailwindCss} href="/collections">Collections</Link>
-                        <Link onClick={() => setIsMenuOpen(false)} className={menuTailwindCss} href="/workspaces">Workspaces</Link>
+                        <Link onClick={() => setIsMenuOpen(false)} className={menuTailwindCss} href="/workspaces">temp workspaces</Link>
                         <Link
                             onClick={() => setIsMenuOpen(false)}
                             className={menuTailwindCss}

@@ -11,7 +11,7 @@ import { TrashIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 
 export default function Collections () {
-    const { collections, loading, fetchCollections, createCollection } = useCollectionsApi();
+    const { collections, setCollections, loading, fetchCollections, createCollection } = useCollectionsApi();
     const { status } = useSession();
 
     const [isFlyoutOpen, setIsFlyoutOpen] = useState(false);
@@ -33,11 +33,27 @@ export default function Collections () {
     const handleCreateCollection = async (text: string) => {
         createCollection({name: text});
         await fetchCollections();
-    }
+    };
+
+    const onDeleteHandler = async ( collectionId: string, event: React.MouseEvent<HTMLButtonElement> ) => {
+        if (!collectionId.length) return;
+        event.stopPropagation();
+        event.preventDefault();
+        try {
+            const res = await fetch(`/api/collections/${collectionId}`, { method: "DELETE" });
+            if (!res.ok) throw new Error("Failed to delete collection");
+            // optimistic update
+            setCollections((prev) => prev.filter((collection) => collection._id !== collectionId));
+            // allow the server to delete without flashing
+        } catch (err) {
+            console.error(err);
+            alert("Failed to delete collection");
+        };
+    };
 
     return (
         <section className="flex flex-1 flex-col items-center h-[calc(100dvh-72px)]">
-            <PageHeader title="Stations"/>
+            <PageHeader title="Collections"/>
             {
                 loading ? 
                 <Loader /> :
@@ -66,7 +82,7 @@ export default function Collections () {
                                             { 
                                                 collection?.todoLists?.length && collection.todoLists.length > 0 ? 
                                                 `${collection.todoLists.length} trains` :
-                                                "no trains"
+                                                "empty"
                                             }   
                                         </p>
                                         {/* <div className={clsx(
@@ -77,7 +93,7 @@ export default function Collections () {
 
                                     <button 
                                         className="flex items-center justify-between cursor-pointer hover:text-red-500" 
-                                        // onClick={onDeleteHandler}
+                                        onClick={(e) => onDeleteHandler(collection._id, e)}
                                         title="delete"
                                     >
                                         <TrashIcon className="size-5" />
