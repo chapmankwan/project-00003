@@ -4,6 +4,8 @@ import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import Collection from "@/models/Collection";
 
+import mongoose from "mongoose";
+
 export async function GET( req: NextRequest ) {
     try {
         const session = await getServerSession(authOptions);
@@ -27,3 +29,35 @@ export async function GET( req: NextRequest ) {
         return new NextResponse("Internal Server Error", { status: 500 });
     };
 };
+
+export async function DELETE(
+    _: NextRequest,
+    context: { params: Promise<{collectionId: string}>}
+) {
+    try {
+        const { collectionId } = await context.params;
+        const session = await getServerSession(authOptions);
+
+        if (!session?.user?.email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        if (!mongoose.Types.ObjectId.isValid(collectionId)) return NextResponse.json({ error: "Invalid list ID" }, { status: 400 });
+        if (!mongoose.Types.ObjectId.isValid(session.user.id)) return NextResponse.json({ error: "Invalid user ID in session" }, { status: 400 });
+
+        await connectToDatabase();
+
+        const result = await Collection.findOneAndDelete({
+            _id: new mongoose.Types.ObjectId(collectionId),
+            userId: new mongoose.Types.ObjectId(session.user.id),
+        });
+
+        if (!result) return NextResponse.json({ error: "Collection not found" }, { status: 404 });
+
+        return NextResponse.json(
+            { message: "Collection deleted successfully", collectionId },
+            { status: 200 },
+        );
+
+    } catch (err) {
+        console.error("Delete collection error", err);
+        return NextResponse.json({ message: "Internal Server Error"}, { status: 500 });
+    };
+}

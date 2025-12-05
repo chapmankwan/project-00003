@@ -32,20 +32,31 @@ export const Card = ({
         setSelectedTaskListId(taskList._id)
     };
 
+    const taskPriorityColour = (priority: string) => {
+        let priorityColour: string = "";
+        switch (priority) {
+            case 'minor':
+                priorityColour = "text-mint-400"
+                break;
+            case 'moderate':
+                priorityColour = "text-lavender-400"
+                break;
+            case 'major':
+                priorityColour = "text-red-700"
+                break;
+        }
+        return priorityColour
+    }
+
     return (
         <Link
             href={`/todo-lists/${taskList._id}/${taskList.slug}`}
             className={clsx((haveTasks && completedMatchesTotal) 
             ? "bg-mint-900 hover:bg-mint-800" 
             : "bg-mono-700 hover:bg-mono-600",
-            "flex items-center first:mt-0 last:mb-0 my-3 p-3 h-16 rounded-sm gap-3 cursor-pointer")}
+            "flex items-center first:mt-0 last:mb-0 p-3 h-16 rounded-sm gap-3 cursor-pointer")}
         >
-            <div 
-                // href={`/todo-lists/${taskList._id}/${taskList.slug}`}
-                className="flex-1"
-            >
-                <span>{taskList.title}</span>
-            </div>
+            <span className="flex-1">{taskList.title}</span>
 
             <div className="flex items-center gap-3">
                 <div className="flex flex-col text-xs items-end">
@@ -57,10 +68,7 @@ export const Card = ({
                         :
                         <p className="text-mono-400">no tracks</p>
                     }
-                    <div className={clsx(
-                        taskList.priority === "minor" && "text-mint-400",
-                        taskList.priority === "major" && "text-red-700",
-                    )}>{taskList.priority}</div>
+                    <div className={taskPriorityColour(taskList.priority)}>{taskList.priority}</div>
                 </div>
 
                 <button 

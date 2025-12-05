@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
 
         return NextResponse.json(
             {
-                id: collection._id.toString(),
+                _id: collection._id.toString(),
                 name: collection.name
             },
             { status: 201 }

@@ -38,6 +38,7 @@ export function useCollectionsApi() {
 
     return {
         collections,
+        setCollections,
         loading,
         error,
         fetchCollections,

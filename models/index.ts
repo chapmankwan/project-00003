@@ -32,4 +32,5 @@ export interface Collection {
   name: string;
   description?: string;
   dateCreated: Date;
+  todoLists?: TodoListModel[]
 }
