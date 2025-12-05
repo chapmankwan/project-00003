@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import { FlyoutPanel, PageHeader, Loader } from "@/app/components";
 import { useCollectionsApi } from "@/app/utilities/collectionApiHooks";
 
+import { Dialog, DialogPanel } from '@headlessui/react';
 import { TrashIcon } from "@heroicons/react/24/outline";
 
 import Link from "next/link";
@@ -15,6 +16,8 @@ export default function Collections () {
     const { status } = useSession();
 
     const [isFlyoutOpen, setIsFlyoutOpen] = useState(false);
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [selectedCollectionId, setSelectedCollectionId] = useState("");
 
     const createNewRef = useRef<HTMLButtonElement>(null)
     
@@ -35,10 +38,8 @@ export default function Collections () {
         await fetchCollections();
     };
 
-    const onDeleteHandler = async ( collectionId: string, event: React.MouseEvent<HTMLButtonElement> ) => {
+    const onDeleteHandler = async ( collectionId: string ) => {
         if (!collectionId.length) return;
-        event.stopPropagation();
-        event.preventDefault();
         try {
             const res = await fetch(`/api/collections/${collectionId}`, { method: "DELETE" });
             if (!res.ok) throw new Error("Failed to delete collection");
@@ -49,6 +50,14 @@ export default function Collections () {
             console.error(err);
             alert("Failed to delete collection");
         };
+        setIsDeleteDialogOpen(false);
+    };
+    
+    const onClickDeleteCollectionButton = (event: React.MouseEvent<HTMLButtonElement>, selectedCollectionId: string) => {
+        event.stopPropagation();
+        event.preventDefault();
+        setIsDeleteDialogOpen(true);
+        setSelectedCollectionId(selectedCollectionId);
     };
 
     return (
@@ -93,7 +102,7 @@ export default function Collections () {
 
                                     <button 
                                         className="flex items-center justify-between cursor-pointer hover:text-red-500" 
-                                        onClick={(e) => onDeleteHandler(collection._id, e)}
+                                        onClick={(e) => onClickDeleteCollectionButton(e, collection._id)}
                                         title="delete"
                                     >
                                         <TrashIcon className="size-5" />
@@ -120,7 +129,6 @@ export default function Collections () {
                 ref={createNewRef}
                 onClick={() => setIsFlyoutOpen(!isFlyoutOpen)}
                 className="
-                    sm:hidden
                     flex items-center justify-center 
                     absolute bottom-4 right-4 p-2 m-2 
                     cursor-pointer rounded-md
@@ -130,6 +138,18 @@ export default function Collections () {
             >
                 new collection
             </button>
+
+            <Dialog open={isDeleteDialogOpen} onClose={() => setIsDeleteDialogOpen(false)} className="relative z-50 duration-300 ease-out data-closed:opacity-0" transition>
+                <div className="fixed inset-0 flex w-screen items-center justify-center p-4 bg-black/50">
+                    <DialogPanel className="max-w-lg min-w-xs sm:min-w-sm space-y-4 bg-mono-700 p-4 rounded backdrop-blur-2xl items-center">
+                        <p>Do you want to delete this todolist?</p>
+                        <div className="flex gap-2">
+                            <button onClick={() => setIsDeleteDialogOpen(false)} className="p-2 bg-mint-500 hover:bg-mint-700 rounded cursor-pointer">cancel</button>
+                            <button onClick={() => onDeleteHandler(selectedCollectionId)}className="p-2 bg-red-500 hover:bg-red-700 rounded cursor-pointer">delete</button>
+                        </div>
+                    </DialogPanel>
+                </div>
+            </Dialog>
         </section>
     )
 }
