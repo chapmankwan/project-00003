@@ -32,6 +32,22 @@ export const Card = ({
         setSelectedTaskListId(taskList._id)
     };
 
+    const taskPriorityColour = (priority: string) => {
+        let priorityColour: string = "";
+        switch (priority) {
+            case 'minor':
+                priorityColour = "text-mint-400"
+                break;
+            case 'moderate':
+                priorityColour = "text-lavender-400"
+                break;
+            case 'major':
+                priorityColour = "text-red-700"
+                break;
+        }
+        return priorityColour
+    }
+
     return (
         <Link
             href={`/todo-lists/${taskList._id}/${taskList.slug}`}
@@ -52,10 +68,7 @@ export const Card = ({
                         :
                         <p className="text-mono-400">no tracks</p>
                     }
-                    <div className={clsx(
-                        taskList.priority === "minor" && "text-mint-400",
-                        taskList.priority === "major" && "text-red-700",
-                    )}>{taskList.priority}</div>
+                    <div className={taskPriorityColour(taskList.priority)}>{taskList.priority}</div>
                 </div>
 
                 <button 
