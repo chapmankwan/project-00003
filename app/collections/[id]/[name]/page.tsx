@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { redirect, useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 
-import { Card, PageHeader, Loader, NewListInput, FlyoutPanel } from "@/app/components";
+import { Card, PageHeader, Loader, FlyoutPanel } from "@/app/components";
 import type { TodoListModel } from "@/models";
 import { Dialog, DialogPanel } from '@headlessui/react';
 import { PlusIcon } from "@heroicons/react/24/outline";
@@ -13,7 +13,6 @@ export default function Collections () {
     const { status } = useSession();
     const [allTaskLists, setAllTaskLists] = useState<TodoListModel[]>([])
     const [loading, setLoading] = useState(true);
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [selectedTaskListId, setSelectedTaskListId] = useState("");
 
@@ -81,11 +80,10 @@ export default function Collections () {
 
     return (
         <section className="flex flex-1 flex-col items-center h-[calc(100dvh-72px)]">
-            <PageHeader title={`Collection: ${params.name}`}/>
+            <PageHeader title={`Collection: ${decodeURIComponent(params.name)}`}/>
 
             <button
                 ref={createNewRef}
-                // onClick={() => setIsDialogOpen(true)} 
                 onClick={() => setIsFlyoutOpen(!isFlyoutOpen)}
                 className="
                     sm:hidden w-12 h-12 
@@ -133,15 +131,6 @@ export default function Collections () {
                             <button onClick={() => setIsDeleteDialogOpen(false)} className="p-2 bg-mint-500 hover:bg-mint-700 rounded cursor-pointer">cancel</button>
                             <button onClick={() => handleDelete(selectedTaskListId)}className="p-2 bg-red-500 hover:bg-red-700 rounded cursor-pointer">delete</button>
                         </div>
-                    </DialogPanel>
-                </div>
-            </Dialog>
-
-
-            <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} className="relative z-50 duration-300 ease-out data-closed:opacity-0" transition>
-                <div className="fixed inset-0 flex w-screen items-center justify-center p-4 bg-black/50">
-                    <DialogPanel className="max-w-lg min-w-xs sm:min-w-sm space-y-4 bg-mono-700 p-4 rounded backdrop-blur-2xl">
-                        <NewListInput isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} fetchLists={fetchLists} />
                     </DialogPanel>
                 </div>
             </Dialog>

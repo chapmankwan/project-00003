@@ -19,7 +19,7 @@ export default async function Home() {
 				{
 					session ?
 						<Link
-							href="/workspaces"
+							href="/collections"
 							className="
 								rounded-full 
 								border border-solid border-transparent 
@@ -29,7 +29,7 @@ export default async function Home() {
 								text-background text-sm h-12 px-5
 							"
 						>
-							To workspaces
+							To collections
 						</Link>
 						:
 						<>
@@ -63,7 +63,7 @@ export default async function Home() {
 				}
 			</main>
 
-			<footer className="pt-4 px-4 flex gap-[24px] text-xs">
+			<footer className="pt-4 px-4 flex gap-[24px] text-xs cursor-default">
 				&#169; ck 2025
 			</footer>
 		</div>

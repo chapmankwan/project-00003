@@ -39,7 +39,7 @@ export const Header = () => {
                     :
                     <>
                         <Link href="/collections">Collections</Link>
-                        <Link href="/workspaces">Workspaces</Link>
+                        {/* <Link href="/workspaces">Workspaces</Link> */}
                         <Link href="/account">Account</Link>
                         <button onClick={handleSignOut}>Sign out</button>
                     </>
