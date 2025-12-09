@@ -86,7 +86,7 @@ export default function Collections () {
                 ref={createNewRef}
                 onClick={() => setIsFlyoutOpen(!isFlyoutOpen)}
                 className="
-                    sm:hidden w-12 h-12 
+                    w-12 h-12 
                     flex items-center justify-center 
                     absolute bottom-4 right-4 p-2 m-2 
                     cursor-pointer rounded-full 

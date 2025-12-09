@@ -11,6 +11,8 @@ import { toSlug } from "@/app/utilities";
 
 import { CheckIcon, PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
+import clsx from "clsx";
+
 import {
     DndContext,
     closestCenter,
@@ -106,12 +108,17 @@ export const TodoList = ({id}: { id:string}) => {
     // this hook allows user to scroll to latest task after adding
     useEffect(() => {
         // Scroll to the latest task
-        if (justAddedRef.current && lastTaskRef.current) {
-            lastTaskRef.current.scrollIntoView({ behavior: 'smooth' });
-            // Makes sure to reset the reference point for next task added
-            justAddedRef.current = false;
-        }
-    }, [tasks]);
+        const timer = setTimeout(() => {
+            if (isFlyoutOpen && lastTaskRef.current) {
+                console.log("+++ lastTaskRef", lastTaskRef.current);
+                lastTaskRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                // Makes sure to reset the reference point for next task added
+                justAddedRef.current = false;
+            }
+        }, 300);
+        
+        return () => clearTimeout(timer)
+    }, [tasks, isFlyoutOpen]);
 
     useEffect(() => {
         if( titleInputRef.current ) titleInputRef.current.focus();
@@ -312,14 +319,14 @@ export const TodoList = ({id}: { id:string}) => {
             {
                 loading ? 
                 <Loader/> :
-                <ul className="
-                    w-[90%] md:w-2/3 flex-grow overflow-y-auto overflow-x-hidden mb-4 flex flex-col gap-1.5
-                    [&::-webkit-scrollbar]:w-2
-                    [&::-webkit-scrollbar-track]:rounded-full
-                    [&::-webkit-scrollbar-track]:bg-mono-300
-                    [&::-webkit-scrollbar-thumb]:rounded-full
-                    [&::-webkit-scrollbar-thumb]:bg-mint-600
-                ">
+                <ul className={clsx(
+                    "w-[90%] md:w-2/3 flex-grow overflow-y-auto overflow-x-hidden mb-4 flex flex-col gap-1.5",
+                    "[&::-webkit-scrollbar]:w-2",
+                    "[&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-mono-300",
+                    "[&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-mint-600",
+                    "ease-in-out",
+                    isFlyoutOpen ? "transition-[max-height] max-h-[47dvh] duration-300 md:max-h-none" : "transition-[max-height] duration-300 max-h-[100dvh]"
+                    )}>
                     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                         <SortableContext items={tasks.map(t => t._id.toString())} strategy={verticalListSortingStrategy}>
                             {
