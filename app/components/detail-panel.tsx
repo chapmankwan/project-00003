@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { Task } from "@/models";
 
-import { CheckIcon, PlusIcon, TrashIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { CheckIcon, PencilSquareIcon, PlusIcon, TrashIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import clsx from "clsx";
 import { Types } from "mongoose";
@@ -114,7 +114,7 @@ export const DetailPanel =({
         updateTask({text: editTaskInput, priority: selectedPriority})
         setTaskTitle(task.text);
         setIsEditingTask(false);
-    }
+    };
 
     return (
         <section className="fixed inset-0 z-40">
@@ -146,14 +146,11 @@ export const DetailPanel =({
                     <div className="flex items-center justify-between">
                         {
                             !isEditingTask ?
-                            <button 
-                                onClick={() => setIsEditingTask(!isEditingTask)} 
-                                className="m-0 h-[50px] pr-2 font-bold text-lavender-400 flex-wrap items-start cursor-text hover:text-lavender-500"
-                            >
+                            <p className="pr-2 font-bold text-lavender-400 flex-wrap items-center">
                                 Task: {taskTitle}
-                            </button>
+                            </p>
                             :
-                            <div className="flex p-2 gap-2 items-center w-11/12">
+                            <div className="flex p-2 pl-0 gap-2 items-center w-11/12">
                                 <input 
                                     className="w-full border border-solid border-mono-400 rounded p-1"
                                     type="text" 
@@ -165,23 +162,71 @@ export const DetailPanel =({
                             </div>
                         }
 
-                        {/* Close details panel button */}
-                        <button 
-                            className="flex items-center w-fit border-0 cursor-pointer text-mono-50 bg-red-500 hover:bg-red-700 rounded p-2 gap-2"
-                            onClick={handleDeleteTask}
-                            title="delete"
-                        >
-                            <TrashIcon className="size-5"/>
-                        </button>
+                        <div className="flex gap-1">
+                            <button
+                                className="w-fit border-0 cursor-pointer text-mono-50 bg-mono-400 hover:bg-mono-600 rounded p-2"
+                                onClick={() => setIsEditingTask(!isEditingTask)}
+                                title="edit"
+                            >
+                                <PencilSquareIcon className="size-5"/>
+                            </button>
+                            <button 
+                                className="w-fit border-0 cursor-pointer text-mono-50 bg-red-500 hover:bg-red-700 rounded p-2"
+                                onClick={handleDeleteTask}
+                                title="delete"
+                            >
+                                <TrashIcon className="size-5"/>
+                            </button>
+                        </div>
                     </div>
+                    <p className="text-mint-400 text-xs">{task.edited ? "edited" : ""}</p>
+
                     <p className="m-0 py-2">Date created: {task.date}</p>
 
                     <p className="m-0 py-2">Completed: {task.completed ? "Finished" : "Not yet complete"}</p>
                     <div className="flex gap-2 py-2 items-center">
-                        <p>Urgency:</p>
-                        {task.priority ? task.priority : "none"}
+                        {
+                            isEditingTask ?
+                            <div className="flex flex-col gap-1 w-full">
+                                <span className="font-bold">Priority: </span>
+                                <div className="w-full relative">
+                                    <div
+                                        className={clsx(
+                                            "absolute z-40 top-1/2 -translate-y-1/2 h-[70%] w-[80%] rounded-md bg-lavender-400 transition-all duration-300 ease-out",
+                                        )}
+                                        style={{
+                                            width: `${(100 / priorityList.length) * 0.8}%`,
+                                            left: `${priorityList.indexOf(selectedPriority) * (100 / priorityList.length) + (100 / priorityList.length) * 0.1}%`, 
+                                        }}
+                                    />
+                                    <ul className="relative flex items-center gap-2 w-full mx-auto bg-mono-600 px-2 py-2 rounded-md">
+                                        {
+                                            priorityList.map( priority => (
+                                                <li 
+                                                    className={clsx(
+                                                        "cursor-pointer text-center px-2 py-1 rounded-md flex-1 relative z-40 select-none",
+                                                        selectedPriority === priority ? "text-mono-700" : "text-mono-100"
+                                                    )}
+                                                    key={priority}
+                                                    onClick={()=> priorityButtonHandler(priority)}
+                                                >
+                                                    {priority}
+                                                </li>
+                                            ))
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                            :
+                            <div className="flex">
+                                <p className="font-bold">Priority: </p> 
+                                <span className="ml-1 ">
+                                    {task.priority ? task.priority : "none"}
+                                </span>
+                            </div>
+                        }
                     </div>
-                    {task.edited ? "edited" : ""}
+
                     <div className="subtask container">
                         <ul className="overflow-y-auto h-fit">
                             <p className="">Subtasks: </p>
@@ -237,37 +282,6 @@ export const DetailPanel =({
                                     <button className="cursor-pointer text-red-500" onClick={() => setAddingSubTask(false)}><XMarkIcon className="size-5"/></button>
                                 </>
                             }
-                        </div>
-                    </div>
-
-                    <div className="flex flex-col gap-1">
-                        <span className="text-sm">Priority</span>
-                        <div className="w-full relative">
-                            <div
-                                className={clsx(
-                                    "absolute z-40 top-1/2 -translate-y-1/2 h-[70%] w-[80%] rounded-md bg-lavender-400 transition-all duration-300 ease-out",
-                                )}
-                                style={{
-                                    width: `${(100 / priorityList.length) * 0.8}%`,
-                                    left: `${priorityList.indexOf(selectedPriority) * (100 / priorityList.length) + (100 / priorityList.length) * 0.1}%`, 
-                                }}
-                            />
-                            <ul className="relative flex items-center gap-2 w-full mx-auto bg-mono-600 px-2 py-2 rounded-md">
-                                {
-                                    priorityList.map( priority => (
-                                        <li 
-                                            className={clsx(
-                                                "cursor-pointer text-center px-2 py-1 rounded-md flex-1 relative z-40 select-none",
-                                                selectedPriority === priority ? "text-mono-700" : "text-mono-100"
-                                            )}
-                                            key={priority}
-                                            onClick={()=> priorityButtonHandler(priority)}
-                                        >
-                                            {priority}
-                                        </li>
-                                    ))
-                                }
-                            </ul>
                         </div>
                     </div>
                 </div>

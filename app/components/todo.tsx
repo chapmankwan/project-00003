@@ -106,16 +106,19 @@ export const Todo = ({
                         {task.text}
                     </span>
             }
+            
+            <div className="text-xs flex flex-col items-end">
+                {/* <span className="text-mint-400">
+                    {task.edited ? "edited" : ""}
+                </span> */}
+                <span className={clsx(
+                    task.priority === "minor" && "text-mint-400",
+                    task.priority === "major" && "text-red-700",
+                )}>
+                    {task.priority}
+                </span>
+            </div>
 
-            {/* <span className="text-sm text-mint-400">
-                {task.edited ? "edited" : ""}
-            </span> */}
-
-            <div className={clsx(
-                "text-xs",
-                task.priority === "minor" && "text-mint-400",
-                task.priority === "major" && "text-red-700",
-            )}>{task.priority}</div>
 
             <Menu>
                 <MenuButton 

@@ -110,7 +110,6 @@ export const TodoList = ({id}: { id:string}) => {
         // Scroll to the latest task
         const timer = setTimeout(() => {
             if (isFlyoutOpen && lastTaskRef.current) {
-                console.log("+++ lastTaskRef", lastTaskRef.current);
                 lastTaskRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 // Makes sure to reset the reference point for next task added
                 justAddedRef.current = false;

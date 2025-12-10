@@ -1,15 +1,14 @@
 "use client";
 
 import { SessionProvider as NextAuthSessionProvider } from "next-auth/react";
+import { Session } from "next-auth";
 
 export const SessionProvider = ({
   children,
   session,
 }: {
   children: React.ReactNode;
-  // TODO
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  session: any;
+  session: Session | null;
 }) => {
   return (
     <NextAuthSessionProvider session={session}>
