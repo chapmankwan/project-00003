@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { Task } from "@/models";
 
-import { CheckIcon, PencilSquareIcon, PlusIcon, TrashIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { PencilSquareIcon, PlusIcon, TrashIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import clsx from "clsx";
 import { Types } from "mongoose";
@@ -29,6 +29,7 @@ export const DetailPanel =({
     const [isVisible, setIsVisible] = useState(false);
     const [addingSubTask, setAddingSubTask] = useState(false);
     const [taskTitle, setTaskTitle] = useState(task.text);
+    const [descriptionInput, setDescriptionInput] = useState(task.description || "")
 
     const [subTaskList, setSubTaskList] = useState<{ _id: string; text: string; completed: boolean; }[]>([]);
     const [subTaskInput, setSubTaskInput] = useState("");
@@ -111,7 +112,11 @@ export const DetailPanel =({
     };
 
     const handleEditTask = () => {
-        updateTask({text: editTaskInput, priority: selectedPriority})
+        let description;
+        if (descriptionInput.length) {
+            description = descriptionInput;
+        }
+        updateTask({text: editTaskInput, priority: selectedPriority, description})
         setTaskTitle(task.text);
         setIsEditingTask(false);
     };
@@ -157,8 +162,6 @@ export const DetailPanel =({
                                     value={editTaskInput} 
                                     onChange={e => setEditTaskInput(e.target.value)}
                                 />
-                                <CheckIcon onClick={handleEditTask} className="size-5 hover:text-mint-500 cursor-pointer"/>
-                                <XMarkIcon onClick={() => setIsEditingTask(false) } className="size-5 hover:text-red-400 cursor-pointer"/>
                             </div>
                         }
 
@@ -179,11 +182,30 @@ export const DetailPanel =({
                             </button>
                         </div>
                     </div>
+
                     <p className="text-mint-400 text-xs">{task.edited ? "edited" : ""}</p>
 
-                    <p className="m-0 py-2">Date created: {task.date}</p>
+                    <div className="flex">
+                        <p className="font-bold">Date created: </p>
+                        <p className="ml-1">{task.date}</p>
+                    </div>
 
-                    <p className="m-0 py-2">Completed: {task.completed ? "Finished" : "Not yet complete"}</p>
+                    <div className="flex">
+                        <p className="font-bold">Progress: </p>
+                        <p className="ml-1">{task.completed ? "All work completed" : "In progress"}</p>
+                    </div>
+                    <div className="flex flex-col">
+                        <p className="font-bold">Description: </p>
+                        {
+                            isEditingTask && 
+                            <textarea rows={5} className="p-2 border border-solid border-mono-400 rounded-md h-50" value={descriptionInput} onChange={e => setDescriptionInput(e.target.value)}/>
+                        }
+                        {
+                            task.description && task.description.length > 0 && 
+                            <p className="border border-solid border-mono-500 p-2">{task.description}</p>
+                        }
+                    </div>
+
                     <div className="flex gap-2 py-2 items-center">
                         {
                             isEditingTask ?
@@ -283,6 +305,27 @@ export const DetailPanel =({
                                 </>
                             }
                         </div>
+
+                        {/* Bottom to save */}
+                        {
+                            isEditingTask ?
+                            <div className="flex justify-end gap-1">
+                                <button 
+                                    onClick={handleEditTask} 
+                                    className="flex items-center cursor-pointer rounded bg-mint-400 hover:bg-mint-500 px-2 py-1.5"
+                                >
+                                    <span>Save</span>
+                                </button>
+                                <button 
+                                    onClick={() => setIsEditingTask(false) } 
+                                    className="flex items-center cursor-pointer rounded bg-red-500 hover:bg-red-400 px-2 py-1.5"
+                                >
+                                    <span>Cancel</span>
+                                </button>
+                            </div>
+                            :
+                            null
+                        }
                     </div>
                 </div>
             </div>

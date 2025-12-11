@@ -13,6 +13,7 @@ export interface Task {
     text: string;
     priority: "minor" | "moderate" | "major";
     order: number;
+    description?: string;
 }
 
 export interface TodoListModel {
