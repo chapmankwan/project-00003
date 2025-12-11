@@ -19,6 +19,7 @@ interface TodoModel {
     openDetails: (task: Task) => void;
     toggleTaskCompletion: (task: Task) => void;
     updateTask: (task: Task, text: string) => void;
+    isLast: boolean;
 };
 
 export const Todo = ({
@@ -29,6 +30,7 @@ export const Todo = ({
     openDetails,
     toggleTaskCompletion,
     updateTask,
+    isLast,
 }: TodoModel) => {
 
     // For DnD
@@ -55,6 +57,11 @@ export const Todo = ({
         };
     };
 
+    const handleCancelEditingSubtask = (event: React.MouseEvent<HTMLButtonElement | HTMLDivElement | HTMLLabelElement>) => {
+        stopPropagation(event);
+        setIsEditingTask(false);
+    };
+
     const draggingStyle = {
         transform: CSS.Transform.toString(transform),
         transition,
@@ -67,7 +74,11 @@ export const Todo = ({
             ref={setNodeRef}
             style={draggingStyle}
             {...attributes}
-            className="flex items-center bg-mono-600 hover:bg-mono-500 mx-3 p-2 gap-2 rounded-sm cursor-pointer"
+            className={clsx(
+                "flex items-center bg-mono-600 hover:bg-mono-500 p-2 gap-2 cursor-pointer border border-t-0 border-r-0 border-l-0 border-solid border-mono-800",
+                index === 0 && "rounded-t-md",
+                isLast && "rounded-b-md border-b-0",
+            )}
             onClick={() => toggleTaskCompletion(task)}
             title={task.text}
         >
@@ -98,7 +109,7 @@ export const Todo = ({
                         /> 
                         <div className="flex items-center gap-2 ml-2">
                             <button className="cursor-pointer text-mint-500" onClick={handleUpdateSubtask}><CheckIcon className="size-5"/></button>
-                            <button className="cursor-pointer text-red-500" onClick={() => {setIsEditingTask(false)}}><XMarkIcon className="size-5"/></button>
+                            <button className="cursor-pointer text-red-500" onClick={handleCancelEditingSubtask}><XMarkIcon className="size-5"/></button>
                         </div>
                     </div>
                     :

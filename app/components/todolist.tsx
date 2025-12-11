@@ -299,8 +299,8 @@ export const TodoList = ({id}: { id:string}) => {
                 </div>
             }
 
-            <div className="w-[90%] md:w-2/3 flex items-center justify-between">
-                <div className="flex items-center justify-between bg-mono-700 rounded drop-shadow-lg mx-3 w-full h-14">
+            <div className="w-[85%] md:w-2/3 flex items-center justify-between mb-1">
+                <div className="flex items-center justify-between bg-mono-700 rounded drop-shadow-lg w-full h-14">
                     <div className="m-3 text-sm">Completed: {completedTasksCount} / {totalTasksCount} </div>
                     <Modal  
                         mainButtonText="Delete all"
@@ -319,7 +319,7 @@ export const TodoList = ({id}: { id:string}) => {
                 loading ? 
                 <Loader/> :
                 <ul className={clsx(
-                    "w-[90%] md:w-2/3 flex-grow overflow-y-auto overflow-x-hidden mb-4 flex flex-col gap-1.5",
+                    "w-[85%] md:w-2/3 flex-grow overflow-y-auto overflow-x-hidden mb-4 flex flex-col",
                     "[&::-webkit-scrollbar]:w-2",
                     "[&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-mono-300",
                     "[&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-mint-600",
@@ -342,6 +342,7 @@ export const TodoList = ({id}: { id:string}) => {
                                             toggleTaskCompletion={toggleTaskCompletion}
                                             openDetails={openDetails}
                                             updateTask={handleEditTask}
+                                            isLast={isLast}
                                         />
                                     )
                                 })
