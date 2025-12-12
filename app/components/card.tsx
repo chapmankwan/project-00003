@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import type { TodoListModel } from "@/models"
 
-import { TrashIcon } from "@heroicons/react/24/outline";
+import { DocumentDuplicateIcon, TrashIcon } from "@heroicons/react/24/outline";
 
 import clsx from "clsx";
 import React from "react";
@@ -11,12 +11,14 @@ interface CardModel {
     setIsDeleteDialog: React.Dispatch<React.SetStateAction<boolean>>;
     setSelectedTaskListId: React.Dispatch<React.SetStateAction<string>>;
     taskList: TodoListModel;
+    duplicateTask: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 export const Card = ({
     setIsDeleteDialog,
     setSelectedTaskListId,
-    taskList
+    taskList,
+    duplicateTask,
 }: CardModel) => {
     
     const completedTasks = taskList.tasks?.filter( task => task.completed).length;
@@ -72,7 +74,14 @@ export const Card = ({
                 </div>
 
                 <button 
-                    className="flex items-center justify-between cursor-pointer hover:text-red-500" 
+                    className="cursor-pointer hover:text-lavender-400"
+                    onClick={duplicateTask}
+                    title="make a copy"
+                >
+                    <DocumentDuplicateIcon className="size-5" />
+                </button>
+                <button 
+                    className="cursor-pointer hover:text-red-500" 
                     onClick={onDeleteHandler}
                     title="delete"
                 >

@@ -116,8 +116,9 @@ export const DetailPanel =({
         if (descriptionInput.length) {
             description = descriptionInput;
         }
-        updateTask({text: editTaskInput, priority: selectedPriority, description})
-        setTaskTitle(task.text);
+        updateTask({text: editTaskInput, priority: selectedPriority, description});
+        console.log("+++ taskTitle", taskTitle);
+        setTaskTitle(editTaskInput);
         setIsEditingTask(false);
     };
 
@@ -136,7 +137,7 @@ export const DetailPanel =({
             <div
                 className={clsx(
                 "absolute bottom-0 left-0 right-0 z-50 bg-mono-800 shadow-2xl rounded-t-2xl",
-                "transform transition-transform duration-300 ease-out max-h-[75dvh]",
+                "transform transition-transform duration-300 ease-out min-h-[50dvh] max-h-[75dvh]",
                 isVisible ? "translate-y-0" : "translate-y-full"
                 )}
             >
@@ -148,10 +149,10 @@ export const DetailPanel =({
                 </div>
 
                 <div className="flex flex-col p-4 max-h-[calc(75dvh-61px)] overflow-y-auto">
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between h-[50px]">
                         {
                             !isEditingTask ?
-                            <p className="pr-2 font-bold text-lavender-400 flex-wrap items-center">
+                            <p className="pr-2 h-font-bold text-lavender-400 flex-wrap items-center">
                                 Task: {taskTitle}
                             </p>
                             :
@@ -201,8 +202,8 @@ export const DetailPanel =({
                             <textarea rows={5} className="p-2 border border-solid border-mono-400 rounded-md h-50" value={descriptionInput} onChange={e => setDescriptionInput(e.target.value)}/>
                         }
                         {
-                            task.description && task.description.length > 0 && 
-                            <p className="border border-solid border-mono-500 p-2">{task.description}</p>
+                            task.description && task.description.length > 0 && !isEditingTask &&
+                            <p className="border border-solid border-mono-500 p-2 rounded-md whitespace-pre-wrap">{task.description}</p>
                         }
                     </div>
 

@@ -78,6 +78,25 @@ export default function Collections () {
         };
     };
 
+    const duplicateTaskHandler = async (listId: string) => {
+        const res = await fetch(`/api/todo-lists/${listId}/duplicate`, {
+            method: "POST",
+        });
+
+        if (!res.ok) throw new Error("Failed to duplicate list");
+
+        const newList = await res.json();
+
+        setAllTaskLists(prev => [newList, ...prev]);
+    };
+
+    const handleDuplicateButton = (event: React.MouseEvent<HTMLButtonElement>, listId: string) => {
+        event.stopPropagation();
+        event.preventDefault();
+
+        duplicateTaskHandler(listId);
+    };
+
     return (
         <section className="flex flex-1 flex-col items-center h-[calc(100dvh-72px)]">
             <PageHeader title={`Collection: ${decodeURIComponent(params.name)}`}/>
@@ -104,7 +123,13 @@ export default function Collections () {
                         allTaskLists.length > 0 &&
                         allTaskLists.map( (taskList, index) => {
                             return (
-                                <Card key={index} taskList={taskList} setIsDeleteDialog={setIsDeleteDialogOpen} setSelectedTaskListId={setSelectedTaskListId} />
+                                <Card 
+                                    key={index} 
+                                    taskList={taskList} 
+                                    setIsDeleteDialog={setIsDeleteDialogOpen} 
+                                    setSelectedTaskListId={setSelectedTaskListId} 
+                                    duplicateTask={e => handleDuplicateButton(e, taskList._id)}
+                                />
                             )
                         })
                     }
