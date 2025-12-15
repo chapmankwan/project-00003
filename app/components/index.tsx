@@ -3,7 +3,6 @@ export * from "./detail-panel"
 export * from "./header";
 export * from "./loader";
 export * from "./menu";
-export * from "./modal";
 export * from "./page-header";
 export * from "./session-provider";
 export * from "./todo";

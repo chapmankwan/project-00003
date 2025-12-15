@@ -1,7 +1,8 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 
-import { DetailPanel, FlyoutPanel, Loader, Modal, Todo } from "@/app/components";
+import { DetailPanel, FlyoutPanel, Loader, Todo } from "@/app/components";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import type { Task } from "@/models";
 
 import { useRouter } from 'next/navigation';
@@ -9,7 +10,7 @@ import { useRouter } from 'next/navigation';
 import { taskApiHooks } from "@/app/utilities/taskApiHooks";
 import { toSlug } from "@/app/utilities";
 
-import { CheckIcon, PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { CheckIcon, CheckCircleIcon, PlusIcon, TrashIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import clsx from "clsx";
 
@@ -280,40 +281,62 @@ export const TodoList = ({id}: { id:string}) => {
 
     return (
         <div className="flex-1 flex flex-col items-center h-[calc(100dvh-56px)]">
-            {
-                !isEditingTitle ?
-                <button onClick={() => setIsEditingTitle(true)} className="p-4 font-bold flex w-[90%] md:w-2/3 cursor-text">{listTitle}</button>
-                :
-                <div className="p-3 flex gap-2 items-center w-[90%] md:w-2/3">
-                    <input 
-                        ref={titleInputRef}
-                        type="text" 
-                        value={editTitle} 
-                        onChange={e => setEditTitle(e.target.value)} 
-                        className="border border-solid border-mint-400 rounded outline-0 p-1 w-full"
-                        placeholder="change title"
-                        required
-                    />
-                    <CheckIcon className="size-5 hover:text-mint-500 cursor-pointer" onClick={handleAcceptTitleChange}/>
-                    <XMarkIcon className="size-5 hover:text-red-400 cursor-pointer" onClick={handleCancelTitleChange}/>
-                </div>
-            }
+            <section className="flex items-center justify-between w-[85%] md:w-2/3 py-3">
+                {
+                    !isEditingTitle ?
+                    <button onClick={() => setIsEditingTitle(true)} className="font-bold md:w-2/3 cursor-text p-1">{listTitle}</button>
+                    :
+                    <div className="flex gap-2 items-center w-[75%] md:w-2/3">
+                        <input 
+                            ref={titleInputRef}
+                            type="text" 
+                            value={editTitle} 
+                            onChange={e => setEditTitle(e.target.value)} 
+                            className="border border-solid border-mint-400 rounded outline-0 p-1 w-full font-bold"
+                            placeholder="change title"
+                            required
+                        />
+                        <CheckIcon className="size-6 hover:text-mint-500 cursor-pointer" onClick={handleAcceptTitleChange}/>
+                        <XMarkIcon className="size-6 hover:text-red-400 cursor-pointer" onClick={handleCancelTitleChange}/>
+                    </div>
+                }
 
-            <div className="w-[85%] md:w-2/3 flex items-center justify-between mb-1">
-                <div className="flex items-center justify-between bg-mono-700 rounded drop-shadow-lg w-full h-14">
-                    <div className="m-3 text-sm">Completed: {completedTasksCount} / {totalTasksCount} </div>
-                    <Modal  
-                        mainButtonText="Delete all"
-                        callback={() => deleteAllTasks(id)}
-                        disabled={ false }
-                        leftButtonText="Cancel"
-                        rightButtonText="Delete all"
-                        modalTitle="Delete all tasks"
-                        modalDescription="This will permanently delete all your written tasks"
-                        modalExtraDetails="Are you sure you want to delete all your tasks? Deleted tasks will not be retrievable."
-                    />
+                <div className="flex items-center gap-2">
+                    <span className="flex items-center gap-2 text-sm">
+                        {completedTasksCount} / {totalTasksCount}
+                        <CheckCircleIcon className={clsx("size-6", 
+                            completedTasksCount === totalTasksCount 
+                            && completedTasksCount > 0
+                            && !loading ? 
+                            "text-mint-500" : ""
+                        )}/>
+                    </span>
+                    <Menu>
+                        <MenuButton 
+                            className="inline-flex p-1 rounded cursor-pointer bg-mono-500 hover:bg-mono-400"
+                            onClick={(event) => event.stopPropagation()}
+                        >
+                            <TrashIcon className="size-5"/>
+                        </MenuButton>
+
+                        <MenuItems
+                            transition
+                            anchor="left"
+                            className="origin-bottom-left bg-mono-700 rounded-md"
+                            onClick={(event) => event.stopPropagation()}
+                        >
+                            <MenuItem>
+                                <button 
+                                    className="flex items-center gap-2 cursor-pointer p-2 hover:text-red-500"
+                                    onClick={() => deleteAllTasks(id)}
+                                >
+                                    deleting all, are you sure?
+                                </button>
+                            </MenuItem>
+                        </MenuItems>
+                    </Menu>
                 </div>
-            </div>
+            </section>
 
             {
                 loading ? 

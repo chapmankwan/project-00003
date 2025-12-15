@@ -117,7 +117,6 @@ export const DetailPanel =({
             description = descriptionInput;
         }
         updateTask({text: editTaskInput, priority: selectedPriority, description});
-        console.log("+++ taskTitle", taskTitle);
         setTaskTitle(editTaskInput);
         setIsEditingTask(false);
     };
