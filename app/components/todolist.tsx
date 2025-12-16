@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 import { taskApiHooks } from "@/app/utilities/taskApiHooks";
 import { toSlug } from "@/app/utilities";
 
-import { CheckIcon, CheckCircleIcon, PlusIcon, TrashIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { CheckIcon, CheckCircleIcon, ChevronLeftIcon, PlusIcon, TrashIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import clsx from "clsx";
 
@@ -281,25 +281,34 @@ export const TodoList = ({id}: { id:string}) => {
 
     return (
         <div className="flex-1 flex flex-col items-center h-[calc(100dvh-56px)]">
-            <section className="flex items-center justify-between w-[85%] md:w-2/3 py-3 flex-nowrap">
-                {
-                    !isEditingTitle ?
-                    <button onClick={() => setIsEditingTitle(true)} className="font-bold cursor-text p-1">{listTitle}</button>
-                    :
-                    <div className="flex gap-2 items-center w-3/4">
-                        <input 
-                            ref={titleInputRef}
-                            type="text" 
-                            value={editTitle} 
-                            onChange={e => setEditTitle(e.target.value)} 
-                            className="border border-solid border-mint-400 rounded outline-0 p-1 w-full font-bold"
-                            placeholder="change title"
-                            required
-                        />
-                        <CheckIcon className="size-6 hover:text-mint-500 cursor-pointer" onClick={handleAcceptTitleChange}/>
-                        <XMarkIcon className="size-6 hover:text-red-400 cursor-pointer" onClick={handleCancelTitleChange}/>
-                    </div>
-                }
+            <section className="flex items-center justify-between w-[85%] md:w-2/3 py-3 flex-nowrap h-14">
+                <div className="md:w-3/4 flex">
+                    <button 
+                        className="cursor-pointer mr-3"
+                        onClick={() => router.back()}
+                        title="back to collection"
+                    >
+                            <ChevronLeftIcon className="size-5"/>
+                    </button>
+                    {   
+                        !isEditingTitle ?
+                        <button onClick={() => setIsEditingTitle(true)} className="font-bold cursor-text p-1">{listTitle}</button>
+                        :
+                        <div className="flex gap-2 items-center w-full">
+                            <input 
+                                ref={titleInputRef}
+                                type="text" 
+                                value={editTitle} 
+                                onChange={e => setEditTitle(e.target.value)} 
+                                className="border border-solid border-mint-400 rounded outline-0 p-1 w-full font-bold"
+                                placeholder="change title"
+                                required
+                            />
+                            <CheckIcon className="size-6 hover:text-mint-500 cursor-pointer" onClick={handleAcceptTitleChange}/>
+                            <XMarkIcon className="size-6 hover:text-red-400 cursor-pointer" onClick={handleCancelTitleChange}/>
+                        </div>
+                    }
+                </div>
 
                 <div className="flex items-center gap-2">
                     <span className="flex items-center gap-2 text-sm">
