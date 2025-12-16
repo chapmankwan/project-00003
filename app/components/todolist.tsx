@@ -279,6 +279,11 @@ export const TodoList = ({id}: { id:string}) => {
         });
     };
 
+    const handleDeleteAllButton = () => {
+        if (window.confirm("Are you sure you want to delete all tasks from this list?")) { deleteAllTasks(id); }
+        else return;
+    }
+
     return (
         <div className="flex-1 flex flex-col items-center h-[calc(100dvh-56px)]">
             <section className="flex items-center justify-between w-[85%] md:w-2/3 py-3 flex-nowrap h-14">
@@ -331,15 +336,15 @@ export const TodoList = ({id}: { id:string}) => {
                         <MenuItems
                             transition
                             anchor="left"
-                            className="origin-bottom-left bg-mono-700 rounded-md"
+                            className="bg-mono-700 rounded-md"
                             onClick={(event) => event.stopPropagation()}
                         >
                             <MenuItem>
                                 <button 
                                     className="flex items-center gap-2 cursor-pointer p-2 hover:text-red-500"
-                                    onClick={() => deleteAllTasks(id)}
+                                    onClick={handleDeleteAllButton}
                                 >
-                                    deleting all, are you sure?
+                                    delete all tasks
                                 </button>
                             </MenuItem>
                         </MenuItems>

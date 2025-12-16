@@ -4,7 +4,7 @@ import React, { Ref, useState } from "react";
 import type {Task} from "@/models";
 import { Types } from "mongoose";
 
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import { Checkbox, Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon, EllipsisVerticalIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 
@@ -90,11 +90,19 @@ export const Todo = ({
                 <ChevronUpDownIcon className="size-4 text-mono-400" />
             </button>
             <label className="*:cursor-pointer" onClick={stopPropagation}>
-                <input 
+                {/* <input 
                     checked={task.completed} 
                     className="border-mono-300 rounded-sm bg-black"
                     onChange={() => toggleTaskCompletion(task)}
-                    type="checkbox" />
+                    type="checkbox" /> */}
+                    <Checkbox
+                        checked={task.completed} 
+                        className="group block size-3 rounded-sm border border-mono-100 bg-mono-100 data-checked:bg-lavender-500 data-checked:border-lavender-500"
+                        // className="border-mono-300 rounded-sm bg-black"
+                        onChange={() => toggleTaskCompletion(task)}
+                    >
+                        <CheckIcon className="stroke-lavender-100 stroke-3 stroke opacity-0 group-data-checked:opacity-100"/>
+                    </Checkbox>
             </label>
 
             {
@@ -106,7 +114,7 @@ export const Todo = ({
                             value={editingTaskInput} 
                             onChange={e => setEditingTaskInput(e.target.value)} 
                             onClick={stopPropagation}
-                        /> 
+                        />
                         <div className="flex items-center gap-2 ml-2">
                             <button className="cursor-pointer hover:text-mint-500" onClick={handleUpdateSubtask}><CheckIcon className="size-5"/></button>
                             <button className="cursor-pointer hover:text-red-500" onClick={handleCancelEditingSubtask}><XMarkIcon className="size-5"/></button>
