@@ -281,12 +281,12 @@ export const TodoList = ({id}: { id:string}) => {
 
     return (
         <div className="flex-1 flex flex-col items-center h-[calc(100dvh-56px)]">
-            <section className="flex items-center justify-between w-[85%] md:w-2/3 py-3">
+            <section className="flex items-center justify-between w-[85%] md:w-2/3 py-3 flex-nowrap">
                 {
                     !isEditingTitle ?
-                    <button onClick={() => setIsEditingTitle(true)} className="font-bold md:w-2/3 cursor-text p-1">{listTitle}</button>
+                    <button onClick={() => setIsEditingTitle(true)} className="font-bold cursor-text p-1">{listTitle}</button>
                     :
-                    <div className="flex gap-2 items-center w-[75%] md:w-2/3">
+                    <div className="flex gap-2 items-center w-3/4">
                         <input 
                             ref={titleInputRef}
                             type="text" 

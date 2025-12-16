@@ -108,8 +108,8 @@ export const Todo = ({
                             onClick={stopPropagation}
                         /> 
                         <div className="flex items-center gap-2 ml-2">
-                            <button className="cursor-pointer text-mint-500" onClick={handleUpdateSubtask}><CheckIcon className="size-5"/></button>
-                            <button className="cursor-pointer text-red-500" onClick={handleCancelEditingSubtask}><XMarkIcon className="size-5"/></button>
+                            <button className="cursor-pointer hover:text-mint-500" onClick={handleUpdateSubtask}><CheckIcon className="size-5"/></button>
+                            <button className="cursor-pointer hover:text-red-500" onClick={handleCancelEditingSubtask}><XMarkIcon className="size-5"/></button>
                         </div>
                     </div>
                     :
@@ -151,9 +151,9 @@ export const Todo = ({
 
                     <MenuItems
                         transition
-                        anchor="top"
+                        anchor={index === 0 ? "left start" : isLast ? "left end" : "left"}
                         className="origin-top-right bg-mono-700 w-28 rounded-md hidden md:block"
-                        onClick={(event: React.MouseEvent<HTMLButtonElement | HTMLDivElement | HTMLLabelElement>) => event.stopPropagation()}
+                        onClick={stopPropagation}
                     >
                         <MenuItem>
                             <button 
