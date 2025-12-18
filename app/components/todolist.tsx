@@ -1,7 +1,8 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 
-import { DetailPanel, FlyoutPanel, Loader, Modal, Todo } from "@/app/components";
+import { DetailPanel, FlyoutPanel, Loader, Todo } from "@/app/components";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import type { Task } from "@/models";
 
 import { useRouter } from 'next/navigation';
@@ -9,7 +10,9 @@ import { useRouter } from 'next/navigation';
 import { taskApiHooks } from "@/app/utilities/taskApiHooks";
 import { toSlug } from "@/app/utilities";
 
-import { CheckIcon, PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { CheckIcon, CheckCircleIcon, ChevronLeftIcon, PlusIcon, TrashIcon, XMarkIcon } from "@heroicons/react/24/outline";
+
+import clsx from "clsx";
 
 import {
     DndContext,
@@ -106,12 +109,16 @@ export const TodoList = ({id}: { id:string}) => {
     // this hook allows user to scroll to latest task after adding
     useEffect(() => {
         // Scroll to the latest task
-        if (justAddedRef.current && lastTaskRef.current) {
-            lastTaskRef.current.scrollIntoView({ behavior: 'smooth' });
-            // Makes sure to reset the reference point for next task added
-            justAddedRef.current = false;
-        }
-    }, [tasks]);
+        const timer = setTimeout(() => {
+            if (isFlyoutOpen && lastTaskRef.current) {
+                lastTaskRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                // Makes sure to reset the reference point for next task added
+                justAddedRef.current = false;
+            }
+        }, 300);
+        
+        return () => clearTimeout(timer)
+    }, [tasks, isFlyoutOpen]);
 
     useEffect(() => {
         if( titleInputRef.current ) titleInputRef.current.focus();
@@ -272,54 +279,89 @@ export const TodoList = ({id}: { id:string}) => {
         });
     };
 
+    const handleDeleteAllButton = () => {
+        if (window.confirm("Are you sure you want to delete all tasks from this list?")) { deleteAllTasks(id); }
+        else return;
+    }
+
     return (
         <div className="flex-1 flex flex-col items-center h-[calc(100dvh-56px)]">
-            {
-                !isEditingTitle ?
-                <button onClick={() => setIsEditingTitle(true)} className="p-4 font-bold flex w-[90%] md:w-2/3 cursor-text">{listTitle}</button>
-                :
-                <div className="p-3 flex gap-2 items-center w-[90%] md:w-2/3">
-                    <input 
-                        ref={titleInputRef}
-                        type="text" 
-                        value={editTitle} 
-                        onChange={e => setEditTitle(e.target.value)} 
-                        className="border border-solid border-mint-400 rounded outline-0 p-1 w-full"
-                        placeholder="change title"
-                        required
-                    />
-                    <CheckIcon className="size-5 hover:text-mint-500 cursor-pointer" onClick={handleAcceptTitleChange}/>
-                    <XMarkIcon className="size-5 hover:text-red-400 cursor-pointer" onClick={handleCancelTitleChange}/>
-                </div>
-            }
+            <section className="flex py-3 w-[85%] md:w-2/3">
+                <button 
+                    className="cursor-pointer mr-3"
+                    onClick={() => router.back()}
+                    title="back to collection"
+                >
+                        <ChevronLeftIcon className="size-5"/>
+                </button>
+                {   
+                    !isEditingTitle ?
+                    <div className="flex w-full">
+                        <button onClick={() => setIsEditingTitle(true)} className="font-bold cursor-text p-1">{listTitle}</button>
+                        <div className="flex items-center gap-2 ml-auto">
+                            <span className="flex items-center gap-2 text-sm">
+                                {completedTasksCount} / {totalTasksCount}
+                                <CheckCircleIcon className={clsx("size-6", 
+                                    completedTasksCount === totalTasksCount 
+                                    && completedTasksCount > 0
+                                    && !loading ? 
+                                    "text-mint-500" : ""
+                                )}/>
+                            </span>
+                            <Menu>
+                                <MenuButton 
+                                    className="inline-flex p-1 rounded cursor-pointer bg-mono-500 hover:bg-mono-400"
+                                    onClick={(event) => event.stopPropagation()}
+                                >
+                                    <TrashIcon className="size-5"/>
+                                </MenuButton>
 
-            <div className="w-[90%] md:w-2/3 flex items-center justify-between">
-                <div className="flex items-center justify-between bg-mono-700 rounded drop-shadow-lg mx-3 w-full h-14">
-                    <div className="m-3 text-sm">Completed: {completedTasksCount} / {totalTasksCount} </div>
-                    <Modal  
-                        mainButtonText="Delete all"
-                        callback={() => deleteAllTasks(id)}
-                        disabled={ false }
-                        leftButtonText="Cancel"
-                        rightButtonText="Delete all"
-                        modalTitle="Delete all tasks"
-                        modalDescription="This will permanently delete all your written tasks"
-                        modalExtraDetails="Are you sure you want to delete all your tasks? Deleted tasks will not be retrievable."
-                    />
-                </div>
-            </div>
+                                <MenuItems
+                                    transition
+                                    anchor="left"
+                                    className="bg-mono-700 rounded-md"
+                                    onClick={(event) => event.stopPropagation()}
+                                >
+                                    <MenuItem>
+                                        <button 
+                                            className="flex items-center gap-2 cursor-pointer p-2 hover:text-red-500"
+                                            onClick={handleDeleteAllButton}
+                                        >
+                                            delete all tasks
+                                        </button>
+                                    </MenuItem>
+                                </MenuItems>
+                            </Menu>
+                        </div>
+                    </div>
+                    :
+                    <div className="flex gap-2 items-center w-full">
+                        <input 
+                            ref={titleInputRef}
+                            type="text" 
+                            value={editTitle} 
+                            onChange={e => setEditTitle(e.target.value)} 
+                            className="border border-solid border-mint-400 rounded outline-0 p-1 w-full font-bold"
+                            placeholder="change title"
+                            required
+                        />
+                        <CheckIcon className="size-6 hover:text-mint-500 cursor-pointer" onClick={handleAcceptTitleChange}/>
+                        <XMarkIcon className="size-6 hover:text-red-400 cursor-pointer" onClick={handleCancelTitleChange}/>
+                    </div>
+                }
+            </section>
 
             {
                 loading ? 
                 <Loader/> :
-                <ul className="
-                    w-[90%] md:w-2/3 flex-grow overflow-y-auto overflow-x-hidden mb-4 flex flex-col gap-1.5
-                    [&::-webkit-scrollbar]:w-2
-                    [&::-webkit-scrollbar-track]:rounded-full
-                    [&::-webkit-scrollbar-track]:bg-mono-300
-                    [&::-webkit-scrollbar-thumb]:rounded-full
-                    [&::-webkit-scrollbar-thumb]:bg-mint-600
-                ">
+                <ul className={clsx(
+                    "w-[85%] md:w-2/3 flex-grow overflow-y-auto overflow-x-hidden mb-4 flex flex-col rounded-md",
+                    "[&::-webkit-scrollbar]:w-1.5",
+                    "[&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-mono-200",
+                    "[&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-mono-400",
+                    "ease-in-out",
+                    isFlyoutOpen ? "transition-[max-height] max-h-[47dvh] duration-300 md:max-h-none" : "transition-[max-height] duration-300 max-h-[100dvh]"
+                    )}>
                     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                         <SortableContext items={tasks.map(t => t._id.toString())} strategy={verticalListSortingStrategy}>
                             {
@@ -336,6 +378,7 @@ export const TodoList = ({id}: { id:string}) => {
                                             toggleTaskCompletion={toggleTaskCompletion}
                                             openDetails={openDetails}
                                             updateTask={handleEditTask}
+                                            isLast={isLast}
                                         />
                                     )
                                 })

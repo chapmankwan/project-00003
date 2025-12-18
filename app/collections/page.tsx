@@ -83,7 +83,7 @@ export default function Collections () {
                                     bg-mono-700 hover:bg-mono-600
                                     flex items-center first:mt-0 last:mb-0 p-3 rounded-sm gap-3 cursor-pointer"
                             >
-                                <span className="flex-1">{collection.name}</span>
+                                <span className="flex-1">{decodeURIComponent(collection.name)}</span>
 
                                 <div className="flex items-center gap-3">
                                     <div className="flex flex-col text-xs items-end">

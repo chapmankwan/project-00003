@@ -95,11 +95,15 @@ export const Menu = () => {
                     <XMarkIcon className="size-6" />
                 </button>
 
-                {/* Hidden menu for authenticated users */}
                 {status === "authenticated" ? (
                     <>
-                        <Link onClick={() => setIsMenuOpen(false)} className={menuTailwindCss} href="/collections">Collections</Link>
-                        <Link onClick={() => setIsMenuOpen(false)} className={menuTailwindCss} href="/workspaces">temp workspaces</Link>
+                        <Link 
+                            onClick={() => setIsMenuOpen(false)} 
+                            className={menuTailwindCss} 
+                            href="/collections"
+                        >
+                            Collections
+                        </Link>
                         <Link
                             onClick={() => setIsMenuOpen(false)}
                             className={menuTailwindCss}
@@ -115,7 +119,7 @@ export const Menu = () => {
                         </button>
                     </>
                     ) : (
-                        <>
+                    <>
                         <Link
                             onClick={() => setIsMenuOpen(false)}
                             className={menuTailwindCss}

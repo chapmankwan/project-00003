@@ -2,6 +2,8 @@
 import { signIn, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
+import clsx from "clsx";
+import Link from "next/link";
 
 export default function LoginPage() {
   const { status } = useSession();
@@ -9,7 +11,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (status === "authenticated") {
-      router.push("/workspaces");
+      router.push("/collections");
     }
   }, [status, router]);
   
@@ -33,7 +35,7 @@ export default function LoginPage() {
         redirect: false, // we handle redirect manually
         email,
         password,
-        callbackUrl: "/workspaces",
+        callbackUrl: "/login",
       });
 
       if (res?.error) {
@@ -41,7 +43,7 @@ export default function LoginPage() {
       } else {
         setSuccess("Login successful! Redirecting...");
 
-        setTimeout(() => router.push("/workspaces"), 1000);
+        setTimeout(() => router.push("/collections"), 1000);
       }
     } catch (err) {
       console.error("Error occurred:", err);
@@ -52,7 +54,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-mono-800 text-white">
+    <div className="min-h-[calc(100dvh-56px)] flex flex-col items-center justify-center bg-mono-800 text-white">
       <h1 className="text-2xl mb-4 select-none">Login to Monorail</h1>
 
       <form
@@ -78,15 +80,18 @@ export default function LoginPage() {
           onChange={e => setPassword(e.target.value)}
           aria-invalid={!!errorMessage && !password}
         />
-        <button type="submit" className={`px-4 py-2 mt-4 w-3/4 sm:w-sm cursor-pointer rounded-sm transition-transform ease-in-out duration-300 active:scale-95"
-          ${
-              loading
-                ? "bg-mono-600 text-mono-300 cursor-not-allowed"
-                : "bg-mint-500 text-mono-900 hover:bg-mint-700 hover:text-mono-100"
-            }`}
+        <button type="submit" disabled={email.length <= 0 && password.length <= 0} className={clsx(
+          "px-4 py-2 mt-4 w-3/4 sm:w-sm rounded-sm transition-transform ease-in-out duration-300 active:scale-95",
+          loading || email.length < 1
+            ? "bg-mono-600 text-mono-300 cursor-not-allowed"
+            : "bg-mint-500 text-mono-900 hover:bg-mint-700 hover:text-mono-100 cursor-pointer"
+          )}
           >
           {loading ? "Logging in..." : "Login"}
         </button>
+        <Link href="/account/signup" className="text-xs p-1 mt-1 hover:text-lavender-400">
+            or sign up here
+        </Link>
         <div className="h-12 flex flex-col items-center justify-center">
           <p className="text-red-400 text-sm mt-2 select-none">{errorMessage}</p>
           <p className="text-mint-400 text-sm mt-2">{success}</p>

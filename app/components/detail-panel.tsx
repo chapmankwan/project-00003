@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { Task } from "@/models";
 
-import { CheckIcon, PlusIcon, TrashIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { PencilSquareIcon, PlusIcon, TrashIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import clsx from "clsx";
 import { Types } from "mongoose";
@@ -29,6 +29,7 @@ export const DetailPanel =({
     const [isVisible, setIsVisible] = useState(false);
     const [addingSubTask, setAddingSubTask] = useState(false);
     const [taskTitle, setTaskTitle] = useState(task.text);
+    const [descriptionInput, setDescriptionInput] = useState(task.description || "")
 
     const [subTaskList, setSubTaskList] = useState<{ _id: string; text: string; completed: boolean; }[]>([]);
     const [subTaskInput, setSubTaskInput] = useState("");
@@ -111,10 +112,14 @@ export const DetailPanel =({
     };
 
     const handleEditTask = () => {
-        updateTask({text: editTaskInput, priority: selectedPriority})
-        setTaskTitle(task.text);
+        let description;
+        if (descriptionInput.length) {
+            description = descriptionInput;
+        }
+        updateTask({text: editTaskInput, priority: selectedPriority, description});
+        setTaskTitle(editTaskInput);
         setIsEditingTask(false);
-    }
+    };
 
     return (
         <section className="fixed inset-0 z-40">
@@ -131,7 +136,7 @@ export const DetailPanel =({
             <div
                 className={clsx(
                 "absolute bottom-0 left-0 right-0 z-50 bg-mono-800 shadow-2xl rounded-t-2xl",
-                "transform transition-transform duration-300 ease-out max-h-[75dvh]",
+                "transform transition-transform duration-300 ease-out min-h-[50dvh] max-h-[75dvh]",
                 isVisible ? "translate-y-0" : "translate-y-full"
                 )}
             >
@@ -143,45 +148,107 @@ export const DetailPanel =({
                 </div>
 
                 <div className="flex flex-col p-4 max-h-[calc(75dvh-61px)] overflow-y-auto">
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between h-[50px]">
                         {
                             !isEditingTask ?
-                            <button 
-                                onClick={() => setIsEditingTask(!isEditingTask)} 
-                                className="m-0 h-[50px] pr-2 font-bold text-lavender-400 flex-wrap items-start cursor-text hover:text-lavender-500"
-                            >
+                            <p className="pr-2 h-font-bold text-lavender-400 flex-wrap items-center">
                                 Task: {taskTitle}
-                            </button>
+                            </p>
                             :
-                            <div className="flex p-2 gap-2 items-center w-11/12">
+                            <div className="flex p-2 pl-0 gap-2 items-center w-11/12">
                                 <input 
                                     className="w-full border border-solid border-mono-400 rounded p-1"
                                     type="text" 
                                     value={editTaskInput} 
                                     onChange={e => setEditTaskInput(e.target.value)}
                                 />
-                                <CheckIcon onClick={handleEditTask} className="size-5 hover:text-mint-500 cursor-pointer"/>
-                                <XMarkIcon onClick={() => setIsEditingTask(false) } className="size-5 hover:text-red-400 cursor-pointer"/>
                             </div>
                         }
 
-                        {/* Close details panel button */}
-                        <button 
-                            className="flex items-center w-fit border-0 cursor-pointer text-mono-50 bg-red-500 hover:bg-red-700 rounded p-2 gap-2"
-                            onClick={handleDeleteTask}
-                            title="delete"
-                        >
-                            <TrashIcon className="size-5"/>
-                        </button>
+                        <div className="flex gap-1">
+                            <button
+                                className="w-fit border-0 cursor-pointer text-mono-50 bg-mono-400 hover:bg-mono-600 rounded p-2"
+                                onClick={() => setIsEditingTask(!isEditingTask)}
+                                title="edit"
+                            >
+                                <PencilSquareIcon className="size-5"/>
+                            </button>
+                            <button 
+                                className="w-fit border-0 cursor-pointer text-mono-50 bg-red-500 hover:bg-red-700 rounded p-2"
+                                onClick={handleDeleteTask}
+                                title="delete"
+                            >
+                                <TrashIcon className="size-5"/>
+                            </button>
+                        </div>
                     </div>
-                    <p className="m-0 py-2">Date created: {task.date}</p>
 
-                    <p className="m-0 py-2">Completed: {task.completed ? "Finished" : "Not yet complete"}</p>
-                    <div className="flex gap-2 py-2 items-center">
-                        <p>Urgency:</p>
-                        {task.priority ? task.priority : "none"}
+                    <p className="text-mint-400 text-xs">{task.edited ? "edited" : ""}</p>
+
+                    <div className="flex">
+                        <p className="font-bold">Date created: </p>
+                        <p className="ml-1">{task.date}</p>
                     </div>
-                    {task.edited ? "edited" : ""}
+
+                    <div className="flex">
+                        <p className="font-bold">Progress: </p>
+                        <p className="ml-1">{task.completed ? "All work completed" : "In progress"}</p>
+                    </div>
+                    <div className="flex flex-col">
+                        <p className="font-bold">Description: </p>
+                        {
+                            isEditingTask && 
+                            <textarea rows={5} className="p-2 border border-solid border-mono-400 rounded-md h-50" value={descriptionInput} onChange={e => setDescriptionInput(e.target.value)}/>
+                        }
+                        {
+                            task.description && task.description.length > 0 && !isEditingTask &&
+                            <p className="border border-solid border-mono-500 p-2 rounded-md whitespace-pre-wrap">{task.description}</p>
+                        }
+                    </div>
+
+                    <div className="flex gap-2 py-2 items-center">
+                        {
+                            isEditingTask ?
+                            <div className="flex flex-col gap-1 w-full">
+                                <span className="font-bold">Priority: </span>
+                                <div className="w-full relative">
+                                    <div
+                                        className={clsx(
+                                            "absolute z-40 top-1/2 -translate-y-1/2 h-[70%] w-[80%] rounded-md bg-lavender-400 transition-all duration-300 ease-out",
+                                        )}
+                                        style={{
+                                            width: `${(100 / priorityList.length) * 0.8}%`,
+                                            left: `${priorityList.indexOf(selectedPriority) * (100 / priorityList.length) + (100 / priorityList.length) * 0.1}%`, 
+                                        }}
+                                    />
+                                    <ul className="relative flex items-center gap-2 w-full mx-auto bg-mono-600 px-2 py-2 rounded-md">
+                                        {
+                                            priorityList.map( priority => (
+                                                <li 
+                                                    className={clsx(
+                                                        "cursor-pointer text-center px-2 py-1 rounded-md flex-1 relative z-40 select-none",
+                                                        selectedPriority === priority ? "text-mono-700" : "text-mono-100"
+                                                    )}
+                                                    key={priority}
+                                                    onClick={()=> priorityButtonHandler(priority)}
+                                                >
+                                                    {priority}
+                                                </li>
+                                            ))
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                            :
+                            <div className="flex">
+                                <p className="font-bold">Priority: </p> 
+                                <span className="ml-1 ">
+                                    {task.priority ? task.priority : "none"}
+                                </span>
+                            </div>
+                        }
+                    </div>
+
                     <div className="subtask container">
                         <ul className="overflow-y-auto h-fit">
                             <p className="">Subtasks: </p>
@@ -238,37 +305,27 @@ export const DetailPanel =({
                                 </>
                             }
                         </div>
-                    </div>
 
-                    <div className="flex flex-col gap-1">
-                        <span className="text-sm">Priority</span>
-                        <div className="w-full relative">
-                            <div
-                                className={clsx(
-                                    "absolute z-40 top-1/2 -translate-y-1/2 h-[70%] w-[80%] rounded-md bg-lavender-400 transition-all duration-300 ease-out",
-                                )}
-                                style={{
-                                    width: `${(100 / priorityList.length) * 0.8}%`,
-                                    left: `${priorityList.indexOf(selectedPriority) * (100 / priorityList.length) + (100 / priorityList.length) * 0.1}%`, 
-                                }}
-                            />
-                            <ul className="relative flex items-center gap-2 w-full mx-auto bg-mono-600 px-2 py-2 rounded-md">
-                                {
-                                    priorityList.map( priority => (
-                                        <li 
-                                            className={clsx(
-                                                "cursor-pointer text-center px-2 py-1 rounded-md flex-1 relative z-40 select-none",
-                                                selectedPriority === priority ? "text-mono-700" : "text-mono-100"
-                                            )}
-                                            key={priority}
-                                            onClick={()=> priorityButtonHandler(priority)}
-                                        >
-                                            {priority}
-                                        </li>
-                                    ))
-                                }
-                            </ul>
-                        </div>
+                        {/* Bottom to save */}
+                        {
+                            isEditingTask ?
+                            <div className="flex justify-end gap-1">
+                                <button 
+                                    onClick={handleEditTask} 
+                                    className="flex items-center cursor-pointer rounded bg-mint-400 hover:bg-mint-500 px-2 py-1.5"
+                                >
+                                    <span>Save</span>
+                                </button>
+                                <button 
+                                    onClick={() => setIsEditingTask(false) } 
+                                    className="flex items-center cursor-pointer rounded bg-red-500 hover:bg-red-400 px-2 py-1.5"
+                                >
+                                    <span>Cancel</span>
+                                </button>
+                            </div>
+                            :
+                            null
+                        }
                     </div>
                 </div>
             </div>
