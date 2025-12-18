@@ -38,8 +38,6 @@ export async function POST(
             }))
         );
 
-        console.log("+++ duplicated tasks", duplicateTasks);
-
         const duplicateList = await TodoList.create({
             userId: original.userId,
             collectionId: original.collectionId,

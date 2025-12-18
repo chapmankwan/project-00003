@@ -286,7 +286,7 @@ export const TodoList = ({id}: { id:string}) => {
 
     return (
         <div className="flex-1 flex flex-col items-center h-[calc(100dvh-56px)]">
-            <section className="flex py-3 w-[85%]">
+            <section className="flex py-3 w-[85%] md:w-2/3">
                 <button 
                     className="cursor-pointer mr-3"
                     onClick={() => router.back()}
