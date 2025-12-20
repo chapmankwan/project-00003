@@ -3,10 +3,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { redirect, useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 
-import { Card, PageHeader, Loader, FlyoutPanel } from "@/app/components";
+import { Card, PageHeader, Loader, FlyoutPanel, MoveableFab } from "@/app/components";
 import type { TodoListModel } from "@/models";
 import { Dialog, DialogPanel } from '@headlessui/react';
-import { MoveableFab } from "@/app/components/moveable-fab";
 
 export default function Collections () {
     const params = useParams<{id: string, name: string}>();

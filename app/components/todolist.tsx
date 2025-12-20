@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 
-import { DetailPanel, FlyoutPanel, Loader, Todo } from "@/app/components";
+import { DetailPanel, FlyoutPanel, Loader, MoveableFab, Todo } from "@/app/components";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import type { Task } from "@/models";
 
@@ -29,7 +29,6 @@ import {
     SortableContext,
     verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { MoveableFab } from "./moveable-fab";
 
 export const TodoList = ({id}: { id:string}) => {
     const { saveTask, updateTask, deleteTask } = taskApiHooks(id);
@@ -406,7 +405,7 @@ export const TodoList = ({id}: { id:string}) => {
                     type="todo"
                 />
             }
-            
+
             <MoveableFab onClick={() => setIsFlyoutOpen(true)} />
         </div>
     );

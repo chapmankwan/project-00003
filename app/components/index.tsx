@@ -8,3 +8,4 @@ export * from "./session-provider";
 export * from "./todo";
 export * from "./todolist";
 export * from "./flyout-panel";
+export * from "./moveable-fab";

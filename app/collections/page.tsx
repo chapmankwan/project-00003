@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { redirect } from "next/navigation";
 import { useSession } from "next-auth/react";
 
-import { FlyoutPanel, PageHeader, Loader } from "@/app/components";
+import { FlyoutPanel, PageHeader, Loader, MoveableFab } from "@/app/components";
 import { useCollectionsApi } from "@/app/utilities/collectionApiHooks";
 
 import { Dialog, DialogPanel } from '@headlessui/react';
@@ -125,19 +125,7 @@ export default function Collections () {
                 />
             }
 
-            <button
-                ref={createNewRef}
-                onClick={() => setIsFlyoutOpen(!isFlyoutOpen)}
-                className="
-                    flex items-center justify-center 
-                    absolute bottom-4 right-4 p-2 m-2 
-                    cursor-pointer rounded-md
-                    bg-mint-500 hover:bg-mint-600
-                    data-focus:outline data-focus:outline-white data-hover:bg-black/30
-                "
-            >
-                new collection
-            </button>
+            <MoveableFab onClick={() => setIsFlyoutOpen(!isFlyoutOpen)} />
 
             <Dialog open={isDeleteDialogOpen} onClose={() => setIsDeleteDialogOpen(false)} className="relative z-50 duration-300 ease-out data-closed:opacity-0" transition>
                 <div className="fixed inset-0 flex w-screen items-center justify-center p-4 bg-black/50">
