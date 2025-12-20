@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 
-import { DetailPanel, FlyoutPanel, Loader, Todo } from "@/app/components";
+import { DetailPanel, FlyoutPanel, Loader, MoveableFab, Todo } from "@/app/components";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import type { Task } from "@/models";
 
@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 import { taskApiHooks } from "@/app/utilities/taskApiHooks";
 import { toSlug } from "@/app/utilities";
 
-import { CheckIcon, CheckCircleIcon, ChevronLeftIcon, PlusIcon, TrashIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { CheckIcon, CheckCircleIcon, ChevronLeftIcon, TrashIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import clsx from "clsx";
 
@@ -21,6 +21,7 @@ import {
     TouchSensor,
     useSensor,
     useSensors,
+    type DragEndEvent,
 } from "@dnd-kit/core";
 
 import {
@@ -45,7 +46,7 @@ export const TodoList = ({id}: { id:string}) => {
 
     const [isFlyoutOpen, setIsFlyoutOpen] = useState(false);
 
-    // drag and drop
+    // Drag n Drop
     const sensors = useSensors(
         useSensor(PointerSensor, {
             activationConstraint: {
@@ -55,13 +56,11 @@ export const TodoList = ({id}: { id:string}) => {
         useSensor(TouchSensor),
     );
 
-    // ** FIX TYPESCRIPT **
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleDragEnd = (event: any) => {
+    const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event;
-        if (active.id !== over.id) {
+        if (active.id !== over?.id) {
             const oldIndex = tasks.findIndex(t => t._id.toString() === active.id);
-            const newIndex = tasks.findIndex(t => t._id.toString() === over.id);
+            const newIndex = tasks.findIndex(t => t._id.toString() === over?.id);
             const reordered = arrayMove(tasks, oldIndex, newIndex);
             setTasks(reordered);
 
@@ -407,21 +406,7 @@ export const TodoList = ({id}: { id:string}) => {
                 />
             }
 
-            <button
-                // ref={createNewRef}
-                onClick={() => setIsFlyoutOpen(!isFlyoutOpen)}
-                className="
-                    w-12 h-12 
-                    flex items-center justify-center 
-                    absolute bottom-4 right-4 p-2 m-2 
-                    cursor-pointer rounded-full 
-                    bg-mint-500 hover:bg-mint-600
-                    drop-shadow-lg
-                    data-focus:outline data-focus:outline-white data-hover:bg-black/30
-                "
-            >
-                <PlusIcon className="size-6"/>
-            </button>
+            <MoveableFab onClick={() => setIsFlyoutOpen(true)} />
         </div>
     );
 };
