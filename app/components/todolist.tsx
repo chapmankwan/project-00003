@@ -21,6 +21,7 @@ import {
     TouchSensor,
     useSensor,
     useSensors,
+    DragEndEvent,
 } from "@dnd-kit/core";
 
 import {
@@ -46,7 +47,7 @@ export const TodoList = ({id}: { id:string}) => {
 
     const [isFlyoutOpen, setIsFlyoutOpen] = useState(false);
 
-    // drag and drop
+    // Drag n Drop
     const sensors = useSensors(
         useSensor(PointerSensor, {
             activationConstraint: {
@@ -56,13 +57,11 @@ export const TodoList = ({id}: { id:string}) => {
         useSensor(TouchSensor),
     );
 
-    // ** FIX TYPESCRIPT **
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleDragEnd = (event: any) => {
+    const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event;
-        if (active.id !== over.id) {
+        if (active.id !== over?.id) {
             const oldIndex = tasks.findIndex(t => t._id.toString() === active.id);
-            const newIndex = tasks.findIndex(t => t._id.toString() === over.id);
+            const newIndex = tasks.findIndex(t => t._id.toString() === over?.id);
             const reordered = arrayMove(tasks, oldIndex, newIndex);
             setTasks(reordered);
 
@@ -407,22 +406,7 @@ export const TodoList = ({id}: { id:string}) => {
                     type="todo"
                 />
             }
-
-            {/* <button
-                // ref={createNewRef}
-                onClick={() => setIsFlyoutOpen(!isFlyoutOpen)}
-                className="
-                    w-12 h-12 
-                    flex items-center justify-center 
-                    absolute bottom-4 right-4 p-2 m-2 
-                    cursor-pointer rounded-full 
-                    bg-mint-500 hover:bg-mint-600
-                    drop-shadow-lg
-                    data-focus:outline data-focus:outline-white data-hover:bg-black/30
-                "
-            >
-                <PlusIcon className="size-6"/>
-            </button> */}
+            
             <MoveableFab onClick={() => setIsFlyoutOpen(true)} />
         </div>
     );

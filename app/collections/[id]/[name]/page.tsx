@@ -6,7 +6,7 @@ import { useSession } from "next-auth/react";
 import { Card, PageHeader, Loader, FlyoutPanel } from "@/app/components";
 import type { TodoListModel } from "@/models";
 import { Dialog, DialogPanel } from '@headlessui/react';
-import { PlusIcon } from "@heroicons/react/24/outline";
+import { MoveableFab } from "@/app/components/moveable-fab";
 
 export default function Collections () {
     const params = useParams<{id: string, name: string}>();
@@ -101,20 +101,7 @@ export default function Collections () {
         <section className="flex flex-1 flex-col items-center h-[calc(100dvh-72px)]">
             <PageHeader title={`Collection: ${decodeURIComponent(params.name)}`}/>
 
-            <button
-                ref={createNewRef}
-                onClick={() => setIsFlyoutOpen(!isFlyoutOpen)}
-                className="
-                    w-12 h-12 
-                    flex items-center justify-center 
-                    absolute bottom-4 right-4 p-2 m-2 
-                    cursor-pointer rounded-full 
-                    bg-mint-500 hover:bg-mint-600
-                    data-focus:outline data-focus:outline-white data-hover:bg-black/30
-                "
-            >
-                <PlusIcon className="size-6"/>
-            </button>
+            <MoveableFab onClick={() => setIsFlyoutOpen(!isFlyoutOpen)} />
             {
                 loading ? 
                 <Loader /> :
