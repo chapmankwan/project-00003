@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 import { taskApiHooks } from "@/app/utilities/taskApiHooks";
 import { toSlug } from "@/app/utilities";
 
-import { CheckIcon, CheckCircleIcon, ChevronLeftIcon, PlusIcon, TrashIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { CheckIcon, CheckCircleIcon, ChevronLeftIcon, TrashIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import clsx from "clsx";
 
@@ -28,6 +28,7 @@ import {
     SortableContext,
     verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import { MoveableFab } from "./moveable-fab";
 
 export const TodoList = ({id}: { id:string}) => {
     const { saveTask, updateTask, deleteTask } = taskApiHooks(id);
@@ -407,7 +408,7 @@ export const TodoList = ({id}: { id:string}) => {
                 />
             }
 
-            <button
+            {/* <button
                 // ref={createNewRef}
                 onClick={() => setIsFlyoutOpen(!isFlyoutOpen)}
                 className="
@@ -421,7 +422,8 @@ export const TodoList = ({id}: { id:string}) => {
                 "
             >
                 <PlusIcon className="size-6"/>
-            </button>
+            </button> */}
+            <MoveableFab onClick={() => setIsFlyoutOpen(true)} />
         </div>
     );
 };
