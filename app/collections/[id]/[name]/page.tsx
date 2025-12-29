@@ -6,7 +6,6 @@ import { useSession } from "next-auth/react";
 import { Card, PageHeader, Loader, FlyoutPanel, MoveableFab } from "@/app/components";
 import type { TodoListModel } from "@/models";
 import { Dialog, DialogPanel } from '@headlessui/react';
-import clsx from "clsx";
 
 export default function Collections () {
     const params = useParams<{id: string, name: string}>();
@@ -105,18 +104,7 @@ export default function Collections () {
             {
                 loading ? 
                 <Loader /> :
-                <ul 
-                    className={clsx(
-                        "space-y-2 w-[90%] lg:w-2/3 mx-3 rounded-md flex-grow h-full overflow-y-auto touch-pan-y",
-                        "[&::-webkit-scrollbar]:w-1",
-                        "[&::-webkit-scrollbar-track]:bg-transparent",
-                        "[&::-webkit-scrollbar-thumb]:rounded-full",
-                        "[&::-webkit-scrollbar-thumb]:bg-mono-400/40",
-                        "[&::-webkit-scrollbar-thumb]:transition-all",
-                        "[&::-webkit-scrollbar-thumb]:duration-200",
-                        "[&::-webkit-scrollbar-thumb]:ease-out",
-                        "[&::-webkit-scrollbar-thumb:hover]:bg-mono-400/60",
-                    )}>
+                <ul className="space-y-2 w-[90%] lg:w-2/3 mx-3 rounded-md flex-grow h-full overflow-y-auto touch-pan-y scrollbar-soft">
                     {
                         allTaskLists.length > 0 &&
                         allTaskLists.map( (taskList, index) => {

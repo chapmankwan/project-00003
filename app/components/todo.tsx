@@ -75,7 +75,7 @@ export const Todo = ({
             style={draggingStyle}
             {...attributes}
             className={clsx(
-                "flex items-center bg-mono-600 hover:bg-mono-500 p-2 gap-2 cursor-pointer border border-t-0 border-r-0 border-l-0 border-solid border-mono-800",
+                "flex items-center bg-mono-700 hover:bg-mono-600 p-2 gap-2 cursor-pointer border border-t-0 border-r-0 border-l-0 border-solid border-mono-800",
                 index === 0 && "rounded-t-md",
                 isLast && "rounded-b-md border-b-0",
             )}
