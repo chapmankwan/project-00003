@@ -46,7 +46,7 @@ export const Card = ({
                     (haveTasks && completedMatchesTotal) 
                         ? "bg-mint-900 hover:bg-mint-800" 
                         : "bg-mono-700 hover:bg-mono-600",
-                    "flex items-center first:mt-0 last:mb-0 p-3 h-16 rounded-2xl gap-1 cursor-pointer",
+                    "flex items-center first:mt-0 last:mb-0 p-3 h-16 rounded-2xl gap-1 cursor-pointer mx-0.5",
                 )}
         >
             <PriorityIcon priority={taskList.priority} />
