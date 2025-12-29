@@ -94,10 +94,6 @@ export default function Collections () {
                                                 "empty"
                                             }   
                                         </p>
-                                        {/* <div className={clsx(
-                                            collection.priority === "minor" && "text-mint-400",
-                                            collection.priority === "major" && "text-red-700",
-                                        )}>{collection.priority}</div> */}
                                     </div>
 
                                     <button 
