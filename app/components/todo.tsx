@@ -141,7 +141,7 @@ export const Todo = ({
 
             <Menu>
                 <MenuButton 
-                    className="inline-flex p-2 rounded cursor-pointer hover:bg-mono-600 md:hidden" 
+                    className="inline-flex p-2 rounded cursor-pointer hover:bg-mono-700 md:hidden" 
                     onClick={handleOpenDetails}
                 >
                     <EllipsisVerticalIcon className="size-6"/>
@@ -151,7 +151,7 @@ export const Todo = ({
             <div className="ml-auto hidden md:block">
                 <Menu>
                     <MenuButton 
-                        className="inline-flex p-2 rounded cursor-pointer hover:bg-mono-600" 
+                        className="inline-flex p-2 rounded cursor-pointer hover:bg-mono-700" 
                         onClick={stopPropagation}
                     >
                         <EllipsisVerticalIcon className="size-6"/>
@@ -160,7 +160,7 @@ export const Todo = ({
                     <MenuItems
                         transition
                         anchor={index === 0 ? "left start" : isLast ? "left end" : "left"}
-                        className="origin-top-right bg-mono-700 w-28 rounded-md hidden md:block"
+                        className="origin-top-right bg-mono-500 w-28 rounded-md drop-shadow-md drop-shadow-mono-800 hidden md:block"
                         onClick={stopPropagation}
                     >
                         <MenuItem>

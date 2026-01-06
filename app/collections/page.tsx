@@ -74,7 +74,7 @@ export default function Collections () {
                                 href={`/collections/${collection._id}/${collection.name}`}
                                 className="
                                     bg-mono-700 hover:bg-mono-600
-                                    flex items-center first:mt-0 last:mb-0 p-3 rounded-sm gap-3 cursor-pointer"
+                                    flex items-center first:mt-0 last:mb-0 p-3 h-16 rounded-2xl gap-1 cursor-pointer mx-0.5"
                             >
                                 <span className="flex-1">{decodeURIComponent(collection.name)}</span>
 

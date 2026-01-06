@@ -1,4 +1,3 @@
-import React from "react";
 import Link from "next/link";
 
 import type { TodoListModel } from "@/models"
@@ -15,7 +14,6 @@ interface CardModel {
     taskList: TodoListModel;
     duplicateTask: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
-
 
 export const Card = ({
     setIsDeleteDialog,
@@ -50,7 +48,7 @@ export const Card = ({
                 )}
         >
             <PriorityIcon priority={taskList.priority} />
-            <span className="flex-1 text-nowrap text-ellipsis">{taskList.title}</span>
+            <span className="flex-1 text-nowrap text-ellipsis">{decodeURIComponent(taskList.title)}</span>
 
             <div className="flex flex-[0.5] items-center gap-2 justify-end">
                 <div className="flex flex-col text-xs items-end w-full">

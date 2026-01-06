@@ -1,23 +1,34 @@
 "use client"
 import { useCallback, useEffect, useRef, useState } from "react";
-import { redirect, useParams } from "next/navigation";
+import { redirect, useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 import { Card, PageHeader, Loader, FlyoutPanel, MoveableFab } from "@/app/components";
 import type { TodoListModel } from "@/models";
+
 import { Dialog, DialogPanel } from '@headlessui/react';
+import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
+
 
 export default function Collections () {
     const params = useParams<{id: string, name: string}>();
     const { status } = useSession();
+
+    const router = useRouter();
+    
     const [allTaskLists, setAllTaskLists] = useState<TodoListModel[]>([])
     const [loading, setLoading] = useState(true);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [selectedTaskListId, setSelectedTaskListId] = useState("");
+    const [collectionName, setCollectionName] = useState(params.name);
 
     const [isFlyoutOpen, setIsFlyoutOpen] = useState(false);
 
+    const [isEditingCollectionName, setIsEditingCollectionName] = useState(false);
+    const [editCollectionName, setEditCollectionName] = useState(decodeURIComponent(params.name));;
+
     const createNewRef = useRef<HTMLButtonElement>(null)
+    const collectionNameInputRef = useRef<HTMLInputElement>(null);
     
     if ( status === "unauthenticated" ) redirect("/");
     
@@ -37,13 +48,19 @@ export default function Collections () {
     useEffect( () => {
         // Only fetch for initial mount
         fetchLists();
-        setLoading(false);
+        const timer = setTimeout( () => setLoading(false), 500 );
+
+        return () => clearTimeout(timer);
     },[fetchLists]);
     
     useEffect(() => {
         // only focus on the create new button if there are no tasklists
         if( createNewRef.current && !(allTaskLists.length > 0)) createNewRef.current.focus();
     }, [allTaskLists])
+
+    useEffect(() => {
+        if( collectionNameInputRef.current ) collectionNameInputRef.current.focus();
+    },[isEditingCollectionName])
 
     const handleDelete = async (listId: string) => {
         if (!listId.length) return;
@@ -96,9 +113,66 @@ export default function Collections () {
         duplicateTaskHandler(listId);
     };
 
+    const handleAcceptCollectionNameChange = async () => {
+        if (editCollectionName === params.name || !editCollectionName.length) return setIsEditingCollectionName(false);
+        try {
+            const update = {
+                id: params.id,
+                newCollectionName: editCollectionName
+            };
+
+            const collectionNameChangeResponse = await fetch("/api/collections/", {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(update),
+            });
+
+            if (!collectionNameChangeResponse.ok) throw new Error("There was an issue with changing the collection name");
+
+            setCollectionName(update.newCollectionName);
+            router.push(`/collections/${params.id}/${editCollectionName}`);
+        } catch (err) {
+            console.error("There was an error with changing the collection name", err);
+        }
+        setIsEditingCollectionName(false);
+    }
+
+    const handleCancelCollectionNameChange = () => {
+        setIsEditingCollectionName(false);
+        setEditCollectionName(decodeURIComponent(params.name));
+    };
+
+    const handleEditCollectionNameKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        switch (event.key) {
+            case 'Enter':
+                handleAcceptCollectionNameChange();
+                break;
+            case 'Escape': 
+                handleCancelCollectionNameChange();
+                break;
+        };
+    }
+
     return (
         <section className="flex flex-1 flex-col items-center h-[calc(100dvh-72px)]">
-            <PageHeader title={`Collection: ${decodeURIComponent(params.name)}`}/>
+            {
+                !isEditingCollectionName ?
+                <PageHeader onClick={() => setIsEditingCollectionName(true)} title={`Collection: ${decodeURIComponent(collectionName)}`}/> :
+                <div className="flex gap-2 items-center w-full px-7 py-5 max-h-[72px]">
+                    <input 
+                        ref={collectionNameInputRef}
+                        className="border border-solid border-mint-400 rounded outline-0 m-0 p-1 w-full font-bold text-xl"
+                        type="text"
+                        value={editCollectionName}
+                        onChange={e => setEditCollectionName(e.target.value)}
+                        placeholder="change collection name"
+                        required
+                        onKeyDown={handleEditCollectionNameKeyDown}
+                    />
+                    <CheckIcon className="size-6 hover:text-mint-500 cursor-pointer" onClick={handleAcceptCollectionNameChange}/>
+                    <XMarkIcon className="size-6 hover:text-red-400 cursor-pointer" onClick={handleCancelCollectionNameChange}/>
+                </div>
+            }
 
             <MoveableFab onClick={() => setIsFlyoutOpen(!isFlyoutOpen)} />
             {
