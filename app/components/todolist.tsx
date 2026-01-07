@@ -103,7 +103,7 @@ export const TodoList = ({id}: { id:string}) => {
         }, 500);
 
         return () => clearTimeout(timer);
-    }, [id]);
+    }, [id, listTitle]);
     
     // this hook allows user to scroll to latest task after adding
     useEffect(() => {
@@ -340,7 +340,7 @@ export const TodoList = ({id}: { id:string}) => {
                             type="text" 
                             value={editTitle} 
                             onChange={e => setEditTitle(e.target.value)} 
-                            className="border border-solid border-mint-400 rounded outline-0 p-1 w-full font-bold"
+                            className="border border-solid border-mint-400 rounded outline-0 p-1 w-full font-bold max-h-8"
                             placeholder="change title"
                             required
                         />
