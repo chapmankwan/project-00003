@@ -75,7 +75,7 @@ export const Todo = ({
             style={draggingStyle}
             {...attributes}
             className={clsx(
-                "flex items-center bg-mono-600 hover:bg-mono-500 p-2 gap-2 cursor-pointer border border-t-0 border-r-0 border-l-0 border-solid border-mono-800",
+                "flex items-center bg-mono-700 hover:bg-mono-600 p-2 gap-2 cursor-pointer border border-t-0 border-r-0 border-l-0 border-solid border-mono-800",
                 index === 0 && "rounded-t-md",
                 isLast && "rounded-b-md border-b-0",
             )}
@@ -141,7 +141,7 @@ export const Todo = ({
 
             <Menu>
                 <MenuButton 
-                    className="inline-flex p-2 rounded cursor-pointer hover:bg-mono-600 md:hidden" 
+                    className="inline-flex p-2 rounded cursor-pointer hover:bg-mono-700 md:hidden" 
                     onClick={handleOpenDetails}
                 >
                     <EllipsisVerticalIcon className="size-6"/>
@@ -151,7 +151,7 @@ export const Todo = ({
             <div className="ml-auto hidden md:block">
                 <Menu>
                     <MenuButton 
-                        className="inline-flex p-2 rounded cursor-pointer hover:bg-mono-600" 
+                        className="inline-flex p-2 rounded cursor-pointer hover:bg-mono-700" 
                         onClick={stopPropagation}
                     >
                         <EllipsisVerticalIcon className="size-6"/>
@@ -160,7 +160,7 @@ export const Todo = ({
                     <MenuItems
                         transition
                         anchor={index === 0 ? "left start" : isLast ? "left end" : "left"}
-                        className="origin-top-right bg-mono-700 w-28 rounded-md hidden md:block"
+                        className="origin-top-right bg-mono-500 w-28 rounded-md drop-shadow-md drop-shadow-mono-800 hidden md:block"
                         onClick={stopPropagation}
                     >
                         <MenuItem>

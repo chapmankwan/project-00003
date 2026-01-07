@@ -66,14 +66,7 @@ export default function Collections () {
             {
                 loading ? 
                 <Loader /> :
-                <ul className="
-                    w-[90%] md:w-2/3 flex-grow overflow-y-auto overflow-x-hidden mb-4 flex flex-col gap-1.5
-                    [&::-webkit-scrollbar]:w-2
-                    [&::-webkit-scrollbar-track]:rounded-full
-                    [&::-webkit-scrollbar-track]:bg-mono-300
-                    [&::-webkit-scrollbar-thumb]:rounded-full
-                    [&::-webkit-scrollbar-thumb]:bg-mint-600
-                ">
+                <ul className="w-[90%] md:w-2/3 flex-grow overflow-y-auto overflow-x-hidden mb-4 flex flex-col gap-1.5 scrollbar-soft">
                     {
                         collections.map( (collection, index) => (
                             <Link 
@@ -81,7 +74,7 @@ export default function Collections () {
                                 href={`/collections/${collection._id}/${collection.name}`}
                                 className="
                                     bg-mono-700 hover:bg-mono-600
-                                    flex items-center first:mt-0 last:mb-0 p-3 rounded-sm gap-3 cursor-pointer"
+                                    flex items-center first:mt-0 last:mb-0 p-3 h-16 rounded-2xl gap-1 cursor-pointer mx-0.5"
                             >
                                 <span className="flex-1">{decodeURIComponent(collection.name)}</span>
 
@@ -94,10 +87,6 @@ export default function Collections () {
                                                 "empty"
                                             }   
                                         </p>
-                                        {/* <div className={clsx(
-                                            collection.priority === "minor" && "text-mint-400",
-                                            collection.priority === "major" && "text-red-700",
-                                        )}>{collection.priority}</div> */}
                                     </div>
 
                                     <button 

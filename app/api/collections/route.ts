@@ -55,3 +55,32 @@ export async function POST(req: NextRequest) {
         console.error( "POST /api/collections error", err)
     };
 };
+
+export async function PATCH(req: NextRequest) {
+    try {
+        const session = await getServerSession( authOptions );
+        if (!session?.user?.email) return NextResponse.json( {error: "Unauthorized" }, { status: 401 });
+
+        await connectToDatabase();
+        
+        const { id, newCollectionName } = await req.json();
+
+        const userId = new mongoose.Types.ObjectId(session.user.id);
+
+        const updatedCollection = await Collection.findOneAndUpdate(
+            {_id: id.toString(), userId: userId },
+            { $set: {name: newCollectionName} },
+            { new: true },
+        );
+
+        if (!updatedCollection) return NextResponse.json( {message: "collection or user not found"}, {status: 404} );
+
+        return NextResponse.json( {
+            message: "Collection name updated successfully",
+            updatedCollection,
+        }, { status: 200 })
+    } catch (err) {
+        console.error("Error with updating the collection name", err);
+        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    };
+};
