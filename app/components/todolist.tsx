@@ -389,6 +389,7 @@ export const TodoList = ({id}: { id:string}) => {
                     onClose={closeDetails}
                     deleteTask={() => handleDeleteTask(selectedTask)}
                     updateTask={({text, priority, description}) => handleUpdateTask(selectedTask, {text, priority, description})}
+                    listId={id}
                 />
             )}
 

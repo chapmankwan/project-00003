@@ -7,6 +7,7 @@ import { PencilSquareIcon, PlusIcon, TrashIcon, XMarkIcon } from "@heroicons/rea
 
 import clsx from "clsx";
 import { Types } from "mongoose";
+import { subTaskApiHooks } from "@/app/utilities/subTaskApiHooks";
 
 interface DetailPanelModel {
     deleteTask: (taskId: Types.ObjectId) => void;
@@ -17,6 +18,7 @@ interface DetailPanelModel {
         priority: string,
         description?: string
     }) => Promise<void>;
+    listId: string;
 };
 
 export const DetailPanel =({
@@ -24,7 +26,11 @@ export const DetailPanel =({
     task,
     onClose,
     updateTask,
+    listId,
 }: DetailPanelModel) => {
+    const { saveSubTask } = subTaskApiHooks(listId, task._id)
+
+    console.log("+++listId and taskId", listId, task._id.toString())
 
     const [isVisible, setIsVisible] = useState(false);
     const [addingSubTask, setAddingSubTask] = useState(false);
@@ -33,6 +39,7 @@ export const DetailPanel =({
 
     const [subTaskList, setSubTaskList] = useState<{ _id: string; text: string; completed: boolean; }[]>([]);
     const [subTaskInput, setSubTaskInput] = useState("");
+    const [subTaskLoading, setSubTaskLoading] = useState(true);
 
     const [isEditingTask, setIsEditingTask] = useState(false);
     const [editTaskInput, setEditTaskInput] = useState("");
@@ -53,19 +60,82 @@ export const DetailPanel =({
         }
     },[addingSubTask]);
 
-    const handleAddSubTask = () => {
-        if (subTaskInput.length > 0) {
-            const newSubTask = {
-                _id: `${subTaskInput}`,
+    const handleAddSubTask = async () => {
+        try {
+            const update = {
                 text: subTaskInput,
                 completed: false,
             };
 
-            setSubTaskList([...subTaskList, newSubTask]);
-            // reset input after adding a subTask
+            const newSubTask = await saveSubTask(update)
+
+            setSubTaskList([...subTaskList, newSubTask])
             setSubTaskInput("");
-        }
+
+        } catch (err) {
+            console.error("Failed to add subtask", err);
+        };
     };
+
+    const handleUpdateSubTask = async (event: React.ChangeEvent<HTMLInputElement>, subTask: {_id: string; completed: boolean; }) => {
+        if (!subTask) return;
+        const res = await fetch(
+            `/api/todo-lists/${listId}/tasks/${task._id}/subtasks/${subTask._id}`,
+            {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    completed: !subTask.completed,
+                }),
+            }
+        );
+
+        if (!res.ok) throw new Error("Failed to update subtask");
+
+        const updated = await res.json();
+
+        setSubTaskList(prev =>
+            prev.map(st => (st._id === updated._id ? updated : st))
+        );
+        // const subTask = subTaskList.find( subTask => subTask._id === _id );
+
+        // if (!subTask) return;
+
+        // // // Optimistic update visually
+        // // setSubTaskList((prev) => 
+        // //     prev.map((st) => 
+        // //         st._id === _id
+        // //             ? { ...st, completed: !subTask.completed }
+        // //             : st
+        // //     )
+        // // );
+
+        // try {
+        //     if (!subTask) return;
+        //     const update = {
+        //         _id: subTask._id,
+        //         text: subTask.text,
+        //         completed: !subTask.completed
+        //     };
+
+        //     const updatedSubTask = await updateSubTask(update)
+
+        //     console.log("+++ updatedSubTask", updatedSubTask);
+            
+        //     // Finalize from backend
+        //     setSubTaskList((prev) => {
+        //         return (
+        //             prev.map( st => {
+        //                 return (
+        //                     st._id.toString() === updatedSubTask._id?.toString() ? updatedSubTask : st
+        //                 )
+        //             })
+        //         )
+        //     });
+        // } catch (err) {
+        //     console.error("Failed to update subtask", err);
+        // }
+    }
 
     const keyDownHandler = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === "Enter" && subTaskInput.length > 0 ) {
@@ -76,8 +146,32 @@ export const DetailPanel =({
     useEffect(() => {
         // Animate in after mount
         const timer = setTimeout(() => setIsVisible(true), 10);
+
         return () => clearTimeout(timer);
+        
     }, []);
+
+    useEffect( () => {
+        const timer = setTimeout( async () => {
+            try {
+                const res = await fetch(`/api/todo-lists/${listId}/tasks/${task._id}/subtasks`);
+
+                if (!res.ok) throw new Error("Failed to get subtasks");
+    
+                const subTaskList = await res.json();
+
+                console.log("+++ subTaskList", subTaskList);
+    
+                setSubTaskList(subTaskList);
+                setSubTaskLoading(false);
+    
+            } catch (err) {
+                console.error("There was an error loading the tasks, check logs", err);
+            }
+        }, 1000);
+        return () => clearTimeout(timer);
+
+    }, [task._id, listId])
 
     useEffect(() => {
         setEditTaskInput(task.text);
@@ -92,23 +186,6 @@ export const DetailPanel =({
     const handleDeleteTask = () => {
         deleteTask(task._id);
         handleClose();
-    };
-
-    const handleUpdateSubtask = (subTaskId: string) => {
-        setSubTaskList( (prevList) => {
-            return (
-                prevList.map( subTask => {
-                    return (
-                        subTask._id === subTaskId ? {...subTask, completed: !subTask.completed} : subTask
-                    )
-                })
-            )
-        })
-    };
-
-    const handleRemoveSubTask = (event: React.MouseEvent<HTMLButtonElement>, subTaskId: string) => {
-        event.stopPropagation();
-        setSubTaskList(subTaskList.filter( subTask => subTask._id !== subTaskId));
     };
 
     const handleEditTask = () => {
@@ -253,20 +330,23 @@ export const DetailPanel =({
                         <ul className="overflow-y-auto h-fit">
                             <p className="">Subtasks: </p>
                             {
+                                subTaskLoading ? 
+                                <p>loading...</p>
+                                :
                                 subTaskList.map( (subTask, index) => (
                                     <li 
                                         key={index}
                                         className={clsx("flex gap-2 cursor-pointer hover:bg-mono-600 border border-solid border-mono-400 px-2 py-1", index !== 0 && "border-t-0")}
-                                        onClick={() => handleUpdateSubtask(subTask._id)}
+                                        // onClick={() => handleUpdateSubtask(subTask._id)}
                                     >
                                         <input 
                                             checked={subTask.completed}
-                                            onChange={() => handleUpdateSubtask(subTask._id)}
+                                            onChange={(event) => handleUpdateSubTask(event, subTask)}
                                             type="checkbox" 
                                         />
                                         <span>{subTask.text}</span>
                                         <button 
-                                            onClick={(event) => handleRemoveSubTask(event, subTask._id)}
+                                            // onClick={(event) => handleRemoveSubTask(event, subTask._id)}
                                             className="ml-auto text-red-500 cursor-pointer"
                                         >
                                             <XMarkIcon className="size-4"/>

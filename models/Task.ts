@@ -1,6 +1,21 @@
 // This breaks
 import mongoose from "mongoose";
 
+const SubTaskSchema = new mongoose.Schema({
+    text: {
+        type: String,
+        required: true,
+        trim: true,
+    },
+    completed: {
+        type: Boolean,
+        default: false,
+    },
+    order: {
+        type: Number,
+    }
+}, { _id: true });
+
 const TaskSchema = new mongoose.Schema({
     text: { 
         type: String, 
@@ -27,6 +42,7 @@ const TaskSchema = new mongoose.Schema({
         default: "moderate",
     },
     description: { type: String },
+    subTasks: [SubTaskSchema]
 }); 
 
 export default mongoose.models.Task || mongoose.model("Task", TaskSchema);
