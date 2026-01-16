@@ -30,8 +30,6 @@ export const DetailPanel =({
 }: DetailPanelModel) => {
     const { saveSubTask } = subTaskApiHooks(listId, task._id)
 
-    console.log("+++listId and taskId", listId, task._id.toString())
-
     const [isVisible, setIsVisible] = useState(false);
     const [addingSubTask, setAddingSubTask] = useState(false);
     const [taskTitle, setTaskTitle] = useState(task.text);
@@ -77,8 +75,18 @@ export const DetailPanel =({
         };
     };
 
-    const handleUpdateSubTask = async (event: React.ChangeEvent<HTMLInputElement>, subTask: {_id: string; completed: boolean; }) => {
+    const handleUpdateSubTask = async (subTask: {_id: string; completed: boolean; }) => {
         if (!subTask) return;
+        
+        // Optimistic update visually
+        setSubTaskList(prev =>
+            prev.map((st) => 
+                st._id === subTask._id
+                    ? { ...st, completed: !subTask.completed, }
+                    : st
+            )
+        );
+
         const res = await fetch(
             `/api/todo-lists/${listId}/tasks/${task._id}/subtasks/${subTask._id}`,
             {
@@ -331,7 +339,7 @@ export const DetailPanel =({
                             <p className="">Subtasks: </p>
                             {
                                 subTaskLoading ? 
-                                <p>loading...</p>
+                                <p className="p-1">loading...</p>
                                 :
                                 subTaskList.map( (subTask, index) => (
                                     <li 
@@ -341,7 +349,7 @@ export const DetailPanel =({
                                     >
                                         <input 
                                             checked={subTask.completed}
-                                            onChange={(event) => handleUpdateSubTask(event, subTask)}
+                                            onChange={() => handleUpdateSubTask(subTask)}
                                             type="checkbox" 
                                         />
                                         <span>{subTask.text}</span>
