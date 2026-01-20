@@ -43,7 +43,25 @@ export const subTaskApiHooks = (listId: string, taskId: Types.ObjectId) => {
         }
     };
 
+    const deleteSubTask = async (subTaskId: string) => {
+        try {
+            const response = await fetch(`/api/todo-lists/${listId}/tasks/${taskId}/subtasks/${subTaskId}`, {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ subTaskId })
+            });
+
+            if (!response.ok) throw new Error("Failed to delete task");
+
+            return response.json();
+        } catch (err) {
+            console.error("Error deleting the subtask", err)
+            throw err;
+        }
+    }
+
     return {
+        deleteSubTask,
         saveSubTask,
         updateSubTask,
     };

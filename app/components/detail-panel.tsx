@@ -28,7 +28,7 @@ export const DetailPanel =({
     updateTask,
     listId,
 }: DetailPanelModel) => {
-    const { saveSubTask } = subTaskApiHooks(listId, task._id)
+    const { saveSubTask, deleteSubTask } = subTaskApiHooks(listId, task._id)
 
     const [isVisible, setIsVisible] = useState(false);
     const [addingSubTask, setAddingSubTask] = useState(false);
@@ -105,44 +105,6 @@ export const DetailPanel =({
         setSubTaskList(prev =>
             prev.map(st => (st._id === updated._id ? updated : st))
         );
-        // const subTask = subTaskList.find( subTask => subTask._id === _id );
-
-        // if (!subTask) return;
-
-        // // // Optimistic update visually
-        // // setSubTaskList((prev) => 
-        // //     prev.map((st) => 
-        // //         st._id === _id
-        // //             ? { ...st, completed: !subTask.completed }
-        // //             : st
-        // //     )
-        // // );
-
-        // try {
-        //     if (!subTask) return;
-        //     const update = {
-        //         _id: subTask._id,
-        //         text: subTask.text,
-        //         completed: !subTask.completed
-        //     };
-
-        //     const updatedSubTask = await updateSubTask(update)
-
-        //     console.log("+++ updatedSubTask", updatedSubTask);
-            
-        //     // Finalize from backend
-        //     setSubTaskList((prev) => {
-        //         return (
-        //             prev.map( st => {
-        //                 return (
-        //                     st._id.toString() === updatedSubTask._id?.toString() ? updatedSubTask : st
-        //                 )
-        //             })
-        //         )
-        //     });
-        // } catch (err) {
-        //     console.error("Failed to update subtask", err);
-        // }
     }
 
     const keyDownHandler = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -167,8 +129,6 @@ export const DetailPanel =({
                 if (!res.ok) throw new Error("Failed to get subtasks");
     
                 const subTaskList = await res.json();
-
-                console.log("+++ subTaskList", subTaskList);
     
                 setSubTaskList(subTaskList);
                 setSubTaskLoading(false);
@@ -205,6 +165,17 @@ export const DetailPanel =({
         setTaskTitle(editTaskInput);
         setIsEditingTask(false);
     };
+
+    const handleDeleteSubTask = async (subTaskId: string) => {
+        if (!subTaskId) return;
+        try {
+            await deleteSubTask(subTaskId);
+
+            setSubTaskList( prevSubTasks => prevSubTasks.filter(st => st._id?.toString() !== subTaskId))
+        } catch (err) {
+            console.error("Error deleting subtask", err);
+        };
+    }
 
     return (
         <section className="fixed inset-0 z-40">
@@ -286,8 +257,13 @@ export const DetailPanel =({
                             <textarea rows={5} className="p-2 border border-solid border-mono-400 rounded-md h-50" value={descriptionInput} onChange={e => setDescriptionInput(e.target.value)}/>
                         }
                         {
-                            task.description && task.description.length > 0 && !isEditingTask &&
-                            <p className="border border-solid border-mono-500 p-2 rounded-md whitespace-pre-wrap">{task.description}</p>
+                            task.description 
+                            && task.description.length > 0 
+                            && !isEditingTask 
+                            && 
+                            <p className="border border-solid border-mono-500 p-2 rounded-md whitespace-pre-wrap">
+                                {task.description}
+                            </p>
                         }
                     </div>
 
@@ -334,7 +310,7 @@ export const DetailPanel =({
                         }
                     </div>
 
-                    <div className="subtask container">
+                    <div className="details-container">
                         <ul className="overflow-y-auto h-fit">
                             <p className="">Subtasks: </p>
                             {
@@ -345,7 +321,7 @@ export const DetailPanel =({
                                     <li 
                                         key={index}
                                         className={clsx("flex gap-2 cursor-pointer hover:bg-mono-600 border border-solid border-mono-400 px-2 py-1", index !== 0 && "border-t-0")}
-                                        // onClick={() => handleUpdateSubtask(subTask._id)}
+                                        onClick={() => handleUpdateSubTask(subTask)}
                                     >
                                         <input 
                                             checked={subTask.completed}
@@ -354,7 +330,7 @@ export const DetailPanel =({
                                         />
                                         <span>{subTask.text}</span>
                                         <button 
-                                            // onClick={(event) => handleRemoveSubTask(event, subTask._id)}
+                                            onClick={() => handleDeleteSubTask(subTask._id)}
                                             className="ml-auto text-red-500 cursor-pointer"
                                         >
                                             <XMarkIcon className="size-4"/>
