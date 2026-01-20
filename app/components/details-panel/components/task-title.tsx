@@ -2,15 +2,18 @@ import { useState } from "react";
 import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
 
 interface TaskTitleProps {
+    isEditing: boolean;
+    setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
     taskTitle: string;
     deleteTask: () => void;
-}
+};
 
 export const TaskTitle = ({
+    isEditing,
+    setIsEditing,
     taskTitle,
     deleteTask
 }: TaskTitleProps) => {
-    const [isEditing, setIsEditing] = useState(false);
     const [editTaskInput, setEditTaskInput] = useState(taskTitle);
 
     return (

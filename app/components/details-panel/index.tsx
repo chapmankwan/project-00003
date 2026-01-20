@@ -1,14 +1,13 @@
 "use client"
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Task } from "@/models";
 
-import { PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 
 import clsx from "clsx";
 import { Types } from "mongoose";
-import { subTaskApiHooks } from "@/app/utilities/subTaskApiHooks";
-import { TaskTitle } from "./components/task-title";
+import { DescriptionBox, PriorityBox, SubTasks, TaskTitle } from "@/app/components/details-panel/components";
 
 interface DetailPanelModel {
     deleteTask: (taskId: Types.ObjectId) => void;
@@ -29,91 +28,17 @@ export const DetailsPanel =({
     updateTask,
     listId,
 }: DetailPanelModel) => {
-    const { saveSubTask, deleteSubTask } = subTaskApiHooks(listId, task._id)
 
     const [isVisible, setIsVisible] = useState(false);
-    const [addingSubTask, setAddingSubTask] = useState(false);
     const [taskTitle, setTaskTitle] = useState(task.text);
     const [descriptionInput, setDescriptionInput] = useState(task.description || "")
 
-    const [subTaskList, setSubTaskList] = useState<{ _id: string; text: string; completed: boolean; }[]>([]);
-    const [subTaskInput, setSubTaskInput] = useState("");
-    const [subTaskLoading, setSubTaskLoading] = useState(true);
 
     const [isEditingTask, setIsEditingTask] = useState(false);
     const [editTaskInput, setEditTaskInput] = useState("");
 
-        /* Priority List Selection */
-    const priorityList = ["minor", "moderate", "major"];
     const [selectedPriority, setSelectedPriority] = useState<string>(task.priority);
-    const priorityButtonHandler = (priority: string) => {
-        setSelectedPriority(priority);
-    };
 
-    const subTaskInputRef = useRef<HTMLInputElement>(null);
-
-    useEffect(() => {
-        if (subTaskInputRef.current) {
-            subTaskInputRef.current.scrollIntoView({ behavior: 'smooth'});
-            subTaskInputRef.current.focus();
-        }
-    },[addingSubTask]);
-
-    const handleAddSubTask = async () => {
-        try {
-            const update = {
-                text: subTaskInput,
-                completed: false,
-            };
-
-            const newSubTask = await saveSubTask(update)
-
-            setSubTaskList([...subTaskList, newSubTask])
-            setSubTaskInput("");
-
-        } catch (err) {
-            console.error("Failed to add subtask", err);
-        };
-    };
-
-    const handleUpdateSubTask = async (subTask: {_id: string; completed: boolean; }) => {
-        if (!subTask) return;
-        
-        // Optimistic update visually
-        setSubTaskList(prev =>
-            prev.map((st) => 
-                st._id === subTask._id
-                    ? { ...st, completed: !subTask.completed, }
-                    : st
-            )
-        );
-
-        const res = await fetch(
-            `/api/todo-lists/${listId}/tasks/${task._id}/subtasks/${subTask._id}`,
-            {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    completed: !subTask.completed,
-                }),
-            }
-        );
-
-        if (!res.ok) throw new Error("Failed to update subtask");
-
-        const updated = await res.json();
-
-        setSubTaskList(prev =>
-            prev.map(st => (st._id === updated._id ? updated : st))
-        );
-    }
-
-    const keyDownHandler = (event: React.KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === "Enter" && subTaskInput.length > 0 ) {
-            handleAddSubTask();
-        };
-    };
-    
     useEffect(() => {
         // Animate in after mount
         const timer = setTimeout(() => setIsVisible(true), 10);
@@ -121,26 +46,6 @@ export const DetailsPanel =({
         return () => clearTimeout(timer);
         
     }, []);
-
-    useEffect( () => {
-        const timer = setTimeout( async () => {
-            try {
-                const res = await fetch(`/api/todo-lists/${listId}/tasks/${task._id}/subtasks`);
-
-                if (!res.ok) throw new Error("Failed to get subtasks");
-    
-                const subTaskList = await res.json();
-    
-                setSubTaskList(subTaskList);
-                setSubTaskLoading(false);
-    
-            } catch (err) {
-                console.error("There was an error loading the tasks, check logs", err);
-            }
-        }, 1000);
-        return () => clearTimeout(timer);
-
-    }, [task._id, listId])
 
     useEffect(() => {
         setEditTaskInput(task.text);
@@ -165,190 +70,6 @@ export const DetailsPanel =({
         updateTask({text: editTaskInput, priority: selectedPriority, description});
         setTaskTitle(editTaskInput);
         setIsEditingTask(false);
-    };
-
-    const handleDeleteSubTask = async (subTaskId: string) => {
-        if (!subTaskId) return;
-        try {
-            await deleteSubTask(subTaskId);
-
-            setSubTaskList( prevSubTasks => prevSubTasks.filter(st => st._id?.toString() !== subTaskId))
-        } catch (err) {
-            console.error("Error deleting subtask", err);
-        };
-    }
-
-    // const TaskTitle = () => {
-    //     return (
-    //         <div className="flex items-center justify-between h-[50px]">
-    //             {
-    //                 !isEditingTask ?
-    //                 <p className="pr-2 h-font-bold text-lavender-400 flex-wrap items-center">
-    //                     Task: {taskTitle}
-    //                 </p>
-    //                 :
-    //                 <div className="flex p-2 pl-0 gap-2 items-center w-11/12">
-    //                     <input 
-    //                         className="w-full border border-solid border-mono-400 rounded p-1"
-    //                         type="text" 
-    //                         value={editTaskInput} 
-    //                         onChange={e => setEditTaskInput(e.target.value)}
-    //                     />
-    //                 </div>
-    //             }
-
-    //             <div className="flex gap-1">
-    //                 <button
-    //                     className="w-fit border-0 cursor-pointer text-mono-50 bg-mono-400 hover:bg-mono-600 rounded p-2"
-    //                     onClick={() => setIsEditingTask(!isEditingTask)}
-    //                     title="edit"
-    //                 >
-    //                     <PencilSquareIcon className="size-5"/>
-    //                 </button>
-    //                 <button 
-    //                     className="w-fit border-0 cursor-pointer text-mono-50 bg-red-500 hover:bg-red-700 rounded p-2"
-    //                     onClick={handleDeleteTask}
-    //                     title="delete"
-    //                 >
-    //                     <TrashIcon className="size-5"/>
-    //                 </button>
-    //             </div>
-    //         </div>
-    //     )
-    // };
-
-    const DescriptionBox = () => {
-        return (
-            <div className="flex flex-col">
-                <p className="font-bold">Description: </p>
-                {
-                    isEditingTask && 
-                    <textarea rows={5} className="p-2 border border-solid border-mono-400 rounded-md h-50" value={descriptionInput} onChange={e => setDescriptionInput(e.target.value)}/>
-                }
-                {
-                    task.description 
-                    && task.description.length > 0 
-                    && !isEditingTask 
-                    && 
-                    <p className="border border-solid border-mono-500 p-2 rounded-md whitespace-pre-wrap">
-                        {task.description}
-                    </p>
-                }
-            </div>
-        )
-    };
-
-    const PriorityBox = () => {
-        return (
-            <div className="flex gap-2 py-2 items-center">
-                {
-                    isEditingTask ?
-                    <div className="flex flex-col gap-1 w-full">
-                        <span className="font-bold">Priority: </span>
-                        <div className="w-full relative">
-                            <div
-                                className={clsx(
-                                    "absolute z-40 top-1/2 -translate-y-1/2 h-[70%] w-[80%] rounded-md bg-lavender-400 transition-all duration-300 ease-out",
-                                )}
-                                style={{
-                                    width: `${(100 / priorityList.length) * 0.8}%`,
-                                    left: `${priorityList.indexOf(selectedPriority) * (100 / priorityList.length) + (100 / priorityList.length) * 0.1}%`, 
-                                }}
-                            />
-                            <ul className="relative flex items-center gap-2 w-full mx-auto bg-mono-600 px-2 py-2 rounded-md">
-                                {
-                                    priorityList.map( priority => (
-                                        <li 
-                                            className={clsx(
-                                                "cursor-pointer text-center px-2 py-1 rounded-md flex-1 relative z-40 select-none",
-                                                selectedPriority === priority ? "text-mono-700" : "text-mono-100"
-                                            )}
-                                            key={priority}
-                                            onClick={()=> priorityButtonHandler(priority)}
-                                        >
-                                            {priority}
-                                        </li>
-                                    ))
-                                }
-                            </ul>
-                        </div>
-                    </div>
-                    :
-                    <div className="flex">
-                        <p className="font-bold">Priority: </p> 
-                        <span className="ml-1 ">
-                            {task.priority ? task.priority : "none"}
-                        </span>
-                    </div>
-                }
-            </div>
-        )
-    };
-
-    const SubTasksBox = () => {
-        return (
-            <div className="subtasks-container">
-                <ul className="overflow-y-auto h-fit">
-                    <p className="">Subtasks: </p>
-                    {
-                        subTaskLoading ? 
-                        <p className="p-1">loading...</p>
-                        :
-                        subTaskList.map( (subTask, index) => (
-                            <li 
-                                key={index}
-                                className={clsx("flex gap-2 cursor-pointer hover:bg-mono-600 border border-solid border-mono-400 px-2 py-1", index !== 0 && "border-t-0")}
-                                onClick={() => handleUpdateSubTask(subTask)}
-                            >
-                                <input 
-                                    checked={subTask.completed}
-                                    onChange={() => handleUpdateSubTask(subTask)}
-                                    type="checkbox" 
-                                />
-                                <span>{subTask.text}</span>
-                                <button 
-                                    onClick={() => handleDeleteSubTask(subTask._id)}
-                                    className="ml-auto text-red-500 cursor-pointer"
-                                >
-                                    <XMarkIcon className="size-4"/>
-                                </button>
-                            </li>
-                        ))
-                    }
-
-                </ul>
-
-                <div className="flex gap-2 py-2 items-center w-full">
-                    {
-                        !addingSubTask ?
-                        <button className="p-1 cursor-pointer hover:bg-lavender-500 bg-lavender-600 rounded" onClick={() => setAddingSubTask(true)}>
-                            create subtask
-                        </button>
-                        :
-                        <>
-                            <input 
-                                ref={subTaskInputRef}
-                                className="border rounded w-full border-solid p-1"
-                                type="text"
-                                value={subTaskInput}
-                                onChange={e => setSubTaskInput(e.target.value)}
-                                placeholder="Add a new subtask"
-
-                                onKeyDown={keyDownHandler}
-                            />
-                            <button 
-                                onClick={handleAddSubTask}
-                                className="cursor-pointer text-mint-500"
-                            >
-                                <PlusIcon className="size-5"/>
-                            </button>
-                            <button className="cursor-pointer text-red-500" onClick={() => setAddingSubTask(false)}><XMarkIcon className="size-5"/></button>
-                        </>
-                    }
-                </div>
-
-            </div>
-        )
     };
 
     return (
@@ -378,7 +99,7 @@ export const DetailsPanel =({
                 </div>
 
                 <div className="flex flex-col p-4 max-h-[calc(75dvh-61px)] overflow-y-auto">
-                    <TaskTitle taskTitle={taskTitle} deleteTask={handleDeleteTask}/>
+                    <TaskTitle taskTitle={taskTitle} deleteTask={handleDeleteTask} isEditing={isEditingTask} setIsEditing={setIsEditingTask}/>
 
                     <p className="text-mint-400 text-xs">{task.edited ? "edited" : ""}</p>
 
@@ -392,9 +113,19 @@ export const DetailsPanel =({
                         <p className="ml-1">{task.completed ? "All work completed" : "In progress"}</p>
                     </div>
 
-                    <DescriptionBox />
-                    <PriorityBox />
-                    <SubTasksBox />
+                    <DescriptionBox 
+                        isEditing={isEditingTask} 
+                        descriptionInput={descriptionInput}
+                        setDescriptionInput={setDescriptionInput}
+                        taskDescription={task.description || ""} 
+                    />
+                    <PriorityBox 
+                        priority={task.priority} 
+                        isEditing={isEditingTask} 
+                        selectedPriority={selectedPriority} 
+                        setSelectedPriority={setSelectedPriority}
+                    />
+                    <SubTasks taskId={task._id} listId={listId} />
 
                     {/* Bottom to save */}
                     {
