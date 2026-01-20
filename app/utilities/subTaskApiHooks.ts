@@ -58,10 +58,29 @@ export const subTaskApiHooks = (listId: string, taskId: Types.ObjectId) => {
             console.error("Error deleting the subtask", err)
             throw err;
         }
-    }
+    };
 
+    const getSubTasks = async () => {
+        try {
+            const res = await fetch(`/api/todo-lists/${listId}/tasks/${taskId}/subtasks`);
+
+            if (!res.ok) throw new Error("Failed to get subtasks");
+
+            const subTaskList = await res.json();
+
+            return {
+                subTaskList,
+                subTasksLoading: false,
+            }
+
+        } catch (err) {
+            console.error("There was an error loading the tasks, check logs", err);
+        }
+    };
+    
     return {
         deleteSubTask,
+        getSubTasks,
         saveSubTask,
         updateSubTask,
     };

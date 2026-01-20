@@ -16,7 +16,7 @@ export const SubTasks = ({
     listId,
     taskId,
 }: SubTasksProps) => {
-    const { saveSubTask, deleteSubTask } = subTaskApiHooks(listId, taskId)
+    const { getSubTasks, saveSubTask, deleteSubTask } = subTaskApiHooks(listId, taskId)
     
     const [subTasksLoading, setSubTasksLoading] = useState(true);
     const [subTaskList, setSubTaskList] = useState<{ _id: string; text: string; completed: boolean; }[]>([]);
@@ -35,23 +35,15 @@ export const SubTasks = ({
 
     useEffect( () => {
         const timer = setTimeout( async () => {
-            try {
-                const res = await fetch(`/api/todo-lists/${listId}/tasks/${taskId}/subtasks`);
+            const data = await getSubTasks();
+            if (!data) return;
 
-                if (!res.ok) throw new Error("Failed to get subtasks");
-    
-                const subTaskList = await res.json();
-    
-                setSubTaskList(subTaskList);
-                setSubTasksLoading(false);
-    
-            } catch (err) {
-                console.error("There was an error loading the tasks, check logs", err);
-            }
+            setSubTaskList(data.subTaskList);
+            setSubTasksLoading(data.subTasksLoading);
         }, 1000);
         return () => clearTimeout(timer);
     
-    }, [taskId, listId])
+    }, [getSubTasks])
     
     const handleAddSubTask = async () => {
         try {
