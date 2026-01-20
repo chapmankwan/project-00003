@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 
-import { DetailPanel, FlyoutPanel, Loader, MoveableFab, Todo } from "@/app/components";
+import { DetailsPanel, FlyoutPanel, Loader, MoveableFab, Todo } from "@/app/components";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import type { Task } from "@/models";
 
@@ -384,7 +384,7 @@ export const TodoList = ({id}: { id:string}) => {
             }
 
             {selectedTask && (
-                <DetailPanel
+                <DetailsPanel
                     task={tasks.find( t => t._id === selectedTask._id ) || selectedTask}
                     onClose={closeDetails}
                     deleteTask={() => handleDeleteTask(selectedTask)}

@@ -3,11 +3,12 @@ import { useEffect, useRef, useState } from "react";
 
 import { Task } from "@/models";
 
-import { PencilSquareIcon, PlusIcon, TrashIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import clsx from "clsx";
 import { Types } from "mongoose";
 import { subTaskApiHooks } from "@/app/utilities/subTaskApiHooks";
+import { TaskTitle } from "./components/task-title";
 
 interface DetailPanelModel {
     deleteTask: (taskId: Types.ObjectId) => void;
@@ -21,7 +22,7 @@ interface DetailPanelModel {
     listId: string;
 };
 
-export const DetailPanel =({
+export const DetailsPanel =({
     deleteTask,
     task,
     onClose,
@@ -177,44 +178,44 @@ export const DetailPanel =({
         };
     }
 
-    const TaskTitle = () => {
-        return (
-            <div className="flex items-center justify-between h-[50px]">
-                {
-                    !isEditingTask ?
-                    <p className="pr-2 h-font-bold text-lavender-400 flex-wrap items-center">
-                        Task: {taskTitle}
-                    </p>
-                    :
-                    <div className="flex p-2 pl-0 gap-2 items-center w-11/12">
-                        <input 
-                            className="w-full border border-solid border-mono-400 rounded p-1"
-                            type="text" 
-                            value={editTaskInput} 
-                            onChange={e => setEditTaskInput(e.target.value)}
-                        />
-                    </div>
-                }
+    // const TaskTitle = () => {
+    //     return (
+    //         <div className="flex items-center justify-between h-[50px]">
+    //             {
+    //                 !isEditingTask ?
+    //                 <p className="pr-2 h-font-bold text-lavender-400 flex-wrap items-center">
+    //                     Task: {taskTitle}
+    //                 </p>
+    //                 :
+    //                 <div className="flex p-2 pl-0 gap-2 items-center w-11/12">
+    //                     <input 
+    //                         className="w-full border border-solid border-mono-400 rounded p-1"
+    //                         type="text" 
+    //                         value={editTaskInput} 
+    //                         onChange={e => setEditTaskInput(e.target.value)}
+    //                     />
+    //                 </div>
+    //             }
 
-                <div className="flex gap-1">
-                    <button
-                        className="w-fit border-0 cursor-pointer text-mono-50 bg-mono-400 hover:bg-mono-600 rounded p-2"
-                        onClick={() => setIsEditingTask(!isEditingTask)}
-                        title="edit"
-                    >
-                        <PencilSquareIcon className="size-5"/>
-                    </button>
-                    <button 
-                        className="w-fit border-0 cursor-pointer text-mono-50 bg-red-500 hover:bg-red-700 rounded p-2"
-                        onClick={handleDeleteTask}
-                        title="delete"
-                    >
-                        <TrashIcon className="size-5"/>
-                    </button>
-                </div>
-            </div>
-        )
-    };
+    //             <div className="flex gap-1">
+    //                 <button
+    //                     className="w-fit border-0 cursor-pointer text-mono-50 bg-mono-400 hover:bg-mono-600 rounded p-2"
+    //                     onClick={() => setIsEditingTask(!isEditingTask)}
+    //                     title="edit"
+    //                 >
+    //                     <PencilSquareIcon className="size-5"/>
+    //                 </button>
+    //                 <button 
+    //                     className="w-fit border-0 cursor-pointer text-mono-50 bg-red-500 hover:bg-red-700 rounded p-2"
+    //                     onClick={handleDeleteTask}
+    //                     title="delete"
+    //                 >
+    //                     <TrashIcon className="size-5"/>
+    //                 </button>
+    //             </div>
+    //         </div>
+    //     )
+    // };
 
     const DescriptionBox = () => {
         return (
@@ -377,7 +378,7 @@ export const DetailPanel =({
                 </div>
 
                 <div className="flex flex-col p-4 max-h-[calc(75dvh-61px)] overflow-y-auto">
-                    <TaskTitle />
+                    <TaskTitle taskTitle={taskTitle} deleteTask={handleDeleteTask}/>
 
                     <p className="text-mint-400 text-xs">{task.edited ? "edited" : ""}</p>
 
