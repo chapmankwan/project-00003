@@ -1,5 +1,5 @@
 export * from "./card";
-export * from "./detail-panel"
+export * from "./details-panel";
 export * from "./header";
 export * from "./loader";
 export * from "./menu";
