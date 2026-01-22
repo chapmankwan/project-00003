@@ -16,10 +16,10 @@ export async function GET( req: NextRequest ) {
         const url = new URL(req.url);
         const listId = url.pathname.split("/").pop();
 
-        const list = await TodoList.findOne({
-            _id: listId,
-            userId: session.user.id,
-        });
+		const list = await TodoList
+			.findOne({ _id: listId, userId: session.user.id })
+			.populate("tasks")
+			.lean();
 
         if (!list) return new NextResponse("List not found", {status: 404});
 

@@ -2,7 +2,8 @@
   "compilerOptions": {
     "target": "ESNext",
     "types": [
-      "tailwindcss"
+      "tailwindcss",
+      "node",
     ],
     "lib": [
       "dom",

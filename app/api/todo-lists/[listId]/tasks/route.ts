@@ -2,6 +2,7 @@ import { connectToDatabase } from "@/lib/mongodb";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
+import Task from "@/models/Task";
 import TodoList from "@/models/TodoList";
 
 import { NextRequest, NextResponse } from "next/server";
@@ -21,27 +22,42 @@ export async function POST(
 
         const { listId } = await context.params;
 
-        const updatedList = await TodoList.findOneAndUpdate(
+        const task = await Task.create({
+            userId: session.user.id,
+            listId,
+            text,
+            order,
+            description,
+            priority: priority ?? "moderate",
+            date: new Date().toISOString(),
+        });
+
+        // const updatedList = await TodoList.findOneAndUpdate(
+        //     { _id: listId, userId: session.user.id },
+        //     {
+        //         $push: {
+        //             tasks: {
+        //                 id: crypto.randomUUID(),
+        //                 text,
+        //                 description: description, 
+        //                 priority: priority ?? "moderate",
+        //                 completed: false,
+        //                 edited: false,
+        //                 date: new Date().toISOString(),
+        //                 order,
+        //             },
+        //         },
+        //     },
+        //     {new: true},
+        // );
+
+        await TodoList.findOneAndUpdate(
             { _id: listId, userId: session.user.id },
-            {
-                $push: {
-                    tasks: {
-                        id: crypto.randomUUID(),
-                        text,
-                        description: description, 
-                        priority: priority ?? "moderate",
-                        completed: false,
-                        edited: false,
-                        date: new Date().toISOString(),
-                        order,
-                    },
-                },
-            },
-            {new: true},
+            { $push: { tasks: task._id } }
         );
 
-        return NextResponse.json(updatedList, { status: 200 } );
-
+        return NextResponse.json({ task }, { status: 201 });
+        
     } catch (err) {
         console.error( "Error with the task api", err);
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
