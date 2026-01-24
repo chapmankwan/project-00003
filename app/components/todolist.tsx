@@ -213,9 +213,7 @@ export const TodoList = ({id}: { id:string}) => {
         
         try {
             const order = tasks.length;
-            const response = await saveTask(text, priority , order, description);
-            const allTasks = response.tasks;
-            const savedTask: Task = allTasks[allTasks.length - 1];
+            const savedTask = await saveTask(text, priority , order, description);
 
             justAddedRef.current = true;
             setTasks([...tasks, savedTask]);

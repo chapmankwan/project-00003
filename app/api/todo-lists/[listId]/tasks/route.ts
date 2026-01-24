@@ -32,31 +32,12 @@ export async function POST(
             date: new Date().toISOString(),
         });
 
-        // const updatedList = await TodoList.findOneAndUpdate(
-        //     { _id: listId, userId: session.user.id },
-        //     {
-        //         $push: {
-        //             tasks: {
-        //                 id: crypto.randomUUID(),
-        //                 text,
-        //                 description: description, 
-        //                 priority: priority ?? "moderate",
-        //                 completed: false,
-        //                 edited: false,
-        //                 date: new Date().toISOString(),
-        //                 order,
-        //             },
-        //         },
-        //     },
-        //     {new: true},
-        // );
-
         await TodoList.findOneAndUpdate(
             { _id: listId, userId: session.user.id },
             { $push: { tasks: task._id } }
         );
 
-        return NextResponse.json({ task }, { status: 201 });
+        return NextResponse.json(task, { status: 201 });
         
     } catch (err) {
         console.error( "Error with the task api", err);
@@ -65,7 +46,6 @@ export async function POST(
 };
 
 // Update an existing task
-
 export async function PATCH(
     req: NextRequest, 
     context: { params: Promise<{ listId: string }> }
@@ -95,6 +75,7 @@ export async function PATCH(
     };
 };
 
+// Delete an existing task
 export async function DELETE(
     _req: NextRequest,
     context: { params: Promise<{ listId: string}> }

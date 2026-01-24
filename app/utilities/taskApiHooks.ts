@@ -19,6 +19,8 @@ export const taskApiHooks = (listId: string) => {
 
             const data = await response.json();
 
+            console.log("+++ data", data);
+
             return data; // should contain the saved task with _id
         } catch (error) {
             console.error("Error saving task:", error);
