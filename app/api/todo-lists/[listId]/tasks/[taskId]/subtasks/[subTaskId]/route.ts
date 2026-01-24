@@ -1,6 +1,6 @@
 import { authOptions } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/mongodb";
-import { SubTask, Task } from "@/models";
+import { SubTask, Task } from "@/models/interfaces";
 import TodoList from "@/models/TodoList";
 import mongoose from "mongoose";
 import { getServerSession } from "next-auth";

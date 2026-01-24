@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { DetailsPanel, FlyoutPanel, Loader, MoveableFab, Todo } from "@/app/components";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
-import type { Task } from "@/models";
+import type { Task } from "@/models/interfaces";
 
 import { useRouter } from 'next/navigation';
 

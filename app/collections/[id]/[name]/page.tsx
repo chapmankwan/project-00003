@@ -4,7 +4,7 @@ import { redirect, useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 import { Card, PageHeader, Loader, FlyoutPanel, MoveableFab } from "@/app/components";
-import type { TodoListModel } from "@/models";
+import type { TodoListModel } from "@/models/interfaces";
 
 import { Dialog, DialogPanel } from '@headlessui/react';
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";

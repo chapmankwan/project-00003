@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { Collection } from "@/models"
+import { Collection } from "@/models/interfaces"
 
 export function useCollectionsApi() {
     const [collections, setCollections] = useState<Collection[]>([]);

@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useState } from "react";
 
-import { Task } from "@/models";
+import { Task } from "@/models/interfaces";
 
 import { XMarkIcon } from "@heroicons/react/24/outline";
 

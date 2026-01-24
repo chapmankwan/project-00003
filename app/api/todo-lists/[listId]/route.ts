@@ -1,34 +1,37 @@
+import "@/models";
+
 import { authOptions } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/mongodb";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
+
 import TodoList from "@/models/TodoList";
 
 import mongoose from "mongoose";
 
-export async function GET( req: NextRequest ) {
-    try {
-        const session = await getServerSession(authOptions);
-        if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized"}, { status: 401});
-        
-        await connectToDatabase();
+export async function GET(req: NextRequest) {
+	try {
+		const session = await getServerSession(authOptions);
+		if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+		
+		await connectToDatabase();
 
-        const url = new URL(req.url);
-        const listId = url.pathname.split("/").pop();
+		const url = new URL(req.url);
+		const listId = url.pathname.split("/").pop();
 
+		// populate will now work because Task is registered
 		const list = await TodoList
 			.findOne({ _id: listId, userId: session.user.id })
 			.populate("tasks")
 			.lean();
 
-        if (!list) return new NextResponse("List not found", {status: 404});
+		if (!list) return new NextResponse("List not found", { status: 404 });
 
-        return NextResponse.json(list, { status: 200 });
-
-    } catch (err) {
-        console.error("Error fetching list:", err);
+		return NextResponse.json(list, { status: 200 });
+	} catch (err) {
+		console.error("Error fetching list:", err);
         return new NextResponse("Internal Server Error", { status: 500 });
-    };
+	};
 };
 
 export async function DELETE(
