@@ -17,6 +17,19 @@ const SubTaskSchema = new mongoose.Schema({
 }, { _id: true });
 
 const TaskSchema = new mongoose.Schema({
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+      index: true,
+    },
+
+    listId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "TodoList",
+      required: true,
+      index: true,
+    },
     text: { 
         type: String, 
         required: true,

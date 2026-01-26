@@ -45,37 +45,7 @@ export async function POST(
     };
 };
 
-// Update an existing task
-export async function PATCH(
-    req: NextRequest, 
-    context: { params: Promise<{ listId: string }> }
-) {
-    try {
-        const session = await getServerSession(authOptions);
-        if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-        await connectToDatabase();
-
-        const { taskId, update } = await req.json();
-
-        const { listId } = await context.params;
-
-        const updatedList = await TodoList.findOneAndUpdate(
-            { _id: listId, userId: session.user.id, "tasks._id": taskId },
-            { $set: { "tasks.$": { ...update, _id: taskId } } },
-            { new: true },
-        );
-
-        return NextResponse.json(updatedList, { status: 200 } );
-
-    } catch (err) {
-        console.error( "Error with the task api", err);
-        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
-
-    };
-};
-
-// Delete an existing task
+// Delete ALL existing tasks in list by setting it empty
 export async function DELETE(
     _req: NextRequest,
     context: { params: Promise<{ listId: string}> }

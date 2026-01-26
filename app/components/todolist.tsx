@@ -170,15 +170,9 @@ export const TodoList = ({id}: { id:string}) => {
                 edited: true,
             });
             // finalize from backend if necessary
-            setTasks((prevTasks) => {
-                return (
-                    prevTasks.map( (t) => {
-                        return (
-                            t._id?.toString() === updatedTaskRes.task._id?.toString() ? updatedTaskRes.task : t
-                        )
-                    })
-                )
-            });
+            setTasks(prev =>
+                prev.map(t => (t._id === updatedTaskRes._id ? updatedTaskRes : t))
+            );
 
         } catch (err) {
             console.error(err);
@@ -194,15 +188,9 @@ export const TodoList = ({id}: { id:string}) => {
                 edited: true,
             });
 
-            setTasks((prevTasks) => {
-                return (
-                    prevTasks.map( (t) => {
-                        return (
-                            t._id?.toString() === updatedTaskRes.task._id?.toString() ? updatedTaskRes.task : t
-                        )
-                    })
-                )
-            });
+            setTasks(prev =>
+                prev.map(t => (t._id === updatedTaskRes._id ? updatedTaskRes : t))
+            );
         } catch (err) {
             console.error(err);
         }
