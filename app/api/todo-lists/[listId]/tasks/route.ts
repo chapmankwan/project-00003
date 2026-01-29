@@ -2,6 +2,7 @@ import { connectToDatabase } from "@/lib/mongodb";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
+import Task from "@/models/Task";
 import TodoList from "@/models/TodoList";
 
 import { NextRequest, NextResponse } from "next/server";
@@ -21,64 +22,30 @@ export async function POST(
 
         const { listId } = await context.params;
 
-        const updatedList = await TodoList.findOneAndUpdate(
+        const task = await Task.create({
+            userId: session.user.id,
+            listId,
+            text,
+            order,
+            description,
+            priority: priority ?? "moderate",
+            date: new Date().toISOString(),
+        });
+
+        await TodoList.findOneAndUpdate(
             { _id: listId, userId: session.user.id },
-            {
-                $push: {
-                    tasks: {
-                        id: crypto.randomUUID(),
-                        text,
-                        description: description, 
-                        priority: priority ?? "moderate",
-                        completed: false,
-                        edited: false,
-                        date: new Date().toISOString(),
-                        order,
-                    },
-                },
-            },
-            {new: true},
+            { $push: { tasks: task._id } }
         );
 
-        return NextResponse.json(updatedList, { status: 200 } );
-
+        return NextResponse.json(task, { status: 201 });
+        
     } catch (err) {
         console.error( "Error with the task api", err);
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     };
 };
 
-// Update an existing task
-
-export async function PATCH(
-    req: NextRequest, 
-    context: { params: Promise<{ listId: string }> }
-) {
-    try {
-        const session = await getServerSession(authOptions);
-        if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-        await connectToDatabase();
-
-        const { taskId, update } = await req.json();
-
-        const { listId } = await context.params;
-
-        const updatedList = await TodoList.findOneAndUpdate(
-            { _id: listId, userId: session.user.id, "tasks._id": taskId },
-            { $set: { "tasks.$": { ...update, _id: taskId } } },
-            { new: true },
-        );
-
-        return NextResponse.json(updatedList, { status: 200 } );
-
-    } catch (err) {
-        console.error( "Error with the task api", err);
-        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
-
-    };
-};
-
+// Delete ALL existing tasks in list by setting it empty
 export async function DELETE(
     _req: NextRequest,
     context: { params: Promise<{ listId: string}> }

@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import type { TodoListModel } from "@/models"
+import type { TodoListModel } from "@/models/interfaces"
 import { getCompletionProgress } from "@/app/utilities/completionProgress";
 import { PriorityIcon, ProgressBar } from "@/app/components";
 

@@ -1,11 +1,14 @@
 import { authOptions } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/mongodb";
-import { SubTask, Task } from "@/models";
-import TodoList from "@/models/TodoList";
+
+import SubTask from "@/models/SubTask";
+import Task from "@/models/Task";
+
 import mongoose from "mongoose";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
+// Currently only toggles completion on the subtask - editing text to come
 export async function PATCH(
   	req: NextRequest,
 	context: { params: Promise<{ listId: string; taskId: string, subTaskId: string }> }
@@ -28,62 +31,17 @@ export async function PATCH(
 
 		await connectToDatabase();
 
-		const body = await req.json();
+		const updates = await req.json();
 
-		const updateFields: Partial<{
-			completed: boolean;
-			text: string;
-			order: number;
-		}> = {};
-
-		if (typeof body.completed === "boolean") updateFields.completed = body.completed;
-		if (typeof body.text === "string") updateFields.text = body.text;
-		if (typeof body.order === "number") updateFields.order = body.order;
-
-		const setObject = Object.entries(updateFields).reduce(
-			(acc, [key, value]) => {
-				acc[`tasks.$[task].subTasks.$[subtask].${key}`] = value;
-				return acc;
-			},
-			{} as Record<string, unknown>
+		const subtask = await SubTask.findOneAndUpdate(
+			{ _id: subTaskId, userId: session.user.id },
+			updates,
+			{ new: true }
 		);
 
-		const updatedList = await TodoList.findOneAndUpdate(
-			{
-				_id: listId,
-				userId: session.user.id,
-			},
-			{
-				$set: setObject,
-			},
-			{
-				new: true,
-				arrayFilters: [
-				{ "task._id": taskId },
-				{ "subtask._id": subTaskId },
-				],
-			}
-		);
+		if (!subtask) return NextResponse.json({ error: "SubTask not found" }, { status: 404 });
 
-		if (!updatedList) {
-			return NextResponse.json({ message: "Not found" }, { status: 404 });
-		}
-
-		// Extract the updated subtask to return
-		const task = updatedList.tasks.find(
-			(t: Task) => t._id.toString() === taskId
-		);
-		const subtask = task?.subTasks.find(
-			(st: SubTask) => st._id.toString() === subTaskId
-		);
-
-		return NextResponse.json(
-			{
-				message: "Subtask updated",
-				subtask,
-			},
-			{ status: 200 }
-		);
+		return NextResponse.json(subtask, { status: 200 });
 	} catch (err) {
 			console.error("PATCH subtask error", err);
 			return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
@@ -112,28 +70,18 @@ export async function DELETE(
 
 		await connectToDatabase();
 
+		const subtask = await SubTask.findOneAndDelete({
+			_id: subTaskId,
+			userId: session.user.id,
+		});
 
-		const updatedList = await TodoList.findOneAndUpdate(
-			{
-				_id: listId,
-				userId: session.user.id,
-				"tasks._id": taskId,
-			},
-			{
-				$pull: {
-				"tasks.$.subTasks": { _id: subTaskId },
-				},
-			},
-			{ new: true }
-		);
+		if (!subtask) return NextResponse.json({ error: "SubTask not found" }, { status: 404 });
 
-		if (!updatedList) return NextResponse.json({ message: "task/subtask not found" }, { status: 404 } );
+		await Task.findByIdAndUpdate(subtask.taskId, {
+			$pull: { subTasks: subtask._id },
+		});
 
-		return NextResponse.json(
-			{ message: "Subtask deleted", subTaskId },
-			{ status: 200 }
-		);
-
+		return NextResponse.json({ success: true }, { status: 200 });
 	} catch (err) {
 		console.error("DELETE subtask error", err);
 		return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });

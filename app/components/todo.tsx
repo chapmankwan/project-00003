@@ -1,7 +1,7 @@
 "use client";
 import React, { Ref, useState } from "react";
 
-import type {Task} from "@/models";
+import type {Task} from "@/models/interfaces";
 import { Types } from "mongoose";
 
 import { Checkbox, Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";

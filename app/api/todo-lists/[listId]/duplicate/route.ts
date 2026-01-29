@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 import TodoList from "@/models/TodoList";
 import Task from "@/models/Task";
 
-import { Task as TaskType} from "@/models";
+import { Task as TaskType} from "@/models/interfaces";
 
 export async function POST(
     _req: NextRequest,

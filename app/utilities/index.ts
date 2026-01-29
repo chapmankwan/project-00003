@@ -1,6 +1,6 @@
 import { nanoid } from "nanoid";
 
-import { Task } from "@/models";
+import { Task } from "@/models/interfaces";
 
 export interface TodoListModel {
   id: string;         // unique ID (UUID or nanoid)

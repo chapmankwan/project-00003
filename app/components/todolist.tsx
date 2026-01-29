@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { DetailsPanel, FlyoutPanel, Loader, MoveableFab, Todo } from "@/app/components";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
-import type { Task } from "@/models";
+import type { Task } from "@/models/interfaces";
 
 import { useRouter } from 'next/navigation';
 
@@ -166,19 +166,12 @@ export const TodoList = ({id}: { id:string}) => {
             const updatedTaskRes = await updateTask(id, task._id, {
                 ...task,
                 completed: !task.completed,
-                text: task.text,
                 edited: true,
             });
             // finalize from backend if necessary
-            setTasks((prevTasks) => {
-                return (
-                    prevTasks.map( (t) => {
-                        return (
-                            t._id?.toString() === updatedTaskRes.task._id?.toString() ? updatedTaskRes.task : t
-                        )
-                    })
-                )
-            });
+            setTasks(prev =>
+                prev.map(t => (t._id === updatedTaskRes._id ? updatedTaskRes : t))
+            );
 
         } catch (err) {
             console.error(err);
@@ -194,15 +187,9 @@ export const TodoList = ({id}: { id:string}) => {
                 edited: true,
             });
 
-            setTasks((prevTasks) => {
-                return (
-                    prevTasks.map( (t) => {
-                        return (
-                            t._id?.toString() === updatedTaskRes.task._id?.toString() ? updatedTaskRes.task : t
-                        )
-                    })
-                )
-            });
+            setTasks(prev =>
+                prev.map(t => (t._id === updatedTaskRes._id ? updatedTaskRes : t))
+            );
         } catch (err) {
             console.error(err);
         }
@@ -213,9 +200,7 @@ export const TodoList = ({id}: { id:string}) => {
         
         try {
             const order = tasks.length;
-            const response = await saveTask(text, priority , order, description);
-            const allTasks = response.tasks;
-            const savedTask: Task = allTasks[allTasks.length - 1];
+            const savedTask = await saveTask(text, priority , order, description);
 
             justAddedRef.current = true;
             setTasks([...tasks, savedTask]);
