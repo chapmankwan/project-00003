@@ -5,7 +5,7 @@ import { PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { Types } from "mongoose";
 
-import { subTaskApiHooks } from "@/app/utilities/subTaskApiHooks";
+import { useSubTaskApi } from "@/app/utilities/subTaskApiHooks";
 
 interface SubTasksProps {
     listId: string;
@@ -16,7 +16,7 @@ export const SubTasks = ({
     listId,
     taskId,
 }: SubTasksProps) => {
-    const { getSubTasks, saveSubTask, deleteSubTask } = subTaskApiHooks(listId, taskId)
+    const { getSubTasks, saveSubTask, deleteSubTask } = useSubTaskApi(listId, taskId)
     
     const [subTasksLoading, setSubTasksLoading] = useState(true);
     const [subTaskList, setSubTaskList] = useState<{ _id: string; text: string; completed: boolean; }[]>([]);
@@ -33,28 +33,33 @@ export const SubTasks = ({
         }
     },[addingSubTask]);
 
-    useEffect( () => {
-        const timer = setTimeout( async () => {
+    useEffect(() => {
+        let cancelled = false;
+
+        (async () => {
             const data = await getSubTasks();
-            if (!data) return;
+            if (!data || cancelled) return;
 
             setSubTaskList(data.subTaskList);
             setSubTasksLoading(data.subTasksLoading);
-        }, 1000);
-        return () => clearTimeout(timer);
-    
-    }, [getSubTasks])
+        })();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [getSubTasks]);
     
     const handleAddSubTask = async () => {
         try {
             const update = {
                 text: subTaskInput,
                 completed: false,
+                order: subTaskList.length
             };
 
             const newSubTask = await saveSubTask(update)
 
-            setSubTaskList([...subTaskList, newSubTask])
+            setSubTaskList(prev => [...prev, newSubTask]);
             setSubTaskInput("");
 
         } catch (err) {
@@ -62,39 +67,31 @@ export const SubTasks = ({
         };
     };
 
-    const toggleSubTaskCompletion =  async (subTask: {_id: string; completed: boolean}) => {
-        if (!subTask) return;
-        
-        // Optimistic update visually
-        setSubTaskList(prev =>
-            prev.map((st) => 
-                st._id === subTask._id
-                    ? { ...st, completed: !subTask.completed, }
-                    : st
-            )
-        );
+    // const toggleSubTaskCompletion =  async (subTask: {_id: string; completed: boolean}) => {
+    //     if (!subTask) return;
 
-        const res = await fetch(
-            `/api/todo-lists/${listId}/tasks/${taskId}/subtasks/${subTask._id}`,
-            {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    completed: !subTask.completed,
-                }),
-            }
-        );
+    //     const res = await fetch(
+    //         `/api/todo-lists/${listId}/tasks/${taskId}/subtasks/${subTask._id}`,
+    //         {
+    //             method: "PATCH",
+    //             headers: { "Content-Type": "application/json" },
+    //             body: JSON.stringify({
+    //                 completed: !subTask.completed,
+    //             }),
+    //         }
+    //     );
 
-        if (!res.ok) throw new Error("Failed to update subtask");
+    //     if (!res.ok) throw new Error("Failed to update subtask");
 
-        const updated = await res.json();
+    //     const updated = await res.json();
 
-        setSubTaskList(prev =>
-            prev.map(st => (st._id === updated._id ? updated : st))
-        );
-    };
+    //     setSubTaskList(prev =>
+    //         prev.map(st => (st._id === updated._id ? updated : st))
+    //     );
+    // };
 
-    const handleDeleteSubTask = async (subTaskId: string) => {
+    const handleDeleteSubTask = async (event: React.MouseEvent<HTMLButtonElement>, subTaskId: string) => {
+        event.stopPropagation();
         if (!subTaskId) return;
 
         try {
@@ -117,23 +114,28 @@ export const SubTasks = ({
             <ul className="overflow-y-auto h-fit">
                 <p className="">Subtasks: </p>
                 {
-                    subTasksLoading ? 
+                    subTasksLoading && !subTaskList.length ? 
                     <p className="p-1">loading...</p>
                     :
                     subTaskList.map( (subTask, index) => (
                         <li 
-                            key={index}
+                            key={subTask._id}
                             className={clsx("flex gap-2 cursor-pointer hover:bg-mono-600 border border-solid border-mono-400 px-2 py-1", index !== 0 && "border-t-0")}
-                            onClick={() => toggleSubTaskCompletion(subTask)}
+                            // onClick={() => toggleSubTaskCompletion(subTask)}
                         >
                             <input 
-                                checked={subTask.completed}
-                                onChange={() => toggleSubTaskCompletion(subTask)}
+                                checked={subTask?.completed}
+                                onChange={() =>
+                                    fetch(`/api/todo-lists/${listId}/tasks/${taskId}/subtasks/${subTask._id}`, {
+                                    method: "PATCH",
+                                    body: JSON.stringify({ completed: !subTask.completed }),
+                                    })
+                                }
                                 type="checkbox" 
                             />
-                            <span>{subTask.text}</span>
+                            <span>{subTask?.text}</span>
                             <button 
-                                onClick={() => handleDeleteSubTask(subTask._id)}
+                                onClick={(e) => handleDeleteSubTask(e, subTask._id)}
                                 className="ml-auto text-red-500 cursor-pointer"
                             >
                                 <XMarkIcon className="size-4"/>
@@ -141,7 +143,6 @@ export const SubTasks = ({
                         </li>
                     ))
                 }
-
             </ul>
 
             <div className="flex gap-2 py-2 items-center w-full">

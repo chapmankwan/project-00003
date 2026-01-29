@@ -26,7 +26,15 @@ export async function PATCH(
 
         await connectToDatabase();
 
-        const updates = await req.json();
+        const body = await req.json();
+
+
+        const updates: Record<string, boolean> = {};
+        // Explicit allowlist
+        if (typeof body.completed === "boolean") updates.completed = body.completed;
+        if (typeof body.text === "string") updates.text = body.text.trim();
+        if (typeof body.priority === "string") updates.priority = body.priority;
+        if (typeof body.description === "string") updates.description = body.description;
 
         const task = await Task.findOneAndUpdate(
             {

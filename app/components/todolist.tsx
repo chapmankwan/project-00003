@@ -166,7 +166,6 @@ export const TodoList = ({id}: { id:string}) => {
             const updatedTaskRes = await updateTask(id, task._id, {
                 ...task,
                 completed: !task.completed,
-                text: task.text,
                 edited: true,
             });
             // finalize from backend if necessary
