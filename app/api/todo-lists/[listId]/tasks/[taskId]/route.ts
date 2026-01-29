@@ -35,6 +35,7 @@ export async function PATCH(
         if (typeof body.text === "string") updates.text = body.text.trim();
         if (typeof body.priority === "string") updates.priority = body.priority;
         if (typeof body.description === "string") updates.description = body.description;
+        if (typeof body.edited === "boolean") updates.edited = body.edited;
 
         const task = await Task.findOneAndUpdate(
             {

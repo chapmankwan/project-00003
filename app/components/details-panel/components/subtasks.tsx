@@ -67,29 +67,6 @@ export const SubTasks = ({
         };
     };
 
-    // const toggleSubTaskCompletion =  async (subTask: {_id: string; completed: boolean}) => {
-    //     if (!subTask) return;
-
-    //     const res = await fetch(
-    //         `/api/todo-lists/${listId}/tasks/${taskId}/subtasks/${subTask._id}`,
-    //         {
-    //             method: "PATCH",
-    //             headers: { "Content-Type": "application/json" },
-    //             body: JSON.stringify({
-    //                 completed: !subTask.completed,
-    //             }),
-    //         }
-    //     );
-
-    //     if (!res.ok) throw new Error("Failed to update subtask");
-
-    //     const updated = await res.json();
-
-    //     setSubTaskList(prev =>
-    //         prev.map(st => (st._id === updated._id ? updated : st))
-    //     );
-    // };
-
     const handleDeleteSubTask = async (event: React.MouseEvent<HTMLButtonElement>, subTaskId: string) => {
         event.stopPropagation();
         if (!subTaskId) return;
@@ -121,7 +98,6 @@ export const SubTasks = ({
                         <li 
                             key={subTask._id}
                             className={clsx("flex gap-2 cursor-pointer hover:bg-mono-600 border border-solid border-mono-400 px-2 py-1", index !== 0 && "border-t-0")}
-                            // onClick={() => toggleSubTaskCompletion(subTask)}
                         >
                             <input 
                                 checked={subTask?.completed}

@@ -50,16 +50,16 @@ export async function GET(
 
         if (!task) return NextResponse.json({ error: "Task not found" }, { status: 404 });
 
-        const subtasks = await SubTask.find({
+        const subTasks = await SubTask.find({
             taskId,
             userId: session.user.id,
         })
         .sort({ order: 1 })
         .lean();
 
-        return NextResponse.json( subtasks, { status: 200 });
+        return NextResponse.json( subTasks, { status: 200 });
     } catch (err) {
-        console.error("GET subtasks error", err);
+        console.error("GET subTasks error", err);
         return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
     };
 };
@@ -94,7 +94,7 @@ export async function POST(
         const subTask = await SubTask.create({
             userId: session.user.id,
             taskId,
-            listId: listId,
+            listId,
             text,
             order: order ?? task.subTasks.length,
         });
