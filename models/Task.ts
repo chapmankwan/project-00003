@@ -40,11 +40,10 @@ const TaskSchema = new mongoose.Schema({
         default: "moderate",
     },
     description: { type: String },
-    subTasks: {
+    subTasks: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "SubTask",
-        default: [],
-    },
+    }],
 }); 
 
 export default mongoose.models.Task || mongoose.model("Task", TaskSchema);
