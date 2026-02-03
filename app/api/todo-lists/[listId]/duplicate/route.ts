@@ -47,7 +47,7 @@ export async function POST(
             tasks: duplicateTasks,
         });
 
-        return Response.json(duplicateList);
+        return NextResponse.json(duplicateList);
 
     } catch (err) {
         console.error("Error in copying list", err);
