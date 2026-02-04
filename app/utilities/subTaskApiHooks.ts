@@ -15,8 +15,6 @@ export const useSubTaskApi = (listId: string, taskId: Types.ObjectId) => {
             if (!response.ok) throw new Error(`Failed to save subtask: ${response.statusText}`);
     
             const data = await response.json();
-
-            console.log("+++ data in saveSubTask", data);
             
             return data;
         } catch (err) {
@@ -59,29 +57,6 @@ export const useSubTaskApi = (listId: string, taskId: Types.ObjectId) => {
             throw err;
         }
     };
-
-//     async function deleteSubTask(id: string) {
-//   await fetch(`/api/subtasks/${id}`, { method: "DELETE" });
-//   setSubTasks(prev => prev.filter(st => st._id !== id));
-// }
-
-    // const getSubTasks = async () => {
-    //     try {
-    //         const res = await fetch(`/api/todo-lists/${listId}/tasks/${taskId}/subtasks`);
-
-    //         if (!res.ok) throw new Error("Failed to get subtasks");
-
-    //         const subTaskList = await res.json();
-
-    //         return {
-    //             subTaskList,
-    //             subTasksLoading: false,
-    //         }
-
-    //     } catch (err) {
-    //         console.error("There was an error loading the tasks, check logs", err);
-    //     }
-    // };
     
     const getSubTasks = useCallback(async () => {
         const res = await fetch(

@@ -44,8 +44,6 @@ export default function Collections () {
 
         const list = collection.todoLists;
 
-        console.log("+++ list from collection[id]:", list );
-
         if (list.length) {
             setAllTaskLists(list.reverse());
         }

@@ -67,6 +67,39 @@ export const SubTasks = ({
         };
     };
 
+    const toggleSubTask = async (subTask: { _id: string; text: string; completed: boolean; }) => {
+
+        // optimistic
+        setSubTaskList(prev =>
+            prev.map(st =>
+            st._id === subTask._id
+                ? { ...st, completed: !st.completed }
+                : st
+            )
+        );
+
+        try {
+            const res = await fetch(
+            `/api/todo-lists/${listId}/tasks/${taskId}/subtasks/${subTask._id}`,
+            {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+            }
+            );
+
+            if (!res.ok) throw new Error("Failed");
+        } catch {
+            // rollback only this subtask
+            setSubTaskList(prev =>
+            prev.map(st =>
+                st._id === subTask._id
+                ? subTask
+                : st
+            )
+            );
+        }
+    };
+
     const handleDeleteSubTask = async (event: React.MouseEvent<HTMLButtonElement>, subTaskId: string) => {
         event.stopPropagation();
         if (!subTaskId) return;
@@ -101,12 +134,7 @@ export const SubTasks = ({
                         >
                             <input 
                                 checked={subTask?.completed}
-                                onChange={() =>
-                                    fetch(`/api/todo-lists/${listId}/tasks/${taskId}/subtasks/${subTask._id}`, {
-                                    method: "PATCH",
-                                    body: JSON.stringify({ completed: !subTask.completed }),
-                                    })
-                                }
+                                onChange={() => toggleSubTask(subTask)}
                                 type="checkbox" 
                             />
                             <span>{subTask?.text}</span>
