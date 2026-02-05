@@ -43,7 +43,6 @@ export default function Collections () {
         if (!collection ) return;
 
         const todoLists = collection.todoLists;
-        console.log("+++ collection.todolist", todoLists);
 
         if (todoLists.length) {
             setAllTaskLists(todoLists.reverse());
@@ -100,6 +99,7 @@ export default function Collections () {
     };
 
     const duplicateTaskHandler = async (listId: string) => {
+
         const res = await fetch(`/api/todo-lists/${listId}/duplicate`, {
             method: "POST",
         });

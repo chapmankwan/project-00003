@@ -21,9 +21,6 @@ export const Card = ({
     taskList,
     duplicateTask,
 }: CardModel) => {
-
-    console.log("+++ taskList in card", taskList);
-    
     const completedTasks = taskList.tasks?.filter( task => task.completed).length;
     const totalNumberOfTasks = taskList.tasks?.length;
 
