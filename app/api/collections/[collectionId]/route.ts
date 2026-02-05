@@ -30,6 +30,32 @@ export async function GET( req: NextRequest ) {
     };
 };
 
+export async function PATCH(
+    req: NextRequest,
+    context: { params: Promise<{collectionId: string}>}
+) {
+    try {
+        await connectToDatabase();
+
+        const body = req.json();
+        const { collectionId } = await context.params;
+
+        const updatedCollection = await Collection.findByIdAndUpdate(
+            collectionId,
+            { $set: body },
+            { new: true},
+        );
+
+        if (!updatedCollection) return NextResponse.json( {message: "Collection not found"}, {status: 404} );
+
+        return NextResponse.json(updatedCollection, { status: 200 });
+
+    } catch (err) {
+        console.error("PATCH /api/collections/[collectionId] error patching the collection", err);
+        return NextResponse.json( {message: "Internal Server Error"}, { status: 500 });
+    };
+};
+
 export async function DELETE(
     _: NextRequest,
     context: { params: Promise<{collectionId: string}>}
@@ -60,4 +86,4 @@ export async function DELETE(
         console.error("Delete collection error", err);
         return NextResponse.json({ message: "Internal Server Error"}, { status: 500 });
     };
-}
+};

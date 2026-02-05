@@ -1,6 +1,8 @@
 import { connectToDatabase } from "@/lib/mongodb";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+
+import "@/models/Task";
 import TodoList from "@/models/TodoList";
 import { NextRequest, NextResponse } from "next/server";
 import { toSlug } from "@/app/utilities";
@@ -18,20 +20,22 @@ export async function GET( req: NextRequest ) {
 
 		await connectToDatabase();
 
-		let lists;
-		if (!collectionId) {
-			lists = await TodoList.find({
-				userId: new mongoose.Types.ObjectId(session.user.id)
-			})
-		} else {
-			// Temp so we are able to grab all the todolists in /workspaces
-			lists = await TodoList.find({
-				userId: new mongoose.Types.ObjectId(session.user.id),
-				collectionId,
-			});
-		};
+		const collection = await Collection.findOne({
+			_id: collectionId,
+			userId: session.user.id,
+		})
+		.populate({
+			path: "todoLists",
+			populate: {
+				path: "tasks",
+				select: "_id completed",
+			},
+		})
+		.lean();
 
-		return NextResponse.json(lists, { status: 200 });
+		if (!collection) return NextResponse.json( {message: "Collection not found"}, {status: 404} );
+
+		return NextResponse.json(collection, { status: 200 });
 		
 	} catch (err) {
 		console.error( "GET /api/todo-lists error", err );
@@ -44,16 +48,23 @@ export async function POST(req: NextRequest) {
 	try {
 		const session = await getServerSession(authOptions);
 		if (!session?.user?.email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+		const userId = new mongoose.Types.ObjectId(session.user.id);
 		
 		const { title, priority, collectionId } = await req.json();
+		await connectToDatabase();
+		if (!collectionId) NextResponse.json({ error: "collectionId is required" }, { status: 400 })
 		
 		if (!title || typeof title !== "string") NextResponse.json({ error: "Title is required" }, { status: 400 });
 		
-		await connectToDatabase();
-		
-  		const userId = new mongoose.Types.ObjectId(session.user.id);
+		const collection = await Collection.findOne({
+			_id: collectionId,
+			userId: session.user.id,
+		});
 
-		const list = new TodoList({
+		if (!collection) return NextResponse.json({ error: "Collection not found" }, { status: 404 });
+		
+
+		const list = await TodoList.create({
 			title: title,
 			slug: toSlug(title),
 			userId: userId,
@@ -63,22 +74,12 @@ export async function POST(req: NextRequest) {
 			collectionId,
 		});
 
-		const updateCollection = await Collection.findByIdAndUpdate(
-			collectionId,
-			{ $push: { todoLists: list._id } },
-			{ new: true },
-		).populate("todoLists");
-
-		await list.save();
-
-		return NextResponse.json(
-			{ 
-				id: list._id.toString(), 
-				slug: list.slug,
-				collection: updateCollection,
-			},
-			{ status: 201 }
+		await Collection.updateOne(
+			{ _id: collection._id },
+			{ $push: { todoLists: list._id } }
 		);
+		
+		return NextResponse.json(list, { status: 201 });
 
 	} catch (err) {
 		console.error(err);

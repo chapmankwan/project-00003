@@ -39,9 +39,13 @@ export default function Collections () {
             return;
         }
 
-        const list = await res.json();
-        if (list.length) {
-            setAllTaskLists(list.reverse());
+        const collection = await res.json();
+        if (!collection ) return;
+
+        const todoLists = collection.todoLists;
+
+        if (todoLists.length) {
+            setAllTaskLists(todoLists.reverse());
         }
     }, [params.id]);
 
@@ -65,7 +69,7 @@ export default function Collections () {
     const handleDelete = async (listId: string) => {
         if (!listId.length) return;
         try {
-            const res = await fetch(`/api/todo-lists/${listId}`, { method: "DELETE" });
+            const res = await fetch(`/api/todo-lists/${listId}?collectionId=${params.id}`, { method: "DELETE" });
             if (!res.ok) throw new Error("Failed to delete list");
             // optimistic update
             setAllTaskLists((prev) => prev.filter((list) => list._id !== listId));
@@ -95,6 +99,7 @@ export default function Collections () {
     };
 
     const duplicateTaskHandler = async (listId: string) => {
+
         const res = await fetch(`/api/todo-lists/${listId}/duplicate`, {
             method: "POST",
         });

@@ -5,6 +5,7 @@ import { connectToDatabase } from "@/lib/mongodb";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
+import Collection from "@/models/Collection";
 import TodoList from "@/models/TodoList";
 
 import mongoose from "mongoose";
@@ -35,12 +36,11 @@ export async function GET(req: NextRequest) {
 };
 
 export async function DELETE(
-	_: NextRequest, 
+	req: NextRequest, 
 	context: { params: Promise<{listId: string}>},
 ) {
 	
 	try {
-
 		const { listId } = await context.params;
 		const session = await getServerSession(authOptions);
 
@@ -50,12 +50,25 @@ export async function DELETE(
 
 		await connectToDatabase();
 
-		const result = await TodoList.findOneAndDelete({
-			_id: new mongoose.Types.ObjectId(listId),
-			userId: new mongoose.Types.ObjectId(session.user.id),
+		const { searchParams } = new URL(req.url);
+		const collectionId = searchParams.get("collectionId");
+
+		if (!collectionId) return NextResponse.json({ messsage: "collectionId not provided" }, { status: 404 });
+
+		const list = await TodoList.findOne({
+			_id: listId,
+			userId: session.user.id,
+			collectionId,
 		});
 
-		if (!result) return NextResponse.json({ error: "List not found" }, { status: 404 });
+		if (!list) return NextResponse.json({ messsage: "List not found" }, { status: 404 });
+
+		await Collection.updateOne(
+			{ _id: collectionId },
+			{ $pull: { todoLists: list._id } }
+		);
+
+		await TodoList.deleteOne({ _id: list._id });
 
 		return NextResponse.json(
 			{ message: "List deleted successfully", listId },
@@ -66,4 +79,4 @@ export async function DELETE(
 		console.error("Delete list error", err);
 		return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
 	}
-}
+};

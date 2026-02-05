@@ -22,6 +22,13 @@ export async function POST(
 
         const { listId } = await context.params;
 
+        // Validate list belonds to user and is valid
+        const list = await TodoList.findOne({
+            _id: listId,
+            userId: session.user.id,
+        });
+        if (!list) return NextResponse.json({ error: "TodoList not found" }, { status: 404 });
+
         const task = await Task.create({
             userId: session.user.id,
             listId,
@@ -32,8 +39,8 @@ export async function POST(
             date: new Date().toISOString(),
         });
 
-        await TodoList.findOneAndUpdate(
-            { _id: listId, userId: session.user.id },
+        await TodoList.updateOne(
+            { _id: list._id }, // use validated list's _id
             { $push: { tasks: task._id } }
         );
 
