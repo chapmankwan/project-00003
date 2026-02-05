@@ -8,7 +8,7 @@ import TodoList from "@/models/TodoList";
 import Task from "@/models/Task";
 
 export async function POST(
-    req: NextRequest,
+    _req: NextRequest,
 	context: { params: Promise<{listId: string}>},
 ) {
     try {
