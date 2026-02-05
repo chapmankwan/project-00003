@@ -1,6 +1,8 @@
 import { connectToDatabase } from "@/lib/mongodb";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+
+import "@/models/Task";
 import TodoList from "@/models/TodoList";
 import { NextRequest, NextResponse } from "next/server";
 import { toSlug } from "@/app/utilities";
@@ -18,25 +20,20 @@ export async function GET( req: NextRequest ) {
 
 		await connectToDatabase();
 
-		// let lists;
 		const collection = await Collection.findOne({
 			_id: collectionId,
 			userId: session.user.id,
 		})
-		.populate("todoLists")
+		.populate({
+			path: "todoLists",
+			populate: {
+				path: "tasks",
+				select: "_id completed",
+			},
+		})
 		.lean();
 
-		// if (!collectionId) {
-		// 	lists = await TodoList.find({
-		// 		userId: new mongoose.Types.ObjectId(session.user.id)
-		// 	})
-		// } else {
-		// 	// Temp so we are able to grab all the todolists in /workspaces
-		// 	lists = await TodoList.find({
-		// 		userId: new mongoose.Types.ObjectId(session.user.id),
-		// 		collectionId,
-		// 	});
-		// };
+		if (!collection) return NextResponse.json( {message: "Collection not found"}, {status: 404} );
 
 		return NextResponse.json(collection, { status: 200 });
 		

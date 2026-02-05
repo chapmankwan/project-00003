@@ -42,10 +42,11 @@ export default function Collections () {
         const collection = await res.json();
         if (!collection ) return;
 
-        const list = collection.todoLists;
+        const todoLists = collection.todoLists;
+        console.log("+++ collection.todolist", todoLists);
 
-        if (list.length) {
-            setAllTaskLists(list.reverse());
+        if (todoLists.length) {
+            setAllTaskLists(todoLists.reverse());
         }
     }, [params.id]);
 
