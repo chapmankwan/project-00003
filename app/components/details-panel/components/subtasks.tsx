@@ -84,6 +84,10 @@ export const SubTasks = ({
             {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    ...subTask,
+                    completed: true,
+            }),
             }
             );
 
