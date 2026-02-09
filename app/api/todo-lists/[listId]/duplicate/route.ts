@@ -3,9 +3,7 @@ import { connectToDatabase } from "@/lib/mongodb";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
-import Collection from "@/models/Collection";
-import TodoList from "@/models/TodoList";
-import Task from "@/models/Task";
+import { Collection, Task, TodoList } from "@/models";
 
 export async function POST(
     _req: NextRequest,

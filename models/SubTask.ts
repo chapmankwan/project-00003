@@ -1,4 +1,4 @@
-import mongoose, { Schema, Types } from "mongoose";
+import { Schema, Types } from "mongoose";
 
 const SubTaskSchema = new Schema(
 	{
@@ -42,5 +42,4 @@ const SubTaskSchema = new Schema(
 	{ timestamps: true }
 );
 
-export default mongoose.models.SubTask ||
-  mongoose.model("SubTask", SubTaskSchema);
+export default SubTaskSchema;

@@ -4,7 +4,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/mongodb";
 
-import TodoList from "@/models/TodoList";
+import { TodoList } from "@/models";
+
 import { Task } from "@/models/interfaces";
 
 export async function PATCH(

@@ -3,6 +3,8 @@
 // dotenv.config({ path: ".env.local" });
 
 import mongoose from "mongoose";
+// Initialize the DB models per connectToDatabase();
+import "@/models";
 
 const MONGODB_URI = process.env.MONGODB_URI as string;
 

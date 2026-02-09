@@ -2,12 +2,13 @@ import { connectToDatabase } from "@/lib/mongodb";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
-import "@/models/Task";
-import TodoList from "@/models/TodoList";
+// import "@/models/Task";
 import { NextRequest, NextResponse } from "next/server";
 import { toSlug } from "@/app/utilities";
 import mongoose from "mongoose";
-import Collection from "@/models/Collection";
+
+import { Collection, TodoList } from "@/models";
+
 
 export async function GET( req: NextRequest ) {
 

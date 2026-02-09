@@ -29,4 +29,4 @@ const CollectionSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-export default mongoose.models.Collection || mongoose.model("Collection", CollectionSchema);
+export default CollectionSchema

@@ -2,8 +2,7 @@ import { connectToDatabase } from "@/lib/mongodb";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
-import Task from "@/models/Task";
-import TodoList from "@/models/TodoList";
+import { Task, TodoList } from "@/models";
 
 import { NextRequest, NextResponse } from "next/server";
 
