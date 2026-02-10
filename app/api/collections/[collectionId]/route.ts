@@ -2,7 +2,7 @@ import { authOptions } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/mongodb";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
-import Collection from "@/models/Collection";
+import { Collection } from "@/models";
 
 import mongoose from "mongoose";
 

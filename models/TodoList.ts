@@ -29,4 +29,4 @@ const TodoListSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
-export default mongoose.models.TodoList || mongoose.model("TodoList", TodoListSchema);
+export default TodoListSchema;
