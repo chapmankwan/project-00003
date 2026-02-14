@@ -34,6 +34,19 @@ const TaskSchema = new mongoose.Schema({
         type: Number, 
         required: true 
     },
+    type: {
+        type: String,
+        enum: ["normal", "daily-instance"],
+        default: "normal",
+        index: true,
+    },
+
+    templateId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "DailyTaskTemplate",
+        default: null,
+        index: true,
+    },
     priority: { 
         type: String,
         enum: ["minor", "moderate", "major"],
