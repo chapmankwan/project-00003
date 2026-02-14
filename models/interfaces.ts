@@ -19,6 +19,8 @@ export interface Task {
     order: number;
     description?: string;
     subTasks?: SubTask[];
+    type: "normal" | "daily-instance";
+    templateId?: Types.ObjectId; // if generated from template
 }
 
 export interface SubTask {
@@ -45,4 +47,13 @@ export interface Collection {
   description?: string;
   dateCreated: Date;
   todoLists?: TodoListModel[]
+}
+
+export interface DailyTaskTemplate {
+  _id: Types.ObjectId;
+  userId: Types.ObjectId;
+  text: string;
+  isActive: boolean; // use this to toggle daily without deletion
+  createdAt: Date;
+  updatedAt: Date;
 }

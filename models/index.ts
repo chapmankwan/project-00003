@@ -1,13 +1,18 @@
 import mongoose from "mongoose";
 
 import CollectionSchema from "./Collection";
-import TodoListSchema from "./TodoList";
-import TaskSchema from "./Task";
+import DailyTaskTemplateSchema from "./DailyTaskTemplate";
 import SubTaskSchema from "./SubTask";
+import TaskSchema from "./Task";
+import TodoListSchema from "./TodoList";
 
 export const Collection =
   mongoose.models.Collection ||
   mongoose.model("Collection", CollectionSchema);
+
+export const DailyTaskTemplate =
+  mongoose.models.DailyTaskTemplate ||
+  mongoose.model("DailyTaskTemplate", DailyTaskTemplateSchema);
 
 export const TodoList =
   mongoose.models.TodoList ||
