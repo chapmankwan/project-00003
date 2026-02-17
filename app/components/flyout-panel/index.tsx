@@ -89,9 +89,9 @@ export const FlyoutPanel =({
     };
 
 	const handleResetAllStates = () => {
-		setDescription("");
-		setSelectedPriority("moderate");
+        setSelectedPriority("moderate");
 		setTitleInput("");
+		setDescription("");
 	};
 
     const onSubmitHandler = async (event: React.FormEvent) => {
@@ -161,7 +161,7 @@ export const FlyoutPanel =({
                         panelType.description.length > 0 &&
                         <div className="flex flex-col gap-1">
                             <span className="text-sm">{panelType.description}</span>
-                            <textarea rows={5} className="p-2 border border-solid border-lavender-400 rounded-md h-50" onChange={e => setDescription(e.target.value)}/>
+                            <textarea rows={5} className="p-2 border border-solid border-lavender-400 rounded-md h-50" onChange={e => setDescription(e.target.value)} value={description}/>
                         </div>
                     }
                     {/* <div className="flex flex-col gap-1">
