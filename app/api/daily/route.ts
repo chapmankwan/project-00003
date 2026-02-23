@@ -5,8 +5,10 @@ import { connectToDatabase } from "@/lib/mongodb";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
+import mongoose from "mongoose";
+
 import { Daily, DailyTask, DailyTaskTemplate } from "@/models";
-import { getUTCStartOfDayPT } from "@/lib/date";
+// import { getUTCStartOfDayPT } from "@/lib/date";
 
 // export async function GET () {
 //     try {
@@ -26,88 +28,99 @@ import { getUTCStartOfDayPT } from "@/lib/date";
 //         return new NextResponse( "Internal Server Error", { status: 500 })
 //     };
 // };
-export async function GET(req: NextRequest) {
+export async function GET() {
     try {
         const session = await getServerSession(authOptions);
-        if (!session?.user?.id)
+        if (!session?.user?.id) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
 
         await connectToDatabase();
 
-        const { searchParams } = new URL(req.url);
-        const dateParam = searchParams.get("date");
+        // temp fix with getUTCStartOfDayPT
+        const todayUTC = new Date();
+        todayUTC.setUTCHours(0, 0, 0, 0);
 
-        // this shouldn't really ever be undefined
-        const dayUTC = getUTCStartOfDayPT(dateParam || undefined);
-
-        // 1. Find existing daily
-        let daily = await Daily.findOne({
+        const dailyList = await Daily.findOne({
             userId: session.user.id,
-            date: dayUTC,
-        }).populate("tasks");
+            date: todayUTC,
+        }).populate({
+            path: "tasks",
+            options: { sort: { order: 1 } },
+        });
 
-        if (daily) {
-            return NextResponse.json(daily, { status: 200 });
+        if (dailyList) {
+            return NextResponse.json(dailyList, { status: 200 });
         }
 
-        // 2. If not found → generate from templates
-        const templates = await DailyTaskTemplate.find({
-            userId: session.user.id,
-        });
+        // 3️⃣ If not found → generate inside transaction
+        const mongoSession = await mongoose.startSession();
+        mongoSession.startTransaction();
 
-        const createdTasks = await DailyTask.insertMany(
-            templates.map((template) => ({
+        try {
+            // Get templates
+            const templates = await DailyTaskTemplate.find({
                 userId: session.user.id,
-                templateId: template._id,
-                title: template.title,
-                date: dayUTC,
-                completed: false,
-            }))
-        );
+            })
+                .sort({ order: 1 })
+                .session(mongoSession);
 
-        daily = await Daily.create({
-            userId: session.user.id,
-            date: dayUTC,
-            tasks: createdTasks.map((t) => t._id),
-        });
+            // Create Daily document
+            const newDaily = await Daily.create(
+                [
+                    {
+                        userId: session.user.id,
+                        date: todayUTC,
+                        tasks: [],
+                    },
+                ],
+                { session: mongoSession }
+            );
 
-        daily = await daily.populate("tasks");
+            const dailyDoc = newDaily[0];
 
-        return NextResponse.json(daily, { status: 201 });
+            // Create DailyTask instances
+            const dailyTasks = await DailyTask.insertMany(
+                templates.map((template, index) => ({
+                    userId: session.user.id,
+                    dailyId: dailyDoc._id,
+                    templateId: template._id,
+                    title: template.title,
+                    description: template.description,
+                    priority: template.priority,
+                    completed: false,
+                    order: index,
+                })),
+                { session: mongoSession }
+            );
+
+            // Attach task IDs to Daily
+            dailyDoc.tasks = dailyTasks.map((t) => t._id);
+            await dailyDoc.save({ session: mongoSession });
+
+            await mongoSession.commitTransaction();
+            mongoSession.endSession();
+
+            // Re-fetch populated
+            const populatedDaily = await Daily.findById(dailyDoc._id).populate({
+                path: "tasks",
+                options: { sort: { order: 1 } },
+            });
+
+            return NextResponse.json(populatedDaily, { status: 200 });
+        } catch (err) {
+            await mongoSession.abortTransaction();
+            mongoSession.endSession();
+            throw err;
+        }
     } catch (err) {
-        console.error("Error fetching daily:", err);
+        console.error("Error in GET /api/daily:", err);
         return NextResponse.json(
-            { error: "Internal Server Error" },
+            { message: "Internal Server Error" },
             { status: 500 }
         );
     }
-}
-
-// export async function POST (req: NextRequest) {
-//     try {
-//         const session = await getServerSession(authOptions);
-//         if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        
-//         await connectToDatabase();
-
-//         const body = await req.json();
-//         if (!body.text.trim()) return NextResponse.json( {message: "Text is required"}, {status: 400} );
-
-//         const dailyTask = await DailyTaskTemplate.create({
-//             userId: session.user.id,
-//             text: body.text.trim(),
-//             description: body.description || "",
-//             priority: body.priority ?? 0,
-//             isActive: true,
-//         });
-
-//         return NextResponse.json(dailyTask, { status: 201 });
-
-//     } catch (err) {
-//         console.error( "Error creating a new daily task template", err ); 
-//         return new NextResponse( "Internal Server Error", { status: 500 })
-//     };
-// };
+};
 
 export async function POST(req: NextRequest) {
     try {

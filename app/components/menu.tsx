@@ -104,6 +104,13 @@ export const Menu = () => {
                         >
                             Collections
                         </Link>
+                        <Link 
+                            onClick={() => setIsMenuOpen(false)} 
+                            className={menuTailwindCss} 
+                            href="/dailies"
+                        >
+                            Dailies
+                        </Link>
                         <Link
                             onClick={() => setIsMenuOpen(false)}
                             className={menuTailwindCss}

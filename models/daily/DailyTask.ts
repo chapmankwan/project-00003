@@ -26,7 +26,7 @@ const DailyTaskSchema = new Schema({
 
   date: {
     type: String,
-    required: true,
+    // required: true,
     index: true
   },
 

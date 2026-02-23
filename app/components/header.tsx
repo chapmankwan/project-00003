@@ -38,6 +38,7 @@ export const Header = () => {
                     </>
                     :
                     <>
+                        <Link href="/dailies">Dailies</Link>
                         <Link href="/collections">Collections</Link>
                         {/* <Link href="/workspaces">Workspaces</Link> */}
                         <Link href="/account">Account</Link>
