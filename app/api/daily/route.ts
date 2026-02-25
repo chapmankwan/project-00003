@@ -85,7 +85,7 @@ export async function GET() {
                     userId: session.user.id,
                     dailyId: dailyDoc._id,
                     templateId: template._id,
-                    title: template.title,
+                    text: template.text,
                     description: template.description,
                     priority: template.priority,
                     completed: false,

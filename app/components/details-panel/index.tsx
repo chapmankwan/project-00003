@@ -13,7 +13,7 @@ interface DetailPanelModel {
     deleteTask: (taskId: Types.ObjectId) => void;
     task: Task;
     onClose: () => void;
-    updateTask: (payload: {
+    updateTask?: (payload: {
         text: string,
         priority: string,
         description?: string
@@ -67,7 +67,7 @@ export const DetailsPanel =({
         if (descriptionInput.length) {
             description = descriptionInput;
         }
-        updateTask({text: editTaskInput, priority: selectedPriority, description});
+        if (updateTask) updateTask({text: editTaskInput, priority: selectedPriority, description});
         setTaskTitle(editTaskInput);
         setIsEditingTask(false);
     };
