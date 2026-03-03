@@ -67,6 +67,8 @@ export const DetailsPanel =({
         if (descriptionInput.length) {
             description = descriptionInput;
         }
+
+        console.log("+++ editTaskInput", editTaskInput)
         if (updateTask) updateTask({text: editTaskInput, priority: selectedPriority, description});
         setTaskTitle(editTaskInput);
         setIsEditingTask(false);
@@ -99,7 +101,7 @@ export const DetailsPanel =({
                 </div>
 
                 <div className="flex flex-col p-4 max-h-[calc(75dvh-61px)] overflow-y-auto">
-                    <TaskTitle taskTitle={taskTitle} deleteTask={handleDeleteTask} isEditing={isEditingTask} setIsEditing={setIsEditingTask}/>
+                    <TaskTitle taskTitle={taskTitle} editTaskInput={editTaskInput} deleteTask={handleDeleteTask} isEditing={isEditingTask} setEditTaskInput={setEditTaskInput} setIsEditing={setIsEditingTask}/>
 
                     <p className="text-mint-400 text-xs">{task.edited ? "edited" : ""}</p>
 

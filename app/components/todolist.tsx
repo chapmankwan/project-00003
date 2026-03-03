@@ -252,11 +252,13 @@ export const TodoList = ({id}: { id:string}) => {
             priority: priority
         });
 
+        console.log("+++ updatedTaskRes", updatedTaskRes);
+
         setTasks((prevTasks) => {
             return (
                 prevTasks.map( (t) => {
                     return (
-                        t._id?.toString() === updatedTaskRes.task._id?.toString() ? updatedTaskRes.task : t
+                        t._id?.toString() === updatedTaskRes?.task?._id?.toString() ? updatedTaskRes.task : t
                     )
                 })
             )
