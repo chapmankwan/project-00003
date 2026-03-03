@@ -5,29 +5,8 @@ import { connectToDatabase } from "@/lib/mongodb";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
-import mongoose from "mongoose";
-
 import { Daily, DailyTask, DailyTaskTemplate } from "@/models";
-// import { getUTCStartOfDayPT } from "@/lib/date";
 
-// export async function GET () {
-//     try {
-// 		const session = await getServerSession(authOptions);
-//         if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        
-//         await connectToDatabase();
-
-//         const dailyTasks = await DailyTaskTemplate.find({ userId: session.user.id })
-//             .sort({ order: 1, createdAt: 1 })
-//             .lean();
-
-//         return NextResponse.json(dailyTasks, { status: 200 });
-
-//     } catch (err) {
-//         console.error( "Error fetching daily tasks", err );
-//         return new NextResponse( "Internal Server Error", { status: 500 })
-//     };
-// };
 export async function GET() {
     try {
         const session = await getServerSession(authOptions);
@@ -37,7 +16,6 @@ export async function GET() {
 
         await connectToDatabase();
 
-        // temp fix with getUTCStartOfDayPT
         const todayUTC = new Date();
         todayUTC.setUTCHours(0, 0, 0, 0);
 
@@ -53,66 +31,41 @@ export async function GET() {
             return NextResponse.json(dailyList, { status: 200 });
         }
 
-        // 3️⃣ If not found → generate inside transaction
-        const mongoSession = await mongoose.startSession();
-        mongoSession.startTransaction();
+        // Not found — generate today's daily from templates
+        const templates = await DailyTaskTemplate.find({
+            userId: session.user.id,
+        }).sort({ order: 1 });
 
-        try {
-            // Get templates
-            const templates = await DailyTaskTemplate.find({
+        const newDaily = await Daily.create({
+            userId: session.user.id,
+            date: todayUTC,
+            tasks: [],
+        });
+
+        const dailyTasks = await DailyTask.insertMany(
+            templates.map((template, index) => ({
                 userId: session.user.id,
-            })
-                .sort({ order: 1 })
-                .session(mongoSession);
+                dailyId: newDaily._id,
+                templateId: template._id,
+                date: todayUTC,          // ← this was missing
+                text: template.text,
+                description: template.description,
+                priority: template.priority,
+                completed: false,
+                order: index,
+            }))
+        );
 
-            // Create Daily document
-            const newDaily = await Daily.create(
-                [
-                    {
-                        userId: session.user.id,
-                        date: todayUTC,
-                        tasks: [],
-                    },
-                ],
-                { session: mongoSession }
-            );
+        newDaily.tasks = dailyTasks.map((t) => t._id);
+        await newDaily.save();
 
-            const dailyDoc = newDaily[0];
+        const populatedDaily = await Daily.findById(newDaily._id).populate({
+            path: "tasks",
+            options: { sort: { order: 1 } },
+        });
 
-            // Create DailyTask instances
-            const dailyTasks = await DailyTask.insertMany(
-                templates.map((template, index) => ({
-                    userId: session.user.id,
-                    dailyId: dailyDoc._id,
-                    templateId: template._id,
-                    text: template.text,
-                    description: template.description,
-                    priority: template.priority,
-                    completed: false,
-                    order: index,
-                })),
-                { session: mongoSession }
-            );
+        return NextResponse.json(populatedDaily, { status: 200 });
 
-            // Attach task IDs to Daily
-            dailyDoc.tasks = dailyTasks.map((t) => t._id);
-            await dailyDoc.save({ session: mongoSession });
-
-            await mongoSession.commitTransaction();
-            mongoSession.endSession();
-
-            // Re-fetch populated
-            const populatedDaily = await Daily.findById(dailyDoc._id).populate({
-                path: "tasks",
-                options: { sort: { order: 1 } },
-            });
-
-            return NextResponse.json(populatedDaily, { status: 200 });
-        } catch (err) {
-            await mongoSession.abortTransaction();
-            mongoSession.endSession();
-            throw err;
-        }
     } catch (err) {
         console.error("Error in GET /api/daily:", err);
         return NextResponse.json(
@@ -120,7 +73,7 @@ export async function GET() {
             { status: 500 }
         );
     }
-};
+}
 
 export async function POST(req: NextRequest) {
     try {

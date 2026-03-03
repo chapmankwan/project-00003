@@ -22,7 +22,7 @@ const DailyTaskTemplateSchema = new Schema(
 
     priority: {
       type: String,
-      enum: ["low", "moderate", "high"],
+      enum: ["minor", "moderate", "major"],
       default: "moderate",
       index: true,
     },
