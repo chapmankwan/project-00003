@@ -2,6 +2,7 @@ import "@/models";
 
 import { authOptions } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/mongodb";
+import { shouldIncludeTemplate } from "@/lib/date";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -36,6 +37,10 @@ export async function GET() {
             userId: session.user.id,
         }).sort({ order: 1 });
 
+        const applicableTemplates = templates.filter(t =>
+            shouldIncludeTemplate(t.recurrence ?? "FREQ=DAILY", todayUTC)
+        );
+
         const newDaily = await Daily.create({
             userId: session.user.id,
             date: todayUTC,
@@ -53,6 +58,7 @@ export async function GET() {
                 priority: template.priority,
                 completed: false,
                 order: index,
+                recurrence: applicableTemplates,
             }))
         );
 

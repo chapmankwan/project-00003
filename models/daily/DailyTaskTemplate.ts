@@ -38,13 +38,13 @@ const DailyTaskTemplateSchema = new Schema(
       index: true,
     },
 
-    // future-proofing recurrence
     recurrence: {
-      kind: {
-        type: String,
-        enum: ["daily"],
-        default: "daily",
-      },
+      type: String,
+      default: "FREQ=DAILY",
+        // FREQ=DAILY
+        // FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR
+        // FREQ=MONTHLY;BYMONTHDAY=1
+        // FREQ=YEARLY;BYMONTH=7;BYMONTHDAY=4 
     },
   },
   { timestamps: true }
