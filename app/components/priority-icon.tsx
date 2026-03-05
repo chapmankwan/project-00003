@@ -3,13 +3,15 @@ import { ChevronDoubleUpIcon, ChevronDownIcon, MinusIcon } from "@heroicons/reac
 import clsx from "clsx"
 
 interface PriorityIcon {
-    priority: string
+    priority: string;
+    showText?: boolean;
 }
 
 const DEFAULT_ICON_SIZE = "size-4"
 
 export const PriorityIcon = ({
-    priority
+    priority,
+    showText = false,
 }: PriorityIcon) => {
     let priorityNode: React.ReactNode
 
@@ -37,8 +39,9 @@ export const PriorityIcon = ({
     }
 
     return (
-        <span className="mr-1">
+        <span className="flex gap-1 mr-1">
             { priorityNode }
+            { showText && priority}
         </span>
     )
 

@@ -1,20 +1,22 @@
-import { useState } from "react";
 import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
 
 interface TaskTitleProps {
     isEditing: boolean;
     setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
+    setEditTaskInput: React.Dispatch<React.SetStateAction<string>>;
     taskTitle: string;
+    editTaskInput: string;
     deleteTask: () => void;
 };
 
 export const TaskTitle = ({
     isEditing,
     setIsEditing,
+    setEditTaskInput,
+    editTaskInput,
     taskTitle,
     deleteTask
 }: TaskTitleProps) => {
-    const [editTaskInput, setEditTaskInput] = useState(taskTitle);
 
     return (
         <div className="flex items-center justify-between h-[50px]">
