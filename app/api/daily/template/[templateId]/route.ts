@@ -66,7 +66,6 @@ import { Types } from "mongoose";
 //             );
 
 //             await existingDaily.save();
-//             console.log("+++ existingDaily updated", existingDaily);
 //         };
 
 //         return NextResponse.json(patchedDailyTaskTemplate, {status: 200});

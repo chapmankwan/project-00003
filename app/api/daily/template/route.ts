@@ -87,7 +87,6 @@ export async function POST(
 
             existingDaily.tasks.push(newDailyTask._id);
             await existingDaily.save();
-            console.log("+++ existingDaily updated", existingDaily);
         };
 
         return NextResponse.json(dailyTaskTemplate, { status: 201 });

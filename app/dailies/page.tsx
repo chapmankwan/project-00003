@@ -14,7 +14,6 @@ export default function DailyPage() {
                 if (!getDailiesResponse.ok) throw new Error("Failed to get list for daily tasks");
                 const dailiesList = await getDailiesResponse.json();
 
-                console.log("+++ list", dailiesList);
                 setList(dailiesList);
             } catch (err) {
                 console.error("There was an error loading the tasks, check logs", err);

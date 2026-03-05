@@ -49,7 +49,6 @@ export default function TemplatesPage () {
 
             setDailyTasks([...dailyTasks, newTask])
 
-            console.log("+++ newTask", newTask);
         } catch (err) {
             console.error("Failed to add task", err);
         }
