@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 
 import { FlyoutPanel, MoveableFab, PriorityIcon } from "@/app/components";
+import { rruleToHumanReadable } from "@/app/utilities/rrule";
 
 import { useRouter } from 'next/navigation';
 
@@ -15,6 +16,7 @@ interface DailyTaskTemplateModel {
     description?: string;
     order: number;
     priority: "minor" | "moderate" | "major";
+    recurrence: string;
 };
 
 export default function TemplatesPage () {
@@ -24,47 +26,48 @@ export default function TemplatesPage () {
     const [isFlyoutOpen, setIsFlyoutOpen] = useState(false);
     const [dailyTasks, setDailyTasks] = useState<DailyTaskTemplateModel[]>([]);
 
-    const addTask = async (text:string, priority: string = "moderate", description?: string, ) => {
-        if (!text.trim()) return;
+    const addHabit = async (text: string, priority: string, description?: string, recurrence?: string) => {
 
-        const order = dailyTasks.length;
-        
+        console.log("+++ recurrence", recurrence);
         try {
             const response = await fetch(`/api/daily/template`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ 
-                    text: text, 
-                    priority: priority, 
-                    order: order,
-                    description: description, 
-                 }),
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    text: text,
+                    priority: priority,
+                    description: description,
+                    recurrence: recurrence
+                })
             });
+            const savedHabit = await response.json();
 
-            if (!response.ok) {
-                throw new Error(`Failed to save task: ${response.statusText}`);
-            }
-
-            const newTask = await response.json();
-
-            setDailyTasks([...dailyTasks, newTask])
-
+            console.log("+++ HELP ME HELP YOU", savedHabit)
+            // justAddedRef.current = true;
+            setDailyTasks([...dailyTasks, savedHabit])
         } catch (err) {
-            console.error("Failed to add task", err);
+            console.error("Error saving habit", err);
+            throw err
         }
-    };
+    }
 
     const deleteTask = async ( templateId: Types.ObjectId ) => {
-        const res = await fetch(`/api/daily/template/${templateId}`,
-            {
-                method: "DELETE",
-                headers: { "Content-Type": "application/json" },
-            }
-        );
-
-        if (!res.ok) throw new Error("Failed to delete template");
-
-        return res.json();
+        try {
+            const res = await fetch(`/api/daily/template/${templateId}`,
+                {
+                    method: "DELETE",
+                    headers: { "Content-Type": "application/json" },
+                }
+            );
+        
+            if (!res.ok) throw new Error("Failed to delete template");
+            await res.json();
+            return setDailyTasks((prev) => prev.filter( t => t._id?.toString() !== templateId.toString()))
+        } catch (err) {
+            console.error("Error deleting habit", err);
+        }
     }
 
     useEffect( () => {
@@ -129,6 +132,10 @@ export default function TemplatesPage () {
                                         {task.description}
                                     </span>
 
+                                    <span className="text-xs text-mono-300">
+                                        Recurrence: {rruleToHumanReadable(task.recurrence)}
+                                    </span>
+
                                     <div className="flex ml-auto gap-3 text-sm mt-auto">
                                         <button 
                                             // onClick={() => deleteTask(task._id)}
@@ -157,7 +164,7 @@ export default function TemplatesPage () {
                 isFlyoutOpen && 
                 <FlyoutPanel 
                     onClose={() => setIsFlyoutOpen(false)}
-                    onSubmit={({text, priority, description} ) => addTask(text, priority, description)}
+                    onSubmit={({text, priority, description, recurrence} ) => addHabit(text, priority, description, recurrence)}
                     panelTitle="Create a Daily Task"
                     type="todo"
                 />

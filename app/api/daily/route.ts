@@ -8,7 +8,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { Daily, DailyTask, DailyTaskTemplate } from "@/models";
 
-export async function GET() {
+export async function GET(
+    req: NextRequest,
+) {
     try {
         const session = await getServerSession(authOptions);
         if (!session?.user?.id) {
@@ -17,16 +19,20 @@ export async function GET() {
 
         await connectToDatabase();
 
-        const todayUTC = new Date();
-        todayUTC.setUTCHours(0, 0, 0, 0);
+        const { searchParams } = new URL(req.url);
+        const dateParam = searchParams.get("date");
+
+        const todayUTC = dateParam
+            ? new Date(`${dateParam}T00:00:00.000Z`)
+            : (() => { const d = new Date(); d.setUTCHours(0, 0, 0, 0); return d; })();
 
         const dailyList = await Daily.findOne({
-            userId: session.user.id,
-            date: todayUTC,
-        }).populate({
-            path: "tasks",
-            options: { sort: { order: 1 } },
-        });
+                userId: session.user.id,
+                date: todayUTC,
+            }).populate({
+                path: "tasks",
+                options: { sort: { order: 1 } },
+            });
 
         if (dailyList) {
             return NextResponse.json(dailyList, { status: 200 });

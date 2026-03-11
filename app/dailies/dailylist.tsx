@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 
-import { DetailsPanel, FlyoutPanel, Loader, Todo } from "@/app/components";
+import { DetailsPanel, Loader, Todo } from "@/app/components";
 // import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import type { Task } from "@/models/interfaces";
 
@@ -28,7 +28,7 @@ import {
     verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 
-export const DailyList = ({listId, initialTasks}: { listId:string, initialTasks?: Task[] }) => {
+export const DailyList = ({listId, dateString, initialTasks}: { listId:string, dateString:string, initialTasks?: Task[] }) => {
 
     const router = useRouter();
 
@@ -38,8 +38,6 @@ export const DailyList = ({listId, initialTasks}: { listId:string, initialTasks?
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
     const [isEditingTitle, setIsEditingTitle] = useState(false);
-
-    const [isFlyoutOpen, setIsFlyoutOpen] = useState(false);
 
     // Drag n Drop
     const sensors = useSensors(
@@ -85,7 +83,7 @@ export const DailyList = ({listId, initialTasks}: { listId:string, initialTasks?
     useEffect(() => {
         // Scroll to the latest task
         const timer = setTimeout(() => {
-            if (isFlyoutOpen && lastTaskRef.current) {
+            if (lastTaskRef.current) {
                 lastTaskRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 // Makes sure to reset the reference point for next task added
                 justAddedRef.current = false;
@@ -93,7 +91,7 @@ export const DailyList = ({listId, initialTasks}: { listId:string, initialTasks?
         }, 300);
         
         return () => clearTimeout(timer)
-    }, [tasks, isFlyoutOpen]);
+    }, [tasks]);
 
     useEffect(() => {
         if( titleInputRef.current ) titleInputRef.current.focus();
@@ -135,17 +133,19 @@ export const DailyList = ({listId, initialTasks}: { listId:string, initialTasks?
 
                 <button onClick={() => setIsEditingTitle(true)} className="font-bold cursor-default p-1">Dailies</button>
 
-                <Link href="/dailies/templates" className="px-3 py-1 ml-auto bg-mint-700 rounded-md">
-                    to daily templates
+                <Link href="/dailies/templates" className="px-1.5 py-0.5 ml-auto bg-mint-600 hover:bg-mint-700 rounded-sm">
+                    create a habit
                 </Link>
             </section>
+
+            <h1 className="pb-2 font-bold text-lavender-400">{dateString}</h1>
 
             {
                 loading ? 
                 <Loader/> :
                 <ul className={clsx(
                     "w-[85%] md:w-2/3 flex-grow overflow-y-auto overflow-x-hidden mb-4 flex flex-col rounded-md touch-pan-y scrollbar-soft",
-                    isFlyoutOpen ? "transition-[max-height] max-h-[47dvh] duration-300 md:max-h-none" : "transition-[max-height] duration-300 max-h-[100dvh]"
+                    "transition-[max-height] duration-300 max-h-[100dvh]"
                     )}>
                     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                         <SortableContext items={tasks.map(t => t._id.toString())} strategy={verticalListSortingStrategy}>
@@ -182,15 +182,6 @@ export const DailyList = ({listId, initialTasks}: { listId:string, initialTasks?
                     listId={listId}
                 />
             )}
-
-            {
-                isFlyoutOpen && 
-                <FlyoutPanel 
-                    onClose={() => setIsFlyoutOpen(false)}
-                    panelTitle="New Task"
-                    type="todo"
-                />
-            }
         </div>
     );
 };
