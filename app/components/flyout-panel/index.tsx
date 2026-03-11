@@ -40,8 +40,6 @@ export const FlyoutPanel =({
     const [isAddMoreSelected, setIsAddMoreSelected] = useState(false);
     const [selectedRecurrence, setSelectedRecurrence] = useState<string>("");
 
-    console.log("+++ selectedRecurrence", selectedRecurrence)
-
     let panelType = {
         cancelButton: "Cancel",
         submitButton: "Submit",
@@ -102,8 +100,6 @@ export const FlyoutPanel =({
     const onSubmitHandler = async (event: React.FormEvent) => {
         event.preventDefault();
         if (!titleInput.trim().length || !onSubmit) return;
-
-        console.log("+++ selectedRecurrence onSubmit", selectedRecurrence);
 
         try {
             await onSubmit({
@@ -172,12 +168,7 @@ export const FlyoutPanel =({
                             <textarea rows={5} className="p-2 border border-solid border-lavender-400 rounded-md h-25" onChange={e => setDescription(e.target.value)} value={description}/>
                         </div>
                     }
-                    {/* <div className="flex flex-col gap-1">
-                        <span className="text-sm">Due date</span>
-                        <div className="p-2 w-fit bg-mint-700 rounded-md text-xs">
-                            coming soon&#8482;...
-                        </div>
-                    </div> */}
+
                     <RecurrenceSelector onChange={(rrule) => setSelectedRecurrence(rrule) }/>
 
                     {

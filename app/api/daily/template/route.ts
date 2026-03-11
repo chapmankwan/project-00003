@@ -33,9 +33,6 @@ export async function POST(
         const session = await getServerSession(authOptions);
         if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-            console.log("content-type:", req.headers.get("content-type"));
-
-
         await connectToDatabase();
 
         const { 
@@ -56,8 +53,6 @@ export async function POST(
 
         // use database order
         const nextOrder = lastTemplate ? lastTemplate.order + 1 : order;
-
-        console.log("+++ recurrence in post", recurrence);
 
         const dailyTaskTemplate = await DailyTaskTemplate.create({
             userId: session.user.id,
@@ -97,10 +92,6 @@ export async function POST(
             existingDailyList.tasks.push(newDailyTask._id);
             await existingDailyList.save();
         };
-
-        console.log(
-            "+++ we are here", 
-        )
 
         return NextResponse.json(dailyTaskTemplate, { status: 201 });
         

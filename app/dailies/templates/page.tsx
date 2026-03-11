@@ -28,7 +28,6 @@ export default function TemplatesPage () {
 
     const addHabit = async (text: string, priority: string, description?: string, recurrence?: string) => {
 
-        console.log("+++ recurrence", recurrence);
         try {
             const response = await fetch(`/api/daily/template`, {
                 method: "POST",
@@ -43,9 +42,6 @@ export default function TemplatesPage () {
                 })
             });
             const savedHabit = await response.json();
-
-            console.log("+++ HELP ME HELP YOU", savedHabit)
-            // justAddedRef.current = true;
             setDailyTasks([...dailyTasks, savedHabit])
         } catch (err) {
             console.error("Error saving habit", err);
