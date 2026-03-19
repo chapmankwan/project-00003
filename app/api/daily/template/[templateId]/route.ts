@@ -9,7 +9,7 @@ import { Types } from "mongoose";
 
 export async function PATCH(
     req: NextRequest,
-    context: { params: Promise<{templateId: Types.ObjectId}>}
+    context: { params: Promise<{templateId: string}> }
 ) {
     try {
         const session = await getServerSession(authOptions);
