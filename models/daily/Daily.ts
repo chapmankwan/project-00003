@@ -5,7 +5,7 @@ const DailySchema = new Schema({
   userId: Types.ObjectId,
 
   date: {
-    type: String,
+    type: Date,
     required: true
   },
 

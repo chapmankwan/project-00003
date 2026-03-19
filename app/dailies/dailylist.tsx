@@ -12,22 +12,6 @@ import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 
 import clsx from "clsx";
 
-import {
-    DndContext,
-    closestCenter,
-    PointerSensor,
-    TouchSensor,
-    useSensor,
-    useSensors,
-    type DragEndEvent,
-} from "@dnd-kit/core";
-
-import {
-    // arrayMove,
-    SortableContext,
-    verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-
 export const DailyList = ({listId, dateString, initialTasks}: { listId:string, dateString:string, initialTasks?: Task[] }) => {
 
     const router = useRouter();
@@ -36,36 +20,8 @@ export const DailyList = ({listId, dateString, initialTasks}: { listId:string, d
     const [tasks, setTasks] = useState<Task[]>(initialTasks || []);
     const [loading, setLoading] = useState(true);
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-
+    
     const [isEditingTitle, setIsEditingTitle] = useState(false);
-
-    // Drag n Drop
-    const sensors = useSensors(
-        useSensor(PointerSensor, {
-            activationConstraint: {
-                distance: 8,
-            },
-        }),
-        useSensor(TouchSensor),
-    );
-
-    const handleDragEnd = (event: DragEndEvent) => {
-        console.log("+++ temp for drag, the api we use is still on todo-lists", event)
-        // const { active, over } = event;
-        // if (active.id !== over?.id) {
-        //     const oldIndex = tasks.findIndex(t => t._id.toString() === active.id);
-        //     const newIndex = tasks.findIndex(t => t._id.toString() === over?.id);
-        //     const reordered = arrayMove(tasks, oldIndex, newIndex);
-        //     setTasks(reordered);
-
-        //     // sync to server
-        //     fetch(`/api/todo-lists/${listId}/tasks/reorder`, {
-        //         method: "PATCH",
-        //         headers: { "Content-Type": "application/json" },
-        //         body: JSON.stringify({ orderedIds: reordered?.map(t => t._id.toString()) }),
-        //     });
-        // }
-    };
 
     const openDetails = (task: Task) => setSelectedTask(task);
     const closeDetails = () => setSelectedTask(null);
@@ -98,7 +54,7 @@ export const DailyList = ({listId, dateString, initialTasks}: { listId:string, d
     },[isEditingTitle])
 
     const toggleTaskCompletion = async (task: Task) => {
-        if (!task?._id) return;
+        if (!task || !task._id) return;
 
         // Optimistic update visually
         setTasks((prev) =>
@@ -109,15 +65,30 @@ export const DailyList = ({listId, dateString, initialTasks}: { listId:string, d
             )
         );
 
-        // try {
-        //     // finalize from backend if necessary
-        //     setTasks(prev =>
-        //         prev.map(t => (t._id === updatedTaskRes._id ? updatedTaskRes : t))
-        //     );
+        try {
+            const response = await fetch(`/api/daily/${listId}/habit/${task._id}`,
+                {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                }
+            );
+            console.log("+++ response", response);
 
-        // } catch (err) {
-        //     console.error(err);
-        // }
+            if (!response.ok) console.error("There was an error with the toggle response", response.statusText)
+    
+            const data = await response.json();
+            console.log("+++ data", data);
+            const toggledHabit = data.task;
+            console.log("+++ toggledHabit", toggledHabit)
+            
+            // finalize from backend if necessary
+            setTasks( prev => 
+                prev.map( h => h._id === toggledHabit?._id ? toggledHabit : h)
+            );
+
+        } catch (err) {
+            console.error("There was an error toggling the task", err);
+        }
     };
 
     return (
@@ -147,29 +118,25 @@ export const DailyList = ({listId, dateString, initialTasks}: { listId:string, d
                     "w-[85%] md:w-2/3 flex-grow overflow-y-auto overflow-x-hidden mb-4 flex flex-col rounded-md touch-pan-y scrollbar-soft",
                     "transition-[max-height] duration-300 max-h-[100dvh]"
                     )}>
-                    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                        <SortableContext items={tasks.map(t => t._id.toString())} strategy={verticalListSortingStrategy}>
-                            {
-                                tasks.map((task, index) => {
-                                    const isLast = index === tasks.length - 1;
+                    {
+                        tasks.map((task, index) => {
+                            const isLast = index === tasks.length - 1;
 
-                                    return (
-                                        <Todo 
-                                            ref={isLast ? lastTaskRef : null}
-                                            key={task._id?.toString()}
-                                            index={index}
-                                            deleteTask={() => console.log("+++ remove deleteTask Todo for Dailies")}
-                                            task={task} 
-                                            toggleTaskCompletion={toggleTaskCompletion}
-                                            openDetails={openDetails}
-                                            updateTask={() => console.log("+++ remove updateTask Todo for Dailies")}
-                                            isLast={isLast}
-                                        />
-                                    )
-                                })
-                            }
-                        </SortableContext>
-                    </DndContext>
+                            return (
+                                <Todo 
+                                    ref={isLast ? lastTaskRef : null}
+                                    key={task._id?.toString()}
+                                    index={index}
+                                    deleteTask={() => console.log("+++ remove deleteTask Todo for Dailies")}
+                                    task={task} 
+                                    toggleTaskCompletion={toggleTaskCompletion}
+                                    openDetails={openDetails}
+                                    updateTask={() => console.log("+++ remove updateTask Todo for Dailies")}
+                                    isLast={isLast}
+                                />
+                            )
+                        })
+                    }
                 </ul>
             }
 

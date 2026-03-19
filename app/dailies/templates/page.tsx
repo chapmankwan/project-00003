@@ -6,7 +6,7 @@ import { rruleToHumanReadable } from "@/app/utilities/rrule";
 
 import { useRouter } from 'next/navigation';
 
-import { ChevronLeftIcon, ChevronUpDownIcon, PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { ChevronLeftIcon, PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { Types } from "mongoose";
 
@@ -107,15 +107,11 @@ export default function TemplatesPage () {
                         const isLast = index === dailyTasks.length - 1;
 
                         return (
-                            <li key={task._id.toString()} className={clsx(
+                            <li key={task?._id?.toString()} className={clsx(
                                 "flex gap-2 bg-mono-700 p-2 cursor-pointer border border-t-0 border-r-0 border-l-0 border-solid border-mono-800",
                                 index === 0 && "rounded-t-md",
                                 isLast && "rounded-b-md border-b-0",
                             )}>
-                                
-                                <button>
-                                    <ChevronUpDownIcon className="size-4 text-mono-400" />
-                                </button>
 
                                 <div className="flex flex-col w-full min-h-29 gap-2">
                                     {task.text}
@@ -162,7 +158,7 @@ export default function TemplatesPage () {
                     onClose={() => setIsFlyoutOpen(false)}
                     onSubmit={({text, priority, description, recurrence} ) => addHabit(text, priority, description, recurrence)}
                     panelTitle="Create a Daily Task"
-                    type="todo"
+                    type="habit"
                 />
             }
             <MoveableFab onClick={() => setIsFlyoutOpen(true)} />

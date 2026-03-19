@@ -5,7 +5,6 @@ import { authOptions } from "@/lib/auth";
 import { Daily, DailyTask, DailyTaskTemplate } from "@/models";
 
 import { NextRequest, NextResponse } from "next/server";
-// import { getUTCStartOfDayPT } from "@/lib/date";
 
 export async function GET() {
     try {
@@ -63,8 +62,6 @@ export async function POST(
             priority: priority ?? "moderate",
             recurrence: recurrence ?? "FREQ=DAILY"
         });
-        
-        // insert into Dailies (list) - using DailyTask to copy the template if Dailies exist
 
         const todayUTC = new Date();
         todayUTC.setUTCHours(0, 0, 0, 0);

@@ -6,75 +6,75 @@ import { Daily, DailyTask, DailyTaskTemplate } from "@/models";
 
 import { NextRequest, NextResponse } from "next/server";
 import { Types } from "mongoose";
-// import { getUTCStartOfDayPT } from "@/lib/date";
 
-// export async function PATCH(
-//     req: NextRequest,
-//     context: { params: Promise<{templateId: Types.ObjectId}>}
-// ) {
-//     try {
-//         const session = await getServerSession(authOptions);
-//         if (!session?.user?.id) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+export async function PATCH(
+    req: NextRequest,
+    context: { params: Promise<{templateId: Types.ObjectId}>}
+) {
+    try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user?.id) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
-//         const { templateId } = await context.params;
+        const { templateId } = await context.params;
 
-//         if (!Types.ObjectId.isValid(templateId)) return NextResponse.json( {message: "Invalid template id"}, { status: 400 });
+        if (!Types.ObjectId.isValid(templateId)) return NextResponse.json( {message: "Invalid template id"}, { status: 400 });
 
-//         await connectToDatabase();
+        await connectToDatabase();
 
-//         const body = await req.json();
+        const body = await req.json();
 
-//         const updates: Record<string, boolean> = {};
-//         // Explicit allowlist
-//         if (typeof body.text === "string") updates.text = body.text;
-//         if (typeof body.description === "string") updates.description = body.description;
-//         if (typeof body.priority === "string") updates.priority = body.priority;
-//         if (typeof body.isActive === "boolean") updates.isActive = body.isActive;
+        const updates: Record<string, boolean> = {};
+        // Explicit allowlist
+        if (typeof body.text === "string") updates.text = body.text;
+        if (typeof body.description === "string") updates.description = body.description;
+        if (typeof body.priority === "string") updates.priority = body.priority;
+        if (typeof body.isActive === "boolean") updates.isActive = body.isActive;
+        if (typeof body.recurrence === "string") updates.recurrence = body.reccurence;
 
-//         const patchedDailyTaskTemplate = await DailyTaskTemplate.findOneAndUpdate(
-//             {
-//                 _id: templateId,
-//                 userId: session.user.id
-//             },
-//             {
-//                 $set: updates,
-//             },
-//             { new : true },
-//         );
+        const patchedDailyTaskTemplate = await DailyTaskTemplate.findOneAndUpdate(
+            {
+                _id: templateId,
+                userId: session.user.id
+            },
+            {
+                $set: updates,
+            },
+            { new : true },
+        );
 
-//         if (!patchedDailyTaskTemplate) return NextResponse.json({ error: "Daily Task Template not found" }, { status: 404 });
+        if (!patchedDailyTaskTemplate) return NextResponse.json({ error: "Daily Task Template not found" }, { status: 404 });
 
-//         // Update items that are in current lists?
-//         const todayUTC = new Date();
-//         todayUTC.setUTCHours(0, 0, 0, 0);
+        // Update items that are in current lists?
+        const todayUTC = new Date();
+        todayUTC.setUTCHours(0, 0, 0, 0);
 
-//         const existingDaily = await Daily.findOne({
-//             userId: session.user.id,
-//             date: todayUTC,
-//         });
+        const existingDaily = await Daily.findOne({
+            userId: session.user.id,
+            date: todayUTC,
+        });
 
         
-//         if (existingDaily) {
-//             await Daily.findOneAndUpdate(
-//                 {
-//                     userId: session.user.id,
-//                     templateId: templateId,
-//                 },
-//                 {
-//                     $set: updates
-//                 }
-//             );
+        if (existingDaily) {
+            await Daily.findOneAndUpdate(
+                {
+                    userId: session.user.id,
+                    templateId: templateId,
+                },
+                {
+                    $set: updates
+                }
+            );
 
-//             await existingDaily.save();
-//         };
+            await existingDaily.save();
+        };
 
-//         return NextResponse.json(patchedDailyTaskTemplate, {status: 200});
+        return NextResponse.json(patchedDailyTaskTemplate, {status: 200});
 
-//     } catch (err) {
-//         console.error(`Error with updating the task template PATCH`, err);
-//         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
-//     }
-// };
+    } catch (err) {
+        console.error(`Error with updating the task template PATCH`, err);
+        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    }
+};
 
 export async function DELETE(
   _: NextRequest,

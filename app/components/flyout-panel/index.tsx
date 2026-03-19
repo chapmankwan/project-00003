@@ -47,6 +47,7 @@ export const FlyoutPanel =({
         firstInput: "First",
         description: "Description",
         showPriority: false,
+        showRecurrence: false,
     };
 
     switch (type) {
@@ -74,6 +75,14 @@ export const FlyoutPanel =({
                 showPriority: true,
             };
             break;
+        case 'habit':
+            panelType = {
+                ...panelType,
+                submitButton: 'Add',
+                firstInput: "Habit",
+                showPriority: true,
+                showRecurrence: true,
+            }
         default:
             break;
     }
@@ -169,7 +178,12 @@ export const FlyoutPanel =({
                         </div>
                     }
 
-                    <RecurrenceSelector onChange={(rrule) => setSelectedRecurrence(rrule) }/>
+                    {
+                        panelType.showRecurrence ?
+                            <RecurrenceSelector onChange={(rrule) => setSelectedRecurrence(rrule) }/>
+                            :
+                            null
+                    }
 
                     {
                         panelType.showPriority &&
@@ -209,7 +223,7 @@ export const FlyoutPanel =({
                         </div>
                     }
 					{
-						type === "todo" &&
+						(type === "todo" || type === "habit") &&
 						<div className="flex gap-2 items-center text-sm">
 							<input 
 								className=""
