@@ -28,7 +28,7 @@ export async function PATCH(
 
         task.completed = !task.completed;
         await task.save();
-
+        
         // Update Daily summary counts
         const [completedCount, totalCount] = await Promise.all([
             DailyTask.countDocuments({ dailyId: task.dailyId, completed: true }),

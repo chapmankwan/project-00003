@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 
-import { DetailsPanel, Loader, Todo } from "@/app/components";
+import { getTodayString, DailyNavigator, DetailsPanel, Loader, Todo } from "@/app/components";
 // import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import type { Task } from "@/models/interfaces";
 
@@ -12,7 +12,7 @@ import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 
 import clsx from "clsx";
 
-export const DailyList = ({listId, dateString, initialTasks}: { listId:string, dateString:string, initialTasks?: Task[] }) => {
+export const DailyList = ({listId, initialTasks}: { listId:string, initialTasks?: Task[] }) => {
 
     const router = useRouter();
 
@@ -20,6 +20,8 @@ export const DailyList = ({listId, dateString, initialTasks}: { listId:string, d
     const [tasks, setTasks] = useState<Task[]>(initialTasks || []);
     const [loading, setLoading] = useState(true);
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+    const [completedCount, setCompletedCount] = useState(0);
+    const [totalCount, setTotalCount] = useState(0)
     
     const [isEditingTitle, setIsEditingTitle] = useState(false);
 
@@ -88,6 +90,22 @@ export const DailyList = ({listId, dateString, initialTasks}: { listId:string, d
         }
     };
 
+    const [selectedDate, setSelectedDate] = useState(getTodayString());
+
+    // Replace your existing dateString with selectedDate
+    useEffect(() => {
+        const fetchDaily = async () => {
+            const res = await fetch(`/api/daily?date=${selectedDate}`);
+            const data = await res.json();
+            setTasks(data.tasks);
+            setCompletedCount(data.completedCount ?? 0);
+            setTotalCount(data.totalCount ?? 0);
+        };
+        fetchDaily();
+    }, [selectedDate]); // ← reruns whenever date changes
+
+    <DailyNavigator selectedDate={selectedDate} onDateChange={setSelectedDate} />
+
     return (
         <div className="flex-1 flex flex-col items-center h-[calc(100dvh-56px)]">
             <section className="flex py-3 w-[85%] md:w-2/3 items-center">
@@ -106,7 +124,11 @@ export const DailyList = ({listId, dateString, initialTasks}: { listId:string, d
                 </Link>
             </section>
 
-            <h1 className="pb-2 font-bold text-lavender-400">{dateString}</h1>
+            <div>
+                {completedCount} / {totalCount}
+            </div>
+
+            <DailyNavigator selectedDate={selectedDate} onDateChange={setSelectedDate}/>
 
             {
                 loading ? 

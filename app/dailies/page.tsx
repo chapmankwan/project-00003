@@ -30,6 +30,6 @@ export default function DailyPage() {
     if (!list) return <div className="flex items-center justify-center">Loading...</div>;
 
     return (
-        <DailyList listId={list._id} initialTasks={list.tasks} dateString={dateString} />
+        <DailyList listId={list._id} initialTasks={list.tasks} />
     );
 }

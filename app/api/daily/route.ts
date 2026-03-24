@@ -68,6 +68,21 @@ export async function GET(
                     recurrence: applicableTemplates,
                 }))
             );
+            
+            // Temp and can be removed after - needed for previously generated dailies
+            if (dailyList) {
+                // Backfill if counts are missing
+                if (dailyList.totalCount === 0 && dailyList.tasks.length > 0) {
+                    const [completedCount, totalCount] = await Promise.all([
+                        DailyTask.countDocuments({ dailyId: dailyList._id, completed: true }),
+                        DailyTask.countDocuments({ dailyId: dailyList._id }),
+                    ]);
+                    dailyList.completedCount = completedCount;
+                    dailyList.totalCount = totalCount;
+                    await dailyList.save();
+                }
+                return NextResponse.json(dailyList, { status: 200 });
+            }
 
             newDaily.tasks = dailyTasks.map((t) => t._id);
             await newDaily.save();

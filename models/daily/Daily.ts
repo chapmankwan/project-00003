@@ -13,6 +13,9 @@ const DailySchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "DailyTask",
   }],
+
+  completedCount: { type: Number, default: 0 },
+  totalCount:     { type: Number, default: 0 },
   
 }, {
   timestamps: true
