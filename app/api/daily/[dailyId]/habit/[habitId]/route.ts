@@ -17,15 +17,12 @@ export async function PATCH(
 
         const { habitId } = await context.params;
 
-        console.log("+++taskId in PATCH", habitId);
         await connectToDatabase();
 
         const task = await DailyTask.findOne({
             _id: habitId,
             userId: session.user.id,
         });
-
-        console.log("+++ task", task);
 
         if (!task) return NextResponse.json({ error: "Task not found" }, { status: 404 });
 

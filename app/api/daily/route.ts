@@ -36,9 +36,6 @@ export async function GET(
             return NextResponse.json(dailyList, { status: 200 });
         }
 
-        console.log("findOne result:", dailyList);
-        console.log("findOne query:", { userId: session.user.id, date: todayUTC });
-
         // Not found — generate today's daily from templates
         const templates = await DailyTaskTemplate.find({
             userId: session.user.id,
@@ -47,9 +44,6 @@ export async function GET(
         const applicableTemplates = templates.filter(t =>
             shouldIncludeTemplate(t.recurrence ?? "FREQ=DAILY", todayUTC)
         );
-
-        console.log("templates found:", templates.length);
-
 
         const newDaily = await Daily.create({
             userId: session.user.id,
@@ -65,7 +59,7 @@ export async function GET(
                     userId: session.user.id,
                     dailyId: newDaily._id,
                     templateId: template._id,
-                    date: todayUTC,          // ← this was missing
+                    date: todayUTC,
                     text: template.text,
                     description: template.description,
                     priority: template.priority,
@@ -74,9 +68,7 @@ export async function GET(
                     recurrence: applicableTemplates,
                 }))
             );
-            console.log("dailyTasks created:", dailyTasks.length);
 
-    
             newDaily.tasks = dailyTasks.map((t) => t._id);
             await newDaily.save();
         } catch (err) {

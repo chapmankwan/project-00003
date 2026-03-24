@@ -1,9 +1,6 @@
 "use client"
 import { useEffect, useRef, useState } from "react";
 
-// import { Select } from '@headlessui/react'
-// import { PlusIcon, TrashIcon, XMarkIcon } from "@heroicons/react/24/outline";
-
 import RecurrenceSelector from "../reccurence-selector";
 
 import clsx from "clsx";

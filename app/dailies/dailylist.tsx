@@ -72,14 +72,11 @@ export const DailyList = ({listId, dateString, initialTasks}: { listId:string, d
                     headers: { "Content-Type": "application/json" },
                 }
             );
-            console.log("+++ response", response);
 
             if (!response.ok) console.error("There was an error with the toggle response", response.statusText)
     
             const data = await response.json();
-            console.log("+++ data", data);
             const toggledHabit = data.task;
-            console.log("+++ toggledHabit", toggledHabit)
             
             // finalize from backend if necessary
             setTasks( prev => 
@@ -105,7 +102,7 @@ export const DailyList = ({listId, dateString, initialTasks}: { listId:string, d
                 <button onClick={() => setIsEditingTitle(true)} className="font-bold cursor-default p-1">Dailies</button>
 
                 <Link href="/dailies/templates" className="px-1.5 py-0.5 ml-auto bg-mint-600 hover:bg-mint-700 rounded-sm">
-                    create a habit
+                    habit templates
                 </Link>
             </section>
 

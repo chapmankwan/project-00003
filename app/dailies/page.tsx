@@ -8,9 +8,7 @@ export default function DailyPage() {
     const [list, setList] = useState<TodoListModel|null>(null);
 
     const localDate = new Date();
-    console.log("+++ localDate", localDate);
     const dateString = `${localDate.getFullYear()}-${String(localDate.getMonth() + 1).padStart(2, '0')}-${String(localDate.getDate()).padStart(2, '0')}`;
-    console.log("+++ dateString", dateString)
 
     useEffect(() => {
         const timer = setTimeout(async () => {
