@@ -5,12 +5,11 @@ import { authOptions } from "@/lib/auth";
 import { Daily, DailyTask, DailyTaskTemplate } from "@/models";
 
 import { NextRequest, NextResponse } from "next/server";
-// import { getUTCStartOfDayPT } from "@/lib/date";
 
 export async function GET() {
     try {
         const session = await getServerSession(authOptions);
-        if (!session?.user?.id) return NextResponse.json( {error: "Unauthroized" }, { status: 401 });
+        if (!session?.user?.id) return NextResponse.json( {error: "Unauthorized" }, { status: 401 });
 
         await connectToDatabase();
 
@@ -41,9 +40,11 @@ export async function POST(
             order, 
             priority,
             isActive, 
+            recurrence,
         } = await req.json();
 
-        if (!text?.trim()) return NextResponse.json( {error: "Text is required"}, {status: 400});
+        if (!text?.trim()) return NextResponse.json( {message: "Text is required"}, {status: 400} );
+        if (!recurrence?.trim()) return NextResponse.json( {message: "Recurrence is required"}, {status:402}) ;
 
         const lastTemplate = await DailyTaskTemplate.findOne({
             userId: session.user.id,
@@ -59,35 +60,34 @@ export async function POST(
             order: nextOrder,
             isActive,
             priority: priority ?? "moderate",
+            recurrence: recurrence ?? "FREQ=DAILY"
         });
-        
-        // insert into Dailies (list) - using DailyTask to copy the template if Dailies exist
 
         const todayUTC = new Date();
         todayUTC.setUTCHours(0, 0, 0, 0);
 
-        const existingDaily = await Daily.findOne({
+        const existingDailyList = await Daily.findOne({
             userId: session.user.id,
             date: todayUTC,
         });
 
-        if (existingDaily) {
+        if (existingDailyList) {
             const newDailyTask = await DailyTask.create(
                 {
                     userId: session.user.id,
-                    dailyId: existingDaily._id,
+                    dailyId: existingDailyList._id,
                     templateId: dailyTaskTemplate._id,
                     text: dailyTaskTemplate.text,
                     description: dailyTaskTemplate.description,
                     priority: dailyTaskTemplate.priority,
                     completed: false,
                     order: nextOrder,
+                    recurrence: dailyTaskTemplate.recurrence,
                 }
             );
 
-            existingDaily.tasks.push(newDailyTask._id);
-            await existingDaily.save();
-            console.log("+++ existingDaily updated", existingDaily);
+            existingDailyList.tasks.push(newDailyTask._id);
+            await existingDailyList.save();
         };
 
         return NextResponse.json(dailyTaskTemplate, { status: 201 });

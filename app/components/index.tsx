@@ -1,4 +1,5 @@
 export * from "./card";
+export * from "./daily-navigator";
 export * from "./details-panel";
 export * from "./header";
 export * from "./loader";

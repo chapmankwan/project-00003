@@ -1,8 +1,7 @@
 "use client"
 import { useEffect, useRef, useState } from "react";
 
-// import { Select } from '@headlessui/react'
-// import { PlusIcon, TrashIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import RecurrenceSelector from "../reccurence-selector";
 
 import clsx from "clsx";
 import Form from "next/form";
@@ -10,7 +9,7 @@ import Form from "next/form";
 interface FlyoutPanelModel {
     callback?: () => void;
     onClose: () => void;
-    onSubmit?: (payload: { text: string, priority: string, description?: string }) => Promise<void>;
+    onSubmit?: (payload: { text: string, priority: string, description?: string, recurrence?: string }) => Promise<void>;
     panelTitle: string;
     type: string;
 };
@@ -36,6 +35,7 @@ export const FlyoutPanel =({
 
     const [description, setDescription] = useState<string>("");
     const [isAddMoreSelected, setIsAddMoreSelected] = useState(false);
+    const [selectedRecurrence, setSelectedRecurrence] = useState<string>("");
 
     let panelType = {
         cancelButton: "Cancel",
@@ -44,6 +44,7 @@ export const FlyoutPanel =({
         firstInput: "First",
         description: "Description",
         showPriority: false,
+        showRecurrence: false,
     };
 
     switch (type) {
@@ -71,6 +72,14 @@ export const FlyoutPanel =({
                 showPriority: true,
             };
             break;
+        case 'habit':
+            panelType = {
+                ...panelType,
+                submitButton: 'Add',
+                firstInput: "Habit",
+                showPriority: true,
+                showRecurrence: true,
+            }
         default:
             break;
     }
@@ -102,7 +111,8 @@ export const FlyoutPanel =({
             await onSubmit({
                 text: titleInput,
                 priority: selectedPriority,
-                description: description
+                description: description,
+                recurrence: selectedRecurrence.length > 0 ? selectedRecurrence : ""
             });
         } catch (err) {
             console.error("There was an error with handling the submit in the panel", err)
@@ -145,7 +155,7 @@ export const FlyoutPanel =({
                     <button onClick={onSubmitHandler} className="cursor-pointer text-mint-500">{panelType.submitButton}</button>
                 </div>
 
-                <Form action="/workspaces" onSubmit={onSubmitHandler} className="p-6 pt-0 flex flex-col gap-3">
+                <Form action="/dailies/templates" onSubmit={onSubmitHandler} className="p-6 pt-0 flex flex-col gap-3">
                     <div className="flex flex-col gap-1">
                         <span className="text-sm">{panelType.firstInput}</span>
                         <input 
@@ -161,15 +171,17 @@ export const FlyoutPanel =({
                         panelType.description.length > 0 &&
                         <div className="flex flex-col gap-1">
                             <span className="text-sm">{panelType.description}</span>
-                            <textarea rows={5} className="p-2 border border-solid border-lavender-400 rounded-md h-50" onChange={e => setDescription(e.target.value)} value={description}/>
+                            <textarea rows={5} className="p-2 border border-solid border-lavender-400 rounded-md h-25" onChange={e => setDescription(e.target.value)} value={description}/>
                         </div>
                     }
-                    {/* <div className="flex flex-col gap-1">
-                        <span className="text-sm">Due date</span>
-                        <div className="p-2 w-fit bg-mint-700 rounded-md text-xs">
-                            coming soon&#8482;...
-                        </div>
-                    </div> */}
+
+                    {
+                        panelType.showRecurrence ?
+                            <RecurrenceSelector onChange={(rrule) => setSelectedRecurrence(rrule) }/>
+                            :
+                            null
+                    }
+
                     {
                         panelType.showPriority &&
                         <div className="flex flex-col gap-1">
@@ -208,7 +220,7 @@ export const FlyoutPanel =({
                         </div>
                     }
 					{
-						type === "todo" &&
+						(type === "todo" || type === "habit") &&
 						<div className="flex gap-2 items-center text-sm">
 							<input 
 								className=""

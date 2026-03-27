@@ -1,7 +1,8 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 
-import { DetailsPanel, FlyoutPanel, Loader, Todo } from "@/app/components";
+import { DailyNavigator, DetailsPanel, Loader, Todo } from "@/app/components";
+import { getTodayString } from "../components/daily-navigator/utilities";
 // import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import type { Task } from "@/models/interfaces";
 
@@ -12,22 +13,6 @@ import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 
 import clsx from "clsx";
 
-import {
-    DndContext,
-    closestCenter,
-    PointerSensor,
-    TouchSensor,
-    useSensor,
-    useSensors,
-    type DragEndEvent,
-} from "@dnd-kit/core";
-
-import {
-    // arrayMove,
-    SortableContext,
-    verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-
 export const DailyList = ({listId, initialTasks}: { listId:string, initialTasks?: Task[] }) => {
 
     const router = useRouter();
@@ -36,38 +21,10 @@ export const DailyList = ({listId, initialTasks}: { listId:string, initialTasks?
     const [tasks, setTasks] = useState<Task[]>(initialTasks || []);
     const [loading, setLoading] = useState(true);
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-
+    const [completedCount, setCompletedCount] = useState(0);
+    const [totalCount, setTotalCount] = useState(0)
+    
     const [isEditingTitle, setIsEditingTitle] = useState(false);
-
-    const [isFlyoutOpen, setIsFlyoutOpen] = useState(false);
-
-    // Drag n Drop
-    const sensors = useSensors(
-        useSensor(PointerSensor, {
-            activationConstraint: {
-                distance: 8,
-            },
-        }),
-        useSensor(TouchSensor),
-    );
-
-    const handleDragEnd = (event: DragEndEvent) => {
-        console.log("+++ temp for drag, the api we use is still on todo-lists", event)
-        // const { active, over } = event;
-        // if (active.id !== over?.id) {
-        //     const oldIndex = tasks.findIndex(t => t._id.toString() === active.id);
-        //     const newIndex = tasks.findIndex(t => t._id.toString() === over?.id);
-        //     const reordered = arrayMove(tasks, oldIndex, newIndex);
-        //     setTasks(reordered);
-
-        //     // sync to server
-        //     fetch(`/api/todo-lists/${listId}/tasks/reorder`, {
-        //         method: "PATCH",
-        //         headers: { "Content-Type": "application/json" },
-        //         body: JSON.stringify({ orderedIds: reordered?.map(t => t._id.toString()) }),
-        //     });
-        // }
-    };
 
     const openDetails = (task: Task) => setSelectedTask(task);
     const closeDetails = () => setSelectedTask(null);
@@ -85,7 +42,7 @@ export const DailyList = ({listId, initialTasks}: { listId:string, initialTasks?
     useEffect(() => {
         // Scroll to the latest task
         const timer = setTimeout(() => {
-            if (isFlyoutOpen && lastTaskRef.current) {
+            if (lastTaskRef.current) {
                 lastTaskRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 // Makes sure to reset the reference point for next task added
                 justAddedRef.current = false;
@@ -93,34 +50,58 @@ export const DailyList = ({listId, initialTasks}: { listId:string, initialTasks?
         }, 300);
         
         return () => clearTimeout(timer)
-    }, [tasks, isFlyoutOpen]);
+    }, [tasks]);
 
     useEffect(() => {
         if( titleInputRef.current ) titleInputRef.current.focus();
     },[isEditingTitle])
 
-    const toggleTaskCompletion = async (task: Task) => {
-        if (!task?._id) return;
+    const toggleTaskCompletion = async (habit: Task) => {
+        if (!habit || !habit._id) return;
 
         // Optimistic update visually
         setTasks((prev) =>
             prev.map((t) =>
-                t._id === task._id
-                    ? { ...t, completed: !task.completed, edited: true }
+                t._id === habit._id
+                    ? { ...t, completed: !habit.completed, edited: true }
                     : t
             )
         );
 
-        // try {
-        //     // finalize from backend if necessary
-        //     setTasks(prev =>
-        //         prev.map(t => (t._id === updatedTaskRes._id ? updatedTaskRes : t))
-        //     );
+        try {
+            const response = await fetch(`/api/daily/${listId}/habit/${habit._id}`,
+                {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                }
+            );
 
-        // } catch (err) {
-        //     console.error(err);
-        // }
+            if (!response.ok) console.error("There was an error with the toggle response", response.statusText)
+    
+            const { task, completedCount } = await response.json();
+            
+            // finalize from backend if necessary
+            setTasks( prev => prev.map( h => h._id === task?._id ? task : h));
+            setCompletedCount(completedCount);
+
+        } catch (err) {
+            console.error("There was an error toggling the task", err);
+        }
     };
+
+    const [selectedDate, setSelectedDate] = useState(getTodayString());
+
+    // Replace your existing dateString with selectedDate
+    useEffect(() => {
+        const fetchDaily = async () => {
+            const res = await fetch(`/api/daily?date=${selectedDate}`);
+            const data = await res.json();
+            setTasks(data.tasks);
+            setCompletedCount(data.completedCount ?? 0);
+            setTotalCount(data.totalCount ?? 0);
+        };
+        fetchDaily();
+    }, [selectedDate]); // ← reruns whenever date changes
 
     return (
         <div className="flex-1 flex flex-col items-center h-[calc(100dvh-56px)]">
@@ -135,41 +116,43 @@ export const DailyList = ({listId, initialTasks}: { listId:string, initialTasks?
 
                 <button onClick={() => setIsEditingTitle(true)} className="font-bold cursor-default p-1">Dailies</button>
 
-                <Link href="/dailies/templates" className="px-3 py-1 ml-auto bg-mint-700 rounded-md">
-                    to daily templates
+                <Link href="/dailies/templates" className="px-1.5 py-0.5 ml-auto bg-mint-600 hover:bg-mint-700 rounded-sm">
+                    habit templates
                 </Link>
             </section>
+
+            <div>
+                {completedCount} / {totalCount}
+            </div>
+
+            <DailyNavigator selectedDate={selectedDate} onDateChange={setSelectedDate}/>
 
             {
                 loading ? 
                 <Loader/> :
                 <ul className={clsx(
                     "w-[85%] md:w-2/3 flex-grow overflow-y-auto overflow-x-hidden mb-4 flex flex-col rounded-md touch-pan-y scrollbar-soft",
-                    isFlyoutOpen ? "transition-[max-height] max-h-[47dvh] duration-300 md:max-h-none" : "transition-[max-height] duration-300 max-h-[100dvh]"
+                    "transition-[max-height] duration-300 max-h-[100dvh]"
                     )}>
-                    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                        <SortableContext items={tasks.map(t => t._id.toString())} strategy={verticalListSortingStrategy}>
-                            {
-                                tasks.map((task, index) => {
-                                    const isLast = index === tasks.length - 1;
+                    {
+                        tasks.map((task, index) => {
+                            const isLast = index === tasks.length - 1;
 
-                                    return (
-                                        <Todo 
-                                            ref={isLast ? lastTaskRef : null}
-                                            key={task._id?.toString()}
-                                            index={index}
-                                            deleteTask={() => console.log("+++ remove deleteTask Todo for Dailies")}
-                                            task={task} 
-                                            toggleTaskCompletion={toggleTaskCompletion}
-                                            openDetails={openDetails}
-                                            updateTask={() => console.log("+++ remove updateTask Todo for Dailies")}
-                                            isLast={isLast}
-                                        />
-                                    )
-                                })
-                            }
-                        </SortableContext>
-                    </DndContext>
+                            return (
+                                <Todo 
+                                    ref={isLast ? lastTaskRef : null}
+                                    key={task._id?.toString()}
+                                    index={index}
+                                    deleteTask={() => console.log("+++ remove deleteTask Todo for Dailies")}
+                                    task={task} 
+                                    toggleTaskCompletion={toggleTaskCompletion}
+                                    openDetails={openDetails}
+                                    updateTask={() => console.log("+++ remove updateTask Todo for Dailies")}
+                                    isLast={isLast}
+                                />
+                            )
+                        })
+                    }
                 </ul>
             }
 
@@ -182,15 +165,6 @@ export const DailyList = ({listId, initialTasks}: { listId:string, initialTasks?
                     listId={listId}
                 />
             )}
-
-            {
-                isFlyoutOpen && 
-                <FlyoutPanel 
-                    onClose={() => setIsFlyoutOpen(false)}
-                    panelTitle="New Task"
-                    type="todo"
-                />
-            }
         </div>
     );
 };

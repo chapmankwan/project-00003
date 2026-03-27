@@ -41,6 +41,11 @@ const DailyTaskSchema = new Schema({
     index: true
   },
 
+  order: {
+    type: Number,
+    default: 0,
+  },
+
   completedAt: Date,
 
   notes: String

@@ -107,6 +107,8 @@ export const TodoList = ({id}: { id:string}) => {
     
     // this hook allows user to scroll to latest task after adding
     useEffect(() => {
+        // Only run this if a task was added
+        if (!justAddedRef.current) return;
         // Scroll to the latest task
         const timer = setTimeout(() => {
             if (isFlyoutOpen && lastTaskRef.current) {
@@ -252,8 +254,6 @@ export const TodoList = ({id}: { id:string}) => {
             priority: priority
         });
 
-        console.log("+++ updatedTaskRes", updatedTaskRes);
-
         setTasks((prevTasks) => {
             return (
                 prevTasks.map( (t) => {
@@ -342,7 +342,7 @@ export const TodoList = ({id}: { id:string}) => {
                 <Loader/> :
                 <ul className={clsx(
                     "w-[85%] md:w-2/3 flex-grow overflow-y-auto overflow-x-hidden mb-4 flex flex-col rounded-md touch-pan-y scrollbar-soft",
-                    isFlyoutOpen ? "transition-[max-height] max-h-[47dvh] duration-300 md:max-h-none" : "transition-[max-height] duration-300 max-h-[100dvh]"
+                    isFlyoutOpen ? "transition-[max-height] max-h-[59dvh] duration-300 md:max-h-none" : "transition-[max-height] duration-300 max-h-[100dvh]"
                     )}>
                     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                         <SortableContext items={tasks.map(t => t._id.toString())} strategy={verticalListSortingStrategy}>
