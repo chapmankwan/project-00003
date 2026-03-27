@@ -1,7 +1,8 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 
-import { getTodayString, DailyNavigator, DetailsPanel, Loader, Todo } from "@/app/components";
+import { DailyNavigator, DetailsPanel, Loader, Todo } from "@/app/components";
+import { getTodayString } from "../components/daily-navigator/utilities";
 // import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import type { Task } from "@/models/interfaces";
 
@@ -55,20 +56,20 @@ export const DailyList = ({listId, initialTasks}: { listId:string, initialTasks?
         if( titleInputRef.current ) titleInputRef.current.focus();
     },[isEditingTitle])
 
-    const toggleTaskCompletion = async (task: Task) => {
-        if (!task || !task._id) return;
+    const toggleTaskCompletion = async (habit: Task) => {
+        if (!habit || !habit._id) return;
 
         // Optimistic update visually
         setTasks((prev) =>
             prev.map((t) =>
-                t._id === task._id
-                    ? { ...t, completed: !task.completed, edited: true }
+                t._id === habit._id
+                    ? { ...t, completed: !habit.completed, edited: true }
                     : t
             )
         );
 
         try {
-            const response = await fetch(`/api/daily/${listId}/habit/${task._id}`,
+            const response = await fetch(`/api/daily/${listId}/habit/${habit._id}`,
                 {
                     method: "PATCH",
                     headers: { "Content-Type": "application/json" },
@@ -77,13 +78,11 @@ export const DailyList = ({listId, initialTasks}: { listId:string, initialTasks?
 
             if (!response.ok) console.error("There was an error with the toggle response", response.statusText)
     
-            const data = await response.json();
-            const toggledHabit = data.task;
+            const { task, completedCount } = await response.json();
             
             // finalize from backend if necessary
-            setTasks( prev => 
-                prev.map( h => h._id === toggledHabit?._id ? toggledHabit : h)
-            );
+            setTasks( prev => prev.map( h => h._id === task?._id ? task : h));
+            setCompletedCount(completedCount);
 
         } catch (err) {
             console.error("There was an error toggling the task", err);
@@ -103,8 +102,6 @@ export const DailyList = ({listId, initialTasks}: { listId:string, initialTasks?
         };
         fetchDaily();
     }, [selectedDate]); // ← reruns whenever date changes
-
-    <DailyNavigator selectedDate={selectedDate} onDateChange={setSelectedDate} />
 
     return (
         <div className="flex-1 flex flex-col items-center h-[calc(100dvh-56px)]">

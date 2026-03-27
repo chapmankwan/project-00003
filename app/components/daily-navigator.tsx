@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { ChevronLeftIcon, ChevronRightIcon, ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+import { getTodayString, buildLast30Days, addDays, formatDisplayDate, toUTCDateString } from "./daily-navigator/utilities";
 
 type HeatmapEntry = {
     date: string; // ISO string from API
@@ -16,37 +16,7 @@ type DailyNavigatorProps = {
     onDateChange: (date: string) => void;
 };
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function toDateString(date: Date): string {
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-}
-
-export const  getTodayString = (): string  => {
-    return toDateString(new Date());
-}
-
-function addDays(dateStr: string, days: number): string {
-    const d = new Date(`${dateStr}T00:00:00`);
-    d.setDate(d.getDate() + days);
-    return toDateString(d);
-}
-
-function formatDisplayDate(dateStr: string): string {
-    const d = new Date(`${dateStr}T00:00:00`);
-    const today = getTodayString();
-    const yesterday = addDays(today, -1);
-
-    if (dateStr === today) return "Today";
-    if (dateStr === yesterday) return "Yesterday";
-
-    return d.toLocaleDateString("en-US", {
-        weekday: "short",
-        month: "short",
-        day: "numeric",
-    });
-}
-
+// Colour mapping
 function getCompletionColor(completedCount: number, totalCount: number): string {
     if (totalCount === 0) return "bg-mono-700/40 border-mono-700/20";
     const pct = completedCount / totalCount;
@@ -65,17 +35,6 @@ function getCompletionGlow(completedCount: number, totalCount: number): string {
     if (pct >= 0.75) return "shadow-[0_0_4px_rgba(85,187,174,0.25)]";
     return "";
 }
-
-// Build the last 30 days as an array of "YYYY-MM-DD" strings
-function buildLast30Days(anchorDateStr: string): string[] {
-    const days: string[] = [];
-    for (let i = 29; i >= 0; i--) {
-        days.push(addDays(anchorDateStr, -i));
-    }
-    return days;
-}
-
-// ─── Component ────────────────────────────────────────────────────────────────
 
 export const DailyNavigator = ({ selectedDate, onDateChange }: DailyNavigatorProps) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -112,7 +71,7 @@ export const DailyNavigator = ({ selectedDate, onDateChange }: DailyNavigatorPro
     // Build lookup map for quick access
     const heatmapMap = new Map(
         heatmapData.map(entry => [
-            toDateString(new Date(entry.date)),
+            toUTCDateString(new Date(entry.date)), // ← UTC parse for API dates
             entry,
         ])
     );
@@ -129,10 +88,8 @@ export const DailyNavigator = ({ selectedDate, onDateChange }: DailyNavigatorPro
 
     return (
         <div className="w-[85%] py-3">
-            {/* ── Date Navigator Bar ── */}
             <div className="flex items-center gap-2">
 
-                {/* Prev arrow */}
                 <button
                     onClick={handlePrev}
                     className="p-1.5 rounded-lg text-mono-400 hover:text-mint-300 hover:bg-mono-700/60 transition-all duration-150"
@@ -141,7 +98,6 @@ export const DailyNavigator = ({ selectedDate, onDateChange }: DailyNavigatorPro
                     <ChevronLeftIcon className="size-4" />
                 </button>
 
-                {/* Date label — clickable to toggle heatmap */}
                 <button
                     onClick={() => setIsOpen(o => !o)}
                     className="flex-1 flex items-center justify-center gap-2 py-1.5 rounded-lg hover:bg-mono-700/40 transition-all duration-150 group"
@@ -158,7 +114,6 @@ export const DailyNavigator = ({ selectedDate, onDateChange }: DailyNavigatorPro
                     }
                 </button>
 
-                {/* Next arrow — disabled on today */}
                 <button
                     onClick={handleNext}
                     disabled={isToday}
@@ -171,7 +126,6 @@ export const DailyNavigator = ({ selectedDate, onDateChange }: DailyNavigatorPro
                     <ChevronRightIcon className="size-4" />
                 </button>
 
-                {/* Jump to today — only shown when viewing past */}
                 {!isToday && (
                     <button
                         onClick={() => onDateChange(today)}
@@ -182,11 +136,9 @@ export const DailyNavigator = ({ selectedDate, onDateChange }: DailyNavigatorPro
                 )}
             </div>
 
-            {/* ── Collapsible Heatmap ── */}
             <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? "max-h-40 opacity-100 mt-3" : "max-h-0 opacity-0"}`}>
                 <div className="rounded-xl border border-mono-700/40 bg-mono-900/40 p-3 space-y-2">
 
-                    {/* Tooltip */}
                     <div className="h-5 flex items-center">
                         {tooltipText
                             ? <p className="text-xs text-mono-300 font-mono">{tooltipText}</p>
@@ -194,7 +146,6 @@ export const DailyNavigator = ({ selectedDate, onDateChange }: DailyNavigatorPro
                         }
                     </div>
 
-                    {/* Heatmap grid */}
                     {isLoading ? (
                         <div className="flex gap-1 flex-wrap">
                             {Array.from({ length: 30 }).map((_, i) => (
@@ -237,7 +188,6 @@ export const DailyNavigator = ({ selectedDate, onDateChange }: DailyNavigatorPro
                         </div>
                     )}
 
-                    {/* Legend */}
                     <div className="flex items-center gap-2 pt-1">
                         <span className="text-[10px] text-mono-600">Less</span>
                         {["bg-mono-700/30", "bg-mint-950", "bg-mint-900", "bg-mint-800", "bg-mint-700", "bg-mint-500"].map(bg => (
