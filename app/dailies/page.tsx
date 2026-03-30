@@ -26,8 +26,7 @@ export default function DailyPage() {
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
     const [completedCount, setCompletedCount] = useState(0);
     const [totalCount, setTotalCount] = useState(0)
-    
-    const [isEditingTitle, setIsEditingTitle] = useState(false);
+    const [selectedDate, setSelectedDate] = useState(getTodayString());
 
     const openDetails = (task: Task) => setSelectedTask(task);
     const closeDetails = () => setSelectedTask(null);
@@ -35,7 +34,33 @@ export default function DailyPage() {
     // references
     const justAddedRef = useRef(false);
     const lastTaskRef = useRef<HTMLLIElement>(null);
-    const titleInputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        const fetchDaily = async () => {
+            setLoading(true);
+            // reset states
+            setList(null);
+            setTasks([]);
+            setCompletedCount(0);
+            setTotalCount(0);
+
+            try {
+                const res = await fetch(`/api/daily?date=${selectedDate}`);
+                if (!res.ok) throw new Error("Failed to fetch daily");
+                const data = await res.json();
+
+                setList(data);
+                setTasks(data.tasks);
+                setCompletedCount(data.completedCount ?? 0);
+                setTotalCount(data.totalCount ?? 0);
+            } catch (err) {
+                console.error("Error loading daily:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchDaily();
+    }, [selectedDate]);
     
     // this hook allows user to scroll to latest task after adding
     useEffect(() => {
@@ -50,10 +75,6 @@ export default function DailyPage() {
         
         return () => clearTimeout(timer)
     }, [tasks]);
-
-    useEffect(() => {
-        if( titleInputRef.current ) titleInputRef.current.focus();
-    },[isEditingTitle])
 
     const toggleTaskCompletion = async (habit: Task) => {
         if (!habit || !habit._id) return;
@@ -88,44 +109,6 @@ export default function DailyPage() {
         }
     };
 
-    const [selectedDate, setSelectedDate] = useState(getTodayString());
-
-    // Replace your existing dateString with selectedDate
-    useEffect(() => {
-        const fetchDaily = async () => {
-            const res = await fetch(`/api/daily?date=${selectedDate}`);
-            const data = await res.json();
-            setTasks(data.tasks);
-            setCompletedCount(data.completedCount ?? 0);
-            setTotalCount(data.totalCount ?? 0);
-        };
-        fetchDaily();
-
-        setLoading(false);
-    }, [selectedDate]); // ← reruns whenever date changes
-
-    const localDate = new Date();
-    const dateString = `${localDate.getFullYear()}-${String(localDate.getMonth() + 1).padStart(2, '0')}-${String(localDate.getDate()).padStart(2, '0')}`;
-
-    useEffect(() => {
-        const timer = setTimeout(async () => {
-            try {
-                const getDailiesResponse = await fetch(`/api/daily?date=${dateString}`);
-
-                if (!getDailiesResponse.ok) throw new Error("Failed to get list for daily tasks");
-                const dailiesList = await getDailiesResponse.json();
-
-                setList(dailiesList);
-            } catch (err) {
-                console.error("There was an error loading the tasks, check logs", err);
-            }
-        }, 500);
-
-        return () => clearTimeout(timer);
-    }, [dateString])
-
-    if (!list) return <div className="flex items-center justify-center">Loading...</div>;
-
     return (
         <div className="flex-1 flex flex-col items-center h-[calc(100dvh-56px)]">
             <section className="flex py-3 w-[85%] md:w-2/3 items-center">
@@ -137,9 +120,9 @@ export default function DailyPage() {
                         <ChevronLeftIcon className="size-5"/>
                 </button>
 
-                <button onClick={() => setIsEditingTitle(true)} className="font-bold cursor-default p-1">Dailies</button>
+                <h1 className="font-bold cursor-default p-1">Dailies</h1>
 
-                <Link href="/dailies/templates" className="px-1.5 py-0.5 ml-auto bg-mint-600 hover:bg-mint-700 rounded-sm">
+                <Link href="/dailies/templates" className="px-1.5 py-0.5 ml-auto bg-lavender-600 hover:bg-lavender-700 rounded-sm">
                     habit templates
                 </Link>
             </section>
@@ -179,7 +162,7 @@ export default function DailyPage() {
                 </ul>
             }
 
-            {selectedTask && (
+            {list && selectedTask && (
                 <DetailsPanel
                     task={tasks.find( t => t._id === selectedTask._id ) || selectedTask}
                     onClose={closeDetails}

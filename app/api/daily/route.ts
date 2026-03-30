@@ -22,11 +22,13 @@ export async function GET(
         const { searchParams } = new URL(req.url);
         const dateParam = searchParams.get("date");
 
-        const todayUTC = new Date(`${dateParam}T00:00:00.000Z`);
+        const requestedDate = dateParam
+            ? new Date(`${dateParam}T00:00:00.000Z`)
+            : (() => { const d = new Date(); d.setUTCHours(0, 0, 0, 0); return d; })();
 
         const dailyList = await Daily.findOne({
                 userId: session.user.id,
-                date: todayUTC,
+                date: requestedDate,
             }).populate({
                 path: "tasks",
                 options: { sort: { order: 1 } },
@@ -42,12 +44,12 @@ export async function GET(
         }).sort({ order: 1 });
 
         const applicableTemplates = templates.filter(t =>
-            shouldIncludeTemplate(t.recurrence ?? "FREQ=DAILY", todayUTC)
+            shouldIncludeTemplate(t.recurrence ?? "FREQ=DAILY", requestedDate)
         );
 
         const newDaily = await Daily.create({
             userId: session.user.id,
-            date: todayUTC,
+            date: requestedDate,
             tasks: [],
             completedCount: 0,
             totalCount: 0,
@@ -55,11 +57,11 @@ export async function GET(
 
         try {
             const dailyTasks = await DailyTask.insertMany(
-                templates.map((template, index) => ({
+                applicableTemplates.map((template, index) => ({
                     userId: session.user.id,
                     dailyId: newDaily._id,
                     templateId: template._id,
-                    date: todayUTC,
+                    date: requestedDate,
                     text: template.text,
                     description: template.description,
                     priority: template.priority,

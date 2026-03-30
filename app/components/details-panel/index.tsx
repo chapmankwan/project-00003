@@ -106,12 +106,16 @@ export const DetailsPanel =({
 
                     <div className="flex">
                         <p className="font-bold">Date created: </p>
-                        <p className="ml-1">{task.date}</p>
+                        <p className="ml-1">{task.date.toString()}</p>
                     </div>
 
                     <div className="flex">
                         <p className="font-bold">Progress: </p>
                         <p className="ml-1">{task.completed ? "All work completed" : "In progress"}</p>
+                    </div>
+
+                    <div>
+                        {task.recurrence}
                     </div>
 
                     <DescriptionBox 

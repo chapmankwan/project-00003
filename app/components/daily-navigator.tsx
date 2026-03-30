@@ -21,11 +21,11 @@ function getCompletionColor(completedCount: number, totalCount: number): string 
     if (totalCount === 0) return "bg-mono-700/40 border-mono-700/20";
     const pct = completedCount / totalCount;
     if (pct === 0)   return "bg-mono-700/60 border-mono-600/30";
-    if (pct < 0.25)  return "bg-mint-950 border-mint-900/60";
-    if (pct < 0.5)   return "bg-mint-900 border-mint-800/60";
-    if (pct < 0.75)  return "bg-mint-800 border-mint-700/60";
-    if (pct < 1)     return "bg-mint-700 border-mint-600/60";
-    return "bg-mint-500 border-mint-400/60"; // 100%
+    if (pct < 0.25)  return "bg-lavender-950 border-lavender-900/60";
+    if (pct < 0.5)   return "bg-lavender-900 border-lavender-800/60";
+    if (pct < 0.75)  return "bg-lavender-800 border-lavender-700/60";
+    if (pct < 1)     return "bg-lavender-700 border-lavender-600/60";
+    return "bg-lavender-500 border-lavender-400/60"; // 100%
 }
 
 function getCompletionGlow(completedCount: number, totalCount: number): string {
@@ -87,12 +87,12 @@ export const DailyNavigator = ({ selectedDate, onDateChange }: DailyNavigatorPro
         : null;
 
     return (
-        <div className="w-[85%] py-3">
+        <div className="w-[85%] md:w-2/3 py-3">
             <div className="flex items-center gap-2">
 
                 <button
                     onClick={handlePrev}
-                    className="p-1.5 rounded-lg text-mono-400 hover:text-mint-300 hover:bg-mono-700/60 transition-all duration-150"
+                    className="p-1.5 rounded-lg cursor-pointer text-mono-400 hover:text-lavender-300 hover:bg-mono-700/60 transition-all duration-150"
                     aria-label="Previous day"
                 >
                     <ChevronLeftIcon className="size-4" />
@@ -100,9 +100,9 @@ export const DailyNavigator = ({ selectedDate, onDateChange }: DailyNavigatorPro
 
                 <button
                     onClick={() => setIsOpen(o => !o)}
-                    className="flex-1 flex items-center justify-center gap-2 py-1.5 rounded-lg hover:bg-mono-700/40 transition-all duration-150 group"
+                    className="flex-1 flex items-center justify-center cursor-pointer gap-2 py-1.5 rounded-lg hover:bg-mono-700/40 transition-all duration-150 group"
                 >
-                    <span className={`text-sm font-semibold tracking-wide transition-colors duration-150 ${isToday ? "text-mint-400" : "text-mono-200"}`}>
+                    <span className={`text-sm font-semibold tracking-wide transition-colors duration-150 ${isToday ? "text-lavender-400" : "text-mono-200"}`}>
                         {formatDisplayDate(selectedDate)}
                     </span>
                     {!isToday && (
@@ -117,9 +117,9 @@ export const DailyNavigator = ({ selectedDate, onDateChange }: DailyNavigatorPro
                 <button
                     onClick={handleNext}
                     disabled={isToday}
-                    className={`p-1.5 rounded-lg transition-all duration-150 ${isToday
+                    className={`p-1.5 rounded-lg transition-all duration-150 cursor-pointer ${isToday
                         ? "text-mono-700 cursor-not-allowed"
-                        : "text-mono-400 hover:text-mint-300 hover:bg-mono-700/60"
+                        : "text-mono-400 hover:text-lavender-300 hover:bg-mono-700/60"
                     }`}
                     aria-label="Next day"
                 >
@@ -129,7 +129,7 @@ export const DailyNavigator = ({ selectedDate, onDateChange }: DailyNavigatorPro
                 {!isToday && (
                     <button
                         onClick={() => onDateChange(today)}
-                        className="px-2.5 py-1 rounded-lg text-xs font-semibold text-mint-400 border border-mint-800/60 hover:bg-mint-950/60 hover:border-mint-700/60 transition-all duration-150"
+                        className="px-2.5 py-1 rounded-lg text-xs font-semibold cursor-pointer text-lavender-400 border border-lavender-800/60 hover:bg-lavender-950/60 hover:border-lavender-700/60 transition-all duration-150"
                     >
                         Today
                     </button>
@@ -178,7 +178,7 @@ export const DailyNavigator = ({ selectedDate, onDateChange }: DailyNavigatorPro
                                             w-6 h-6 rounded-md border transition-all duration-150
                                             ${colorClass}
                                             ${glowClass}
-                                            ${isSelected ? "ring-2 ring-mint-400 ring-offset-1 ring-offset-mono-900 scale-110" : ""}
+                                            ${isSelected ? "ring-2 ring-lavender-400 ring-offset-1 ring-offset-mono-900 scale-110" : ""}
                                             ${isFuture ? "opacity-20 cursor-not-allowed" : "cursor-pointer hover:scale-110 hover:brightness-125"}
                                         `}
                                         aria-label={dateStr}
@@ -190,7 +190,7 @@ export const DailyNavigator = ({ selectedDate, onDateChange }: DailyNavigatorPro
 
                     <div className="flex items-center gap-2 pt-1">
                         <span className="text-[10px] text-mono-600">Less</span>
-                        {["bg-mono-700/30", "bg-mint-950", "bg-mint-900", "bg-mint-800", "bg-mint-700", "bg-mint-500"].map(bg => (
+                        {["bg-mono-700/30", "bg-lavender-950", "bg-lavender-900", "bg-lavender-800", "bg-lavender-700", "bg-lavender-500"].map(bg => (
                             <div key={bg} className={`w-3 h-3 rounded-sm ${bg}`} />
                         ))}
                         <span className="text-[10px] text-mono-600">More</span>

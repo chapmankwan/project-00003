@@ -10,7 +10,7 @@ export interface SubTask {
 }
 export interface Task {
     completed: boolean;
-    date: string;
+    date: Date;
     dateCompleted: string | boolean;
     edited: boolean;
     _id: Types.ObjectId;
@@ -21,6 +21,7 @@ export interface Task {
     subTasks?: SubTask[];
     type: "normal" | "daily-instance";
     templateId?: Types.ObjectId; // if generated from template
+    recurrence?: string;
 }
 
 export interface SubTask {
