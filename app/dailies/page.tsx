@@ -9,9 +9,6 @@ import { getTodayString, toUTCDateString } from "../components/daily-navigator/u
 import { Task, TodoListModel } from "@/models/interfaces";
 
 import Link from "next/link";
-import { useRouter } from 'next/navigation';
-
-import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 
 import clsx from "clsx";
 
@@ -22,15 +19,12 @@ interface HeatmapEntry {
 };
 
 export default function DailyPage() {
-    const router = useRouter();
 
     // local states
     const [list, setList] = useState<TodoListModel|null>(null);
     const [tasks, setTasks] = useState<Task[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-    const [, setCompletedCount] = useState(0);
-    const [, setTotalCount] = useState(0)
     const [selectedDate, setSelectedDate] = useState(getTodayString());
     const [heatmapData, setHeatmapData] = useState<HeatmapEntry[]>([]);
 
@@ -43,12 +37,10 @@ export default function DailyPage() {
 
     useEffect(() => {
         const fetchDaily = async () => {
-            setLoading(true);
+            setIsLoading(true);
             // reset states
             setList(null);
             setTasks([]);
-            setCompletedCount(0);
-            setTotalCount(0);
 
             try {
                 const res = await fetch(`/api/daily?date=${selectedDate}`);
@@ -57,12 +49,10 @@ export default function DailyPage() {
 
                 setList(data);
                 setTasks(data.tasks);
-                setCompletedCount(data.completedCount ?? 0);
-                setTotalCount(data.totalCount ?? 0);
             } catch (err) {
                 console.error("Error loading daily:", err);
             } finally {
-                setLoading(false);
+                setIsLoading(false);
             }
         };
         fetchDaily();
@@ -108,7 +98,6 @@ export default function DailyPage() {
             
             // finalize from backend if necessary
             setTasks( prev => prev.map( h => h._id === task?._id ? task : h));
-            setCompletedCount(completedCount);
 
             // Patch the heatmap entry for selectedDate in place
             setHeatmapData(prev => prev.map(entry => {
@@ -125,14 +114,6 @@ export default function DailyPage() {
     return (
         <div className="flex-1 flex flex-col items-center h-[calc(100dvh-56px)]">
             <section className="flex py-3 w-[85%] md:w-2/3 items-center">
-                <button 
-                    className="cursor-pointer mr-3 flex items-center"
-                    onClick={() => router.back()}
-                    title="back to collection"
-                >
-                        <ChevronLeftIcon className="size-5"/>
-                </button>
-
                 <h1 className="font-bold cursor-default p-1">Dailies</h1>
 
                 <Link href="/dailies/templates" className="px-1.5 py-0.5 ml-auto text-sm bg-lavender-600 hover:bg-lavender-700 rounded-sm">
@@ -148,7 +129,7 @@ export default function DailyPage() {
             />
 
             {
-                loading ? 
+                isLoading ? 
                 <Loader/> :
                 <ul className={clsx(
                     "w-[85%] md:w-2/3 flex-grow overflow-y-auto overflow-x-hidden mb-4 flex flex-col rounded-md touch-pan-y scrollbar-soft",
@@ -180,8 +161,6 @@ export default function DailyPage() {
                 <DetailsPanel
                     task={tasks.find( t => t._id === selectedTask._id ) || selectedTask}
                     onClose={closeDetails}
-                    deleteTask={() => console.log("+++ remove deleteTask in DetailsPanel")}
-                    // Prevent updating task for dailies - can only be done on the templates section
                     listId={list._id}
                 />
             )}
