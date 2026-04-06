@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { DailyNavigator, DetailsPanel, Loader, Todo } from "@/app/components";
-import { getTodayString } from "../components/daily-navigator/utilities";
+import { getTodayString, toUTCDateString } from "../components/daily-navigator/utilities";
 
 // import { DailyList } from "./dailylist";
 import { Task, TodoListModel } from "@/models/interfaces";
@@ -15,18 +15,24 @@ import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 
 import clsx from "clsx";
 
-export default function DailyPage() {
-    const [list, setList] = useState<TodoListModel|null>(null);
+interface HeatmapEntry {
+    date: string;
+    completedCount: number;
+    totalCount: number;
+};
 
+export default function DailyPage() {
     const router = useRouter();
 
     // local states
+    const [list, setList] = useState<TodoListModel|null>(null);
     const [tasks, setTasks] = useState<Task[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-    const [completedCount, setCompletedCount] = useState(0);
-    const [totalCount, setTotalCount] = useState(0)
+    const [, setCompletedCount] = useState(0);
+    const [, setTotalCount] = useState(0)
     const [selectedDate, setSelectedDate] = useState(getTodayString());
+    const [heatmapData, setHeatmapData] = useState<HeatmapEntry[]>([]);
 
     const openDetails = (task: Task) => setSelectedTask(task);
     const closeDetails = () => setSelectedTask(null);
@@ -104,6 +110,13 @@ export default function DailyPage() {
             setTasks( prev => prev.map( h => h._id === task?._id ? task : h));
             setCompletedCount(completedCount);
 
+            // Patch the heatmap entry for selectedDate in place
+            setHeatmapData(prev => prev.map(entry => {
+                const entryDate = toUTCDateString(new Date(entry.date));
+                if (entryDate !== selectedDate) return entry;
+                return { ...entry, completedCount };
+            }));
+
         } catch (err) {
             console.error("There was an error toggling the task", err);
         }
@@ -122,16 +135,17 @@ export default function DailyPage() {
 
                 <h1 className="font-bold cursor-default p-1">Dailies</h1>
 
-                <Link href="/dailies/templates" className="px-1.5 py-0.5 ml-auto bg-lavender-600 hover:bg-lavender-700 rounded-sm">
-                    habit templates
+                <Link href="/dailies/templates" className="px-1.5 py-0.5 ml-auto text-sm bg-lavender-600 hover:bg-lavender-700 rounded-sm">
+                    Habit Templates
                 </Link>
             </section>
 
-            <div>
-                {completedCount} / {totalCount}
-            </div>
-
-            <DailyNavigator selectedDate={selectedDate} onDateChange={setSelectedDate}/>
+            <DailyNavigator 
+                selectedDate={selectedDate} 
+                onDateChange={setSelectedDate}
+                heatmapData={heatmapData}
+                onHeatmapLoad={setHeatmapData}
+            />
 
             {
                 loading ? 

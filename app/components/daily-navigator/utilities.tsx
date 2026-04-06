@@ -27,10 +27,11 @@ export function formatDisplayDate(dateStr: string): string {
     });
 }
 
-// Build the last 30 days as an array of "YYYY-MM-DD" strings
-export function buildLast30Days(anchorDateStr: string): string[] {
+// Build the last X days as an array of "YYYY-MM-DD" strings
+export function buildLastXDays(anchorDateStr: string): string[] {
+    const xDays = 89 // 0->89 === 90 total
     const days: string[] = [];
-    for (let i = 29; i >= 0; i--) {
+    for (let i = xDays; i >= 0; i--) {
         days.push(addDays(anchorDateStr, -i));
     }
     return days;

@@ -114,10 +114,6 @@ export const DetailsPanel =({
                         <p className="ml-1">{task.completed ? "All work completed" : "In progress"}</p>
                     </div>
 
-                    <div>
-                        {task.recurrence}
-                    </div>
-
                     <DescriptionBox 
                         isEditing={isEditingTask} 
                         descriptionInput={descriptionInput}
