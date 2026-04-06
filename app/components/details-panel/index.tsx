@@ -10,7 +10,6 @@ import { Types } from "mongoose";
 import { DescriptionBox, PriorityBox, SubTasks, TaskTitle } from "@/app/components/details-panel/components";
 
 interface DetailPanelModel {
-    deleteTask: (taskId: Types.ObjectId) => void;
     task: Task;
     onClose: () => void;
     updateTask?: (payload: {
@@ -19,6 +18,7 @@ interface DetailPanelModel {
         description?: string
     }) => Promise<void>;
     listId: string;
+    deleteTask?: (taskId: Types.ObjectId) => void;
 };
 
 export const DetailsPanel =({
@@ -58,7 +58,7 @@ export const DetailsPanel =({
     };
 
     const handleDeleteTask = () => {
-        deleteTask(task._id);
+        deleteTask?.(task._id);
         handleClose();
     };
 
@@ -106,7 +106,7 @@ export const DetailsPanel =({
 
                     <div className="flex">
                         <p className="font-bold">Date created: </p>
-                        <p className="ml-1">{task.date}</p>
+                        <p className="ml-1">{task.date.toString()}</p>
                     </div>
 
                     <div className="flex">

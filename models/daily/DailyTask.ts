@@ -30,8 +30,8 @@ const DailyTaskSchema = new Schema({
   },
 
   date: {
-    type: String,
-    // required: true,
+    type: Date,
+    required: true,
     index: true
   },
 

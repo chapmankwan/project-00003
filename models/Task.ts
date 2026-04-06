@@ -1,4 +1,3 @@
-// This breaks
 import mongoose from "mongoose";
 
 const TaskSchema = new mongoose.Schema({
@@ -28,8 +27,8 @@ const TaskSchema = new mongoose.Schema({
         type: Boolean, 
         default: false 
     },
-    date: { type: String },
-    dateCompleted: { type: String },
+    date: { type: Date },
+    dateCompleted: { type: Date },
     order: { 
         type: Number, 
         required: true 

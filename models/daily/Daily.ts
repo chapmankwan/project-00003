@@ -2,7 +2,12 @@
 import { Schema, Types } from "mongoose";
 
 const DailySchema = new Schema({
-  userId: Types.ObjectId,
+  userId: {
+    type: Types.ObjectId,
+    ref: "User",
+    required: true,
+    index: true,
+  },
 
   date: {
     type: Date,

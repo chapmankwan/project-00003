@@ -21,13 +21,13 @@ export async function GET(req: NextRequest) {
             ? new Date(`${dateParam}T00:00:00.000Z`)
             : (() => { const d = new Date(); d.setUTCHours(0, 0, 0, 0); return d; })();
 
-        const thirtyDaysAgo = new Date(anchorUTC);
-        thirtyDaysAgo.setUTCDate(thirtyDaysAgo.getUTCDate() - 29); // 29 + today = 30 days
+        const numberOfDays = new Date(anchorUTC);
+        numberOfDays.setUTCDate(numberOfDays.getUTCDate() - 89); // 89 + today = 90 days
 
         const dailies = await Daily.find(
             {
                 userId: session.user.id,
-                date: { $gte: thirtyDaysAgo, $lte: anchorUTC },
+                date: { $gte: numberOfDays, $lte: anchorUTC },
             },
             {
                 date: 1,
