@@ -18,7 +18,7 @@ export const Header = () => {
 
     return (
         <header className="sticky top-0 z-30 px-6 py-4 w-full flex items-center justify-between bg-mono-700">
-            <Link href="/" className="font-semibold">
+            <Link href={ status === "authenticated" ? "/dashboard" : "/" } className="font-semibold">
                 <Image 
                     src="/monorail-logo-raw.png"
                     alt="main"
