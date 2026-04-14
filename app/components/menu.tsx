@@ -100,6 +100,13 @@ export const Menu = () => {
                         <Link 
                             onClick={() => setIsMenuOpen(false)} 
                             className={menuTailwindCss} 
+                            href="/dashboard"
+                        >
+                            Dashboard
+                        </Link>
+                        <Link 
+                            onClick={() => setIsMenuOpen(false)} 
+                            className={menuTailwindCss} 
                             href="/collections"
                         >
                             Collections
