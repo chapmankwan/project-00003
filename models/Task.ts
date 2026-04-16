@@ -1,4 +1,3 @@
-// This breaks
 import mongoose from "mongoose";
 
 const TaskSchema = new mongoose.Schema({
@@ -28,11 +27,29 @@ const TaskSchema = new mongoose.Schema({
         type: Boolean, 
         default: false 
     },
-    date: { type: String },
-    dateCompleted: { type: String },
+    date: { type: Date },
+    dueDate: {
+        type: Date,
+        default: null,
+        index: true,
+    },
+    dateCompleted: { type: Date },
     order: { 
         type: Number, 
         required: true 
+    },
+    type: {
+        type: String,
+        enum: ["normal", "daily-instance"],
+        default: "normal",
+        index: true,
+    },
+
+    templateId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "DailyTaskTemplate",
+        default: null,
+        index: true,
     },
     priority: { 
         type: String,
@@ -44,6 +61,8 @@ const TaskSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "SubTask",
     }],
+}, {
+  timestamps: true
 }); 
 
 export default TaskSchema

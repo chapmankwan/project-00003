@@ -38,8 +38,12 @@ export const taskApiHooks = (listId: string) => {
         return res.json();
     };
 
-    const updateTask = async (listId: string, taskId: Types.ObjectId, update: object) => {
-        const res = await fetch(`/api/todo-lists/${listId}/tasks/${taskId}`, {
+    const updateTask = async (listId: string, taskId: Types.ObjectId, update: object, isDaily?: boolean) => {
+        const endpoint = isDaily
+            ? `/api/daily/tasks/${taskId}`
+            : `/api/todo-lists/${listId}/tasks/${taskId}`;
+
+        const res = await fetch(endpoint, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({

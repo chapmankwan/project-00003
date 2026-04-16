@@ -10,7 +10,7 @@ export interface SubTask {
 }
 export interface Task {
     completed: boolean;
-    date: string;
+    date: Date;
     dateCompleted: string | boolean;
     edited: boolean;
     _id: Types.ObjectId;
@@ -19,6 +19,9 @@ export interface Task {
     order: number;
     description?: string;
     subTasks?: SubTask[];
+    type: "normal" | "daily-instance";
+    templateId?: Types.ObjectId; // if generated from template
+    recurrence?: string;
 }
 
 export interface SubTask {
@@ -45,4 +48,13 @@ export interface Collection {
   description?: string;
   dateCreated: Date;
   todoLists?: TodoListModel[]
+}
+
+export interface DailyTaskTemplate {
+  _id: Types.ObjectId;
+  userId: Types.ObjectId;
+  text: string;
+  isActive: boolean; // use this to toggle daily without deletion
+  createdAt: Date;
+  updatedAt: Date;
 }
