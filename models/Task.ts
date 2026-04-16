@@ -28,6 +28,11 @@ const TaskSchema = new mongoose.Schema({
         default: false 
     },
     date: { type: Date },
+    dueDate: {
+        type: Date,
+        default: null,
+        index: true,
+    },
     dateCompleted: { type: Date },
     order: { 
         type: Number, 
@@ -56,6 +61,8 @@ const TaskSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "SubTask",
     }],
+}, {
+  timestamps: true
 }); 
 
 export default TaskSchema
