@@ -7,6 +7,7 @@ import DailyTaskTemplateSchema from "./daily/DailyTaskTemplate";
 import SubTaskSchema from "./SubTask";
 import TaskSchema from "./Task";
 import TodoListSchema from "./TodoList";
+import UserSchema from "./User";
 
 export const Collection =
   mongoose.models.Collection ||
@@ -35,3 +36,7 @@ export const Task =
 export const SubTask =
   mongoose.models.SubTask ||
   mongoose.model("SubTask", SubTaskSchema);
+
+export const User =
+  mongoose.models.User ||
+  mongoose.model("User", UserSchema);
