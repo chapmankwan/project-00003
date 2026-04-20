@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface ProfileSectionProps {
   displayName?: string;
@@ -16,6 +17,8 @@ export default function Profile({
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
 
   async function handleSubmit() {
     setError(null);
@@ -37,6 +40,7 @@ export default function Profile({
       }
 
       setSuccess(true);
+      router.refresh()
     } catch {
       setError("Something went wrong.");
     } finally {

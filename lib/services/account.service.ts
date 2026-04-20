@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import { connectToDatabase } from "@/lib/mongodb";
 import { User } from "@/models";
 import { UserDoc } from "@/lib/types/models";
+import mongoose from "mongoose";
 
 export interface AccountProfile {
   _id: string;
@@ -48,31 +49,64 @@ export async function getAccountProfile(
  * Updates display name and/or username.
  * Checks for username uniqueness before saving.
  */
+type MongoDuplicateKeyError = {
+  code: 11000;
+  keyPattern?: Record<string, unknown>;
+};
+
 export async function updateProfile(
   userId: string,
   data: { displayName?: string; username?: string }
 ): Promise<UpdateProfileResult> {
   await connectToDatabase();
 
-  if (data.username) {
-    const existing = await User.findOne({
-      username: data.username,
-      _id: { $ne: userId },
-    }).lean();
+  const update: Partial<{
+    displayName: string;
+    username: string;
+  }> = {};
 
-    if (existing) {
-      return { success: false, error: "Username is already taken." };
-    }
+  if (data.displayName !== undefined) {
+    update.displayName = data.displayName;
   }
 
-  await User.findByIdAndUpdate(userId, {
-    $set: {
-      ...(data.displayName !== undefined && { displayName: data.displayName }),
-      ...(data.username !== undefined && { username: data.username }),
-    },
-  });
+  if (data.username !== undefined) {
+    update.username = data.username.toLowerCase();
+  }
 
-  return { success: true };
+  if (Object.keys(update).length === 0) {
+    return { success: true };
+  }
+
+  try {
+    await User.findByIdAndUpdate(
+      userId,
+      { $set: update },
+      { runValidators: true }
+    );
+
+    return { success: true };
+  } catch (err: unknown) {
+    // Mongoose validation error
+    if (err instanceof mongoose.Error.ValidationError) {
+      return { success: false, error: "Invalid profile data." };
+    }
+
+    // Mongo duplicate key error (type guard)
+    if (
+      typeof err === "object" &&
+      err !== null &&
+      "code" in err &&
+      (err as { code?: unknown }).code === 11000
+    ) {
+      const mongoErr = err as MongoDuplicateKeyError;
+
+      if (mongoErr.keyPattern?.username) {
+        return { success: false, error: "Username is already taken." };
+      }
+    }
+
+    throw err;
+  }
 }
 
 /**

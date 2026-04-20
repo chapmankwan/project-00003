@@ -31,11 +31,11 @@ export default async function AccountPage() {
           username={profile.username}
         />
  
-        <div className="pt-8">
+        <div className="pt-4">
           <Email currentEmail={profile.email} />
         </div>
  
-        <div className="pt-8">
+        <div className="pt-4">
           <Password />
         </div>
       </div>
