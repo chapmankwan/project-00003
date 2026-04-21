@@ -38,7 +38,7 @@ export interface DailyDoc {
   _id: Types.ObjectId;
   userId: Types.ObjectId;
   date: Date;
-  tasks: Types.ObjectId[] | DailyTaskDoc[];
+  tasks: DailyTaskDoc[];
   completedCount: number;
   totalCount: number;
   createdAt: Date;

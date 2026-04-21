@@ -55,7 +55,7 @@ export async function GET() {
     
         const perHabit = calculatePerHabitStreaks(
             habitTasks.map( task => ({
-                templateId: task.temmplateId.toString(),
+                templateId: task.templateId.toString(),
                 text: task.text,
                 date: task.date,
                 completed: task.completed
