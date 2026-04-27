@@ -11,7 +11,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (status === "authenticated") {
-      router.push("/collections");
+      router.push("/dashboard");
     }
   }, [status, router]);
   
@@ -43,7 +43,7 @@ export default function LoginPage() {
       } else {
         setSuccess("Login successful! Redirecting...");
 
-        setTimeout(() => router.push("/collections"), 1000);
+        setTimeout(() => router.push("/dashboard"), 1000);
       }
     } catch (err) {
       console.error("Error occurred:", err);

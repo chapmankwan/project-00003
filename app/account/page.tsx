@@ -9,10 +9,10 @@ import Password from "./components/password";
  
 export default async function AccountPage() {
   const session = await getServerSession(authOptions);
-  if (!session?.user?.id) redirect("/login");
+  if (!session?.user?.id) redirect("/account/login");
  
   const profile = await getAccountProfile(session.user.id);
-  if (!profile) redirect("/login");
+  if (!profile) redirect("/account/login");
  
   return (
     <div className="max-w-xl mx-auto px-4 py-8 flex flex-col gap-8">
