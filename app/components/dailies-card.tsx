@@ -52,18 +52,18 @@ export const DailiesCard = ({
   }
 
   return (
-    <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5">
+    <div className="rounded-xl border border-mono-200 dark:border-mono-800 bg-white dark:bg-mono-900 p-5">
       <div className="flex items-center justify-between mb-4">
-        <p className="text-xs font-medium uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
+        <p className="text-xs font-medium uppercase tracking-widest text-mono-400 dark:text-mono-500">
           Today s dailies
         </p>
-        <span className="text-xs text-zinc-400 dark:text-zinc-500">
+        <span className="text-xs text-mono-400 dark:text-mono-500">
           {completedCount}/{totalCount}
         </span>
       </div>
 
       {tasks.length === 0 && (
-        <p className="text-sm text-zinc-400 dark:text-zinc-500">
+        <p className="text-sm text-mono-400 dark:text-mono-500">
           No dailies scheduled for today.
         </p>
       )}
@@ -73,14 +73,14 @@ export const DailiesCard = ({
           <button
             key={task._id}
             onClick={() => toggleTask(task._id, task.completed)}
-            className="flex items-center gap-3 text-left w-full group"
+            className="flex items-center gap-3 text-left w-full group cursor-pointer"
           >
             <span
               className={`
                 w-4 h-4 rounded-full border flex-shrink-0 flex items-center justify-center transition-colors
                 ${task.completed
-                  ? "bg-emerald-500 border-emerald-500"
-                  : "border-zinc-300 dark:border-zinc-600 group-hover:border-zinc-400 dark:group-hover:border-zinc-500"
+                  ? "bg-lavender-500 border-lavender-500"
+                  : "border-mono-300 dark:border-mono-600 group-hover:border-mono-400 dark:group-hover:border-mono-500"
                 }
               `}
             >
@@ -97,10 +97,10 @@ export const DailiesCard = ({
               )}
             </span>
             <span
-              className={`text-sm transition-colors ${
+              className={`text-sm transition-colors hover:underline ${
                 task.completed
-                  ? "line-through text-zinc-400 dark:text-zinc-500"
-                  : "text-zinc-900 dark:text-zinc-100"
+                  ? "line-through text-mono-400 dark:text-mono-500"
+                  : "text-mono-900 dark:text-mono-100"
               }`}
             >
               {task.text}

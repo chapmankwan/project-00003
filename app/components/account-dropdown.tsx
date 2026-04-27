@@ -10,8 +10,6 @@ export const AccountDropdown = () => {
   const ref = useRef<HTMLDivElement>(null);
 
   const username = session?.user?.name ?? session?.user?.email ?? "Account";
-  console.log("+++ username", username);
-  console.log("+++ sesssion", session);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
