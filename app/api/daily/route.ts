@@ -9,7 +9,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Daily, DailyTask, DailyTaskTemplate } from "@/models";
 
 export async function GET(
-    req: NextRequest,
+    req: NextRequest
 ) {
     try {
         const session = await getServerSession(authOptions);

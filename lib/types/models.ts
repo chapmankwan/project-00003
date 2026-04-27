@@ -44,3 +44,13 @@ export interface DailyDoc {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface UserDoc {
+  _id: Types.ObjectId;
+  email: string;
+  hashedPassword?: string;
+  username?: string;
+  displayName?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
