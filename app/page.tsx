@@ -19,7 +19,7 @@ export default async function Home() {
 				{
 					session ?
 						<Link
-							href="/collections"
+							href="/dashboard"
 							className="
 								rounded-full 
 								border border-solid border-transparent 
@@ -29,7 +29,7 @@ export default async function Home() {
 								text-background text-sm h-12 px-5
 							"
 						>
-							To collections
+							To dashboard
 						</Link>
 						:
 						<>

@@ -13,6 +13,7 @@ interface DailiesCardProps {
   tasks: DailyTask[];
   completedCount: number;
   totalCount: number;
+  onHabitToggle?: () => Promise<void>;
 }
 
 export const DailiesCard = ({
@@ -20,6 +21,7 @@ export const DailiesCard = ({
   tasks: initialTasks,
   completedCount: initialCompleted,
   totalCount,
+  onHabitToggle,
 }: DailiesCardProps) => {
   const [tasks, setTasks] = useState(initialTasks);
   const [completedCount, setCompletedCount] = useState(initialCompleted);
@@ -42,6 +44,12 @@ export const DailiesCard = ({
 
       const data = await res.json();
       setCompletedCount(data.completedCount);
+
+      // Callback to parent to refresh streaks or other related data
+      if (onHabitToggle) {
+        await onHabitToggle();
+      };
+
     } catch {
       // Revert on failure
       setTasks(prev =>

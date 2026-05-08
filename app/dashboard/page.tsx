@@ -76,6 +76,12 @@ export default function DashboardPage() {
     }
   }, []);
 
+  const refreshStreaks = async () => {
+    const res = await fetch("/api/daily/streak");
+    const streakData = await res.json();
+    setData((prev) => prev ? { ...prev, streak: streakData } : prev);
+  };
+
   useEffect(() => {
     fetchDashboard();
   }, [fetchDashboard]);
@@ -124,6 +130,7 @@ export default function DashboardPage() {
               tasks={daily.tasks}
               completedCount={daily.completedCount}
               totalCount={daily.totalCount}
+              onHabitToggle={refreshStreaks}
             />
           ) : (
             <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5">
