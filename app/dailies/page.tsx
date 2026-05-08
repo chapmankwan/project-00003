@@ -60,6 +60,7 @@ export default function DailyPage() {
     
     // this hook allows user to scroll to latest task after adding
     useEffect(() => {
+        if (!justAddedRef.current) return;
         // Scroll to the latest task
         const timer = setTimeout(() => {
             if (lastTaskRef.current) {

@@ -23,7 +23,7 @@ export const StreakCard = ({
 }: StreakCardProps) => {
   const [expanded, setExpanded] = useState(false);
 
-//   const weekPercent = todayTotal > 0 ? Math.round((todayCompleted / todayTotal) * 100) : 0;
+  // const weekPercent = todayTotal > 0 ? Math.round((todayCompleted / todayTotal) * 100) : 0;
 
   return (
     <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5">
@@ -45,7 +45,7 @@ export const StreakCard = ({
 
         <div>
           <p className="text-2xl font-medium text-zinc-900 dark:text-zinc-100 leading-none">
-            {todayCompleted}/{todayTotal}
+            { !todayCompleted && !todayTotal ? "...waiting" : `${todayCompleted}/${todayTotal}` }
           </p>
           <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
             today
