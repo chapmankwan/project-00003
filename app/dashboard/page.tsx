@@ -9,16 +9,19 @@ import {
   DailiesCard,
   OverdueCard,
 } from "@/app/components";
-import { DashboardSkeleton } from "@/app/dashboard/components/dashboard-skeleton";
+import { DashboardSkeleton } from "./components/dashboard-skeleton";
+import { QuickTasksCard } from "@/app/components/quick-tasks-card";
 
 import type { DailyListResult } from "@/lib/services/daily.service";
 import type { StreakResult } from "@/lib/services/streak.service";
 import type { OverdueTask } from "@/lib/services/task.service";
+import type { TodayTasksResult } from "@/lib/services/today.service";
 
 interface DashboardData {
   daily: DailyListResult | null;
   streak: StreakResult;
   overdue: OverdueTask[];
+  today: TodayTasksResult;
 }
 
 function toLocalDateParam(date: Date): string {
@@ -39,29 +42,32 @@ export default function DashboardPage() {
     const dateParam = toLocalDateParam(today);
 
     try {
-      const [dailyRes, streakRes, overdueRes] = await Promise.all([
+      const [dailyRes, streakRes, overdueRes, todayRes] = await Promise.all([
         fetch(`/api/daily?date=${dateParam}`),
         fetch("/api/daily/streak"),
         fetch("/api/tasks/overdue"),
+        fetch(`/api/tasks/today?date=${dateParam}`),
       ]);
 
       const failed = [
         !dailyRes.ok && "daily list",
         !streakRes.ok && "streak",
         !overdueRes.ok && "overdue tasks",
+        !todayRes.ok && "quick tasks",
       ].filter(Boolean);
 
       if (failed.length > 0) {
         throw new Error(`Failed to load: ${failed.join(", ")}`);
       }
 
-      const [daily, streak, overdue] = await Promise.all([
+      const [daily, streak, overdue, todayTasks] = await Promise.all([
         dailyRes.json(),
         streakRes.json(),
         overdueRes.json(),
+        todayRes.json(),
       ]);
 
-      setData({ daily, streak, overdue });
+      setData({ daily, streak, overdue, today: todayTasks });
     } catch (err) {
       console.error("Dashboard fetch error:", err);
       toast.error("Failed to load dashboard", {
@@ -75,13 +81,13 @@ export default function DashboardPage() {
       setLoading(false);
     }
   }, []);
-
+  
   const refreshStreaks = async () => {
     const res = await fetch("/api/daily/streak");
     const streakData = await res.json();
     setData((prev) => prev ? { ...prev, streak: streakData } : prev);
   };
-
+  
   useEffect(() => {
     fetchDashboard();
   }, [fetchDashboard]);
@@ -106,13 +112,14 @@ export default function DashboardPage() {
     );
   }
 
-  const { daily, streak, overdue } = data;
+  const { daily, streak, overdue, today } = data;
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 flex flex-col gap-6">
       <GreetingHeader />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Left column */}
         <div className="flex flex-col gap-4">
           <StreakCard
             globalStreak={streak.globalStreak}
@@ -123,6 +130,7 @@ export default function DashboardPage() {
           <OverdueCard tasks={overdue} />
         </div>
 
+        {/* Right column */}
         <div className="flex flex-col gap-4">
           {daily ? (
             <DailiesCard
@@ -149,6 +157,11 @@ export default function DashboardPage() {
               </p>
             </div>
           )}
+
+          <QuickTasksCard
+            listId={today.listId}
+            initialTasks={today.tasks}
+          />
         </div>
       </div>
     </div>
