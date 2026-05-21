@@ -17,3 +17,4 @@ export * from "./dailies-card";
 export * from "./overdue-card";
 export * from "./greeting-header";
 export * from "./account-dropdown";
+export * from "./quick-tasks-card";
