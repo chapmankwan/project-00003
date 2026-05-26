@@ -142,8 +142,8 @@ export default function DashboardPage() {
             />
           ) : (
             <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5">
-              <p className="text-xs font-medium uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-4">
-                Todays dailies
+              <p className="text-xs font-medium uppercase text-zinc-400 dark:text-zinc-500 mb-4">
+                Today&#39;s dailies
               </p>
               <p className="text-sm text-zinc-400 dark:text-zinc-500">
                 No daily list for today yet.{" "}
