@@ -47,8 +47,6 @@ export const authOptions: AuthOptions = {
     secret: process.env.NEXTAUTH_SECRET,
     callbacks: {
         async jwt({ token, user }) {
-            console.log("+++ JWT callback user:", user);
-            console.log("+++ JWT callback token before:", token);
 
             if (user) {
                 token.id = user.id;

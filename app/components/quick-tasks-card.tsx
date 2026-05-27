@@ -109,15 +109,50 @@ export function QuickTasksCard({ listId, initialTasks }: QuickTasksCardProps) {
   }
 
   return (
-    <div className="rounded-xl border border-mono-200 dark:border-mono-800 bg-white dark:bg-mono-900 p-5 flex flex-col gap-3">
+    <div className="rounded-xl bg-mono-700 p-5 flex flex-col gap-3">
       <div className="flex items-center justify-between">
-        <p className="text-xs font-medium uppercase tracking-widest text-mono-400 dark:text-mono-500">
+        <p className="text-xs font-medium uppercase text-pale-300">
           Quick Tasks
         </p>
-        <span className="text-xs text-mono-400 dark:text-mono-500">
+        <span className="text-xs text-pale-500/70">
           {incompleteTasks.length} remaining
         </span>
       </div>
+
+      {/* Add input */}
+      {inputOpen ? (
+        <div className="flex items-center gap-2 mt-1">
+          <input
+            ref={inputRef}
+            type="text"
+            value={inputValue}
+            onChange={e => setInputValue(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Task name..."
+            className="flex-1 text-sm bg-transparent border-b border-mono-400 outline-none py-1 text-mono-800 dark:text-mono-100 placeholder:text-mono-400"
+          />
+          <button
+            onClick={handleAdd}
+            disabled={adding || !inputValue.trim()}
+            className="text-xs text-mint-500 hover:underline underline-offset-2 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+          >
+            {adding ? "Adding..." : "Add"}
+          </button>
+          <button
+            onClick={() => { setInputOpen(false); setInputValue(""); }}
+            className="text-xs text-blush-700/75 hover:underline underline-offset-2 cursor-pointer"
+          >
+            Cancel
+          </button>
+        </div>
+      ) : (
+        <button
+          onClick={() => setInputOpen(true)}
+          className="text-xs text-mono-400 hover:text-mono-200 text-left cursor-pointer transition-colors"
+        >
+          + Add task
+        </button>
+      )}
 
       {/* Incomplete tasks */}
       {incompleteTasks.length > 0 && (
@@ -140,40 +175,7 @@ export function QuickTasksCard({ listId, initialTasks }: QuickTasksCardProps) {
         </p>
       )}
 
-      {/* Add input */}
-      {inputOpen ? (
-        <div className="flex items-center gap-2 mt-1">
-          <input
-            ref={inputRef}
-            type="text"
-            value={inputValue}
-            onChange={e => setInputValue(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Task name..."
-            className="flex-1 text-sm bg-transparent border-b border-mono-300 dark:border-mono-700 outline-none py-1 text-mono-800 dark:text-mono-100 placeholder:text-mono-400 dark:placeholder:text-mono-600"
-          />
-          <button
-            onClick={handleAdd}
-            disabled={adding || !inputValue.trim()}
-            className="text-xs text-mono-600 dark:text-mono-300 hover:underline underline-offset-2 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-          >
-            {adding ? "Adding..." : "Add"}
-          </button>
-          <button
-            onClick={() => { setInputOpen(false); setInputValue(""); }}
-            className="text-xs text-mono-400 dark:text-mono-500 hover:underline underline-offset-2 cursor-pointer"
-          >
-            Cancel
-          </button>
-        </div>
-      ) : (
-        <button
-          onClick={() => setInputOpen(true)}
-          className="text-xs text-mono-400 dark:text-mono-500 hover:text-mono-600 dark:hover:text-mono-300 text-left cursor-pointer transition-colors"
-        >
-          + Add task
-        </button>
-      )}
+      
 
       {/* Completed tasks */}
       {completedTasks.length > 0 && (
@@ -211,26 +213,26 @@ function TaskRow({ task, onToggle, onDelete }: TaskRowProps) {
         className={`
           w-4 h-4 rounded border flex-shrink-0 flex items-center justify-center transition-colors cursor-pointer
           ${task.completed
-            ? "bg-mono-400 dark:bg-mono-600 border-mono-400 dark:border-mono-600"
-            : "border-mono-300 dark:border-mono-700 hover:border-mono-400 dark:hover:border-mono-500"
+            ? "bg-mono-600 border-mono-100"
+            : "border-mono-400 dark:hover:border-mono-300"
           }
         `}
         aria-label={task.completed ? "Mark incomplete" : "Mark complete"}
       >
         {task.completed && (
-          <svg className="w-2.5 h-2.5 text-white" viewBox="0 0 10 10" fill="none">
+          <svg className="w-2.5 h-2.5 text-white fill-black cursor-pointer" viewBox="0 0 10 10" fill="none">
             <path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         )}
       </button>
 
-      <span className={`flex-1 text-sm ${task.completed ? "line-through text-mono-400 dark:text-mono-600" : "text-mono-800 dark:text-mono-100"}`}>
+      <span className={`flex-1 text-sm cursor-pointer text-mono-300 hover:text-mono-200 ${task.completed ? "line-through" : ""}`}>
         {task.text}
       </span>
 
       <button
         onClick={() => onDelete(task)}
-        className="opacity-0 group-hover:opacity-100 transition-opacity text-mono-400 dark:text-mono-600 hover:text-mono-600 dark:hover:text-mono-400 cursor-pointer"
+        className="opacity-0 group-hover:opacity-100 transition-opacity text-mono-300 hover:text-mono-200 cursor-pointer"
         aria-label="Delete task"
       >
         <svg className="w-3.5 h-3.5" viewBox="0 0 14 14" fill="none">
