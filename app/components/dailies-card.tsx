@@ -60,12 +60,13 @@ export const DailiesCard = ({
   }
 
   return (
-    <div className="rounded-xl border border-mono-200 dark:border-mono-800 bg-white dark:bg-mono-900 p-5">
+    <div className="rounded-xl bg-mono-700 p-5">
       <div className="flex items-center justify-between mb-4">
-        <p className="text-xs font-medium uppercase tracking-widest text-mono-400 dark:text-mono-500">
-          Today s dailies
+        <p className="text-xs font-medium uppercase text-mint-400">
+          Today&#39;s dailies
         </p>
-        <span className="text-xs text-mono-400 dark:text-mono-500">
+        {/* Temporarily hidden to consider if its duplication is needed next to the streak card */}
+        <span className="text-xs text-mint-400 hidden">
           {completedCount}/{totalCount}
         </span>
       </div>
@@ -105,9 +106,9 @@ export const DailiesCard = ({
               )}
             </span>
             <span
-              className={`text-sm transition-colors hover:underline ${
+              className={`text-sm transition-colors group-hover:underline hover:underline ${
                 task.completed
-                  ? "line-through text-mono-400 dark:text-mono-500"
+                  ? "line-through text-mono-300"
                   : "text-mono-900 dark:text-mono-100"
               }`}
             >

@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "monorail",
-  description: "Built with NextJS",
+  description: "A simple task manager for your daily needs.",
 };
 
 export default async function RootLayout({

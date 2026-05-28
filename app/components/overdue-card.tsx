@@ -26,9 +26,9 @@ function formatOverdue(dueDate: string): string {
 
 export const OverdueCard = ({ tasks }: OverdueCardProps) => {
   return (
-    <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5">
+    <div className="rounded-xl bg-mono-700 p-5">
       <div className="flex items-center justify-between mb-4">
-        <p className="text-xs font-medium uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
+        <p className="text-xs font-medium uppercase tracking-widest text-blush-400">
           Overdue
         </p>
         {tasks.length > 0 && (
