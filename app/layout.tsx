@@ -19,6 +19,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "monorail",
   description: "A simple task manager for your daily needs.",
+  manifest: "/site.webmanifest",
 };
 
 export default async function RootLayout({

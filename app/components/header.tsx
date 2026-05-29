@@ -14,7 +14,7 @@ export const Header = () => {
         <header className="sticky top-0 z-30 px-6 py-4 w-full flex items-center justify-between bg-mono-700">
             <Link href={ status === "authenticated" ? "/dashboard" : "/" } className="font-semibold">
                 <Image 
-                    src="/monorail-logo-raw.png"
+                    src="/android-chrome-512x512.png"
                     alt="main"
                     width={30}
                     height={30}
