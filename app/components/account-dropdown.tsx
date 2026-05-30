@@ -4,12 +4,18 @@ import { useRef, useEffect, useState } from "react";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 
-export const AccountDropdown = () => {
+import clsx from "clsx";
+
+export const AccountDropdown = ({
+  position = "right",
+}: {
+  position?: "center" | "left" | "right";  
+}) => {
   const { data: session } = useSession();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  const username = session?.user?.name ?? session?.user?.email ?? "Account";
+  const username = session?.user?.username ?? session?.user?.email ?? "Account";
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -36,7 +42,12 @@ export const AccountDropdown = () => {
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute right-0 mt-3 w-48 rounded-lg bg-mono-700 border border-mono-600 shadow-lg overflow-hidden z-50">
+        <div className={clsx(
+            "absolute mt-3 w-48 rounded-lg bg-mono-700 border border-mono-600 shadow-lg overflow-hidden z-50",
+            position === "left" && "left-0 transform-none",
+            position === "right" && "left-auto right-0 transform-none",
+            position === "center" && "left-1/2 transform -translate-x-1/2",
+          )}>
           {/* Username display */}
           <div className="px-4 py-3 border-b border-mono-600">
             <p className="text-xs text-mono-300 truncate">{username}</p>
