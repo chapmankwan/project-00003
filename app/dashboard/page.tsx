@@ -17,6 +17,8 @@ import type { StreakResult } from "@/lib/services/streak.service";
 import type { OverdueTask } from "@/lib/services/task.service";
 import type { TodayTasksResult } from "@/lib/services/today.service";
 
+import { ArrowPathIcon } from "@heroicons/react/24/outline";
+
 interface DashboardData {
   daily: DailyListResult | null;
   streak: StreakResult;
@@ -115,8 +117,12 @@ export default function DashboardPage() {
   const { daily, streak, overdue, today } = data;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 flex flex-col gap-6">
+    <div className="max-w-4xl mx-auto px-4 py-8 flex flex-col gap-2">
       <GreetingHeader />
+
+      <button className="flex ml-auto gap-1 text-xs text-mono-400 hover:text-mono-200 transition-opacity cursor-pointer" onClick={fetchDashboard}>
+        <ArrowPathIcon className="h-4 w-4" /> sync
+      </button>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Left column */}

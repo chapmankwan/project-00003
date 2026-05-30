@@ -1,12 +1,13 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import { signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import Link from "next/link"
 
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import clsx from "clsx";
-import { redirect } from "next/navigation";
+
+import { AccountDropdown } from "@/app/components";
 
 const menuTailwindCss = "m-2 p-2 rounded-4xl hover:text-mono-400 hover:underline hover:underline-offset-2";
 
@@ -20,12 +21,6 @@ export const Menu = () => {
         if (e.key === "Escape") {
             setIsMenuOpen(false);
         }
-    };
-
-    const handleSignOut = () => {
-        signOut();
-        setIsMenuOpen(false);
-        redirect("/account/signout");
     };
 
     // Hook for focus trap
@@ -95,6 +90,8 @@ export const Menu = () => {
                     <XMarkIcon className="size-6" />
                 </button>
 
+
+
                 {status === "authenticated" ? (
                     <>
                         <Link 
@@ -118,19 +115,8 @@ export const Menu = () => {
                         >
                             Dailies
                         </Link>
-                        <Link
-                            onClick={() => setIsMenuOpen(false)}
-                            className={menuTailwindCss}
-                            href="/account"
-                        >
-                            Account
-                        </Link>
-                        <button 
-                            className={menuTailwindCss}
-                            onClick={handleSignOut}
-                        >
-                            Sign Out
-                        </button>
+
+                        <AccountDropdown position="center" />
                     </>
                     ) : (
                     <>
