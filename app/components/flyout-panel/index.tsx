@@ -9,7 +9,7 @@ import Form from "next/form";
 interface FlyoutPanelModel {
     callback?: () => void;
     onClose: () => void;
-    onSubmit?: (payload: { text: string, priority: string, description?: string, recurrence?: string }) => Promise<void>;
+    onSubmit?: (payload: { text: string, priority: string, description?: string, recurrence?: string, dueDate?: string }) => Promise<void>;
     panelTitle: string;
     type: string;
 };
@@ -33,6 +33,9 @@ export const FlyoutPanel =({
         setSelectedPriority(priority);
     };
 
+    /** Due Date Selection */
+    const [dueDate, setDueDate] = useState<string>("");
+
     const [description, setDescription] = useState<string>("");
     const [isAddMoreSelected, setIsAddMoreSelected] = useState(false);
     const [selectedRecurrence, setSelectedRecurrence] = useState<string>("");
@@ -45,6 +48,7 @@ export const FlyoutPanel =({
         description: "Description",
         showPriority: false,
         showRecurrence: false,
+        hasDueDate: false,
     };
 
     switch (type) {
@@ -70,6 +74,7 @@ export const FlyoutPanel =({
                 submitButton: 'Add',
                 firstInput: "Task",
                 showPriority: true,
+                hasDueDate: true,
             };
             break;
         case 'habit':
@@ -112,7 +117,8 @@ export const FlyoutPanel =({
                 text: titleInput,
                 priority: selectedPriority,
                 description: description,
-                recurrence: selectedRecurrence.length > 0 ? selectedRecurrence : ""
+                recurrence: selectedRecurrence.length > 0 ? selectedRecurrence : "",
+                dueDate: dueDate.length > 0 ? dueDate : "",
             });
         } catch (err) {
             console.error("There was an error with handling the submit in the panel", err)
@@ -180,6 +186,19 @@ export const FlyoutPanel =({
                             <RecurrenceSelector onChange={(rrule) => setSelectedRecurrence(rrule) }/>
                             :
                             null
+                    }
+
+                    {
+                        panelType.hasDueDate &&
+                        <div className="flex flex-col gap-1">
+                            <span className="text-sm">Due Date</span>
+                            <input 
+                                className="p-2 border border-solid border-lavender-400 rounded-md bg-mono-700"
+                                type="date"
+                                value={dueDate}
+                                onChange={e => setDueDate(e.target.value)}
+                            />
+                        </div>
                     }
 
                     {

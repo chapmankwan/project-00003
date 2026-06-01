@@ -197,12 +197,12 @@ export const TodoList = ({id}: { id:string}) => {
         }
     }
 
-    const addTask = async (text:string, priority: string = "moderate", description?: string) => {
+    const addTask = async (text:string, priority: string = "moderate", description?: string, dueDate?: string) => {
         if (!text.trim()) return;
         
         try {
             const order = tasks.length;
-            const savedTask = await saveTask(text, priority , order, description);
+            const savedTask = await saveTask(text, priority , order, description, dueDate);
 
             justAddedRef.current = true;
             setTasks([...tasks, savedTask]);
@@ -384,7 +384,7 @@ export const TodoList = ({id}: { id:string}) => {
                 isFlyoutOpen && 
                 <FlyoutPanel 
                     onClose={() => setIsFlyoutOpen(false)}
-                    onSubmit={({text, priority, description} ) => addTask(text, priority, description)}
+                    onSubmit={({text, priority, description, dueDate} ) => addTask(text, priority, description, dueDate)}
                     panelTitle="New Task"
                     type="todo"
                 />

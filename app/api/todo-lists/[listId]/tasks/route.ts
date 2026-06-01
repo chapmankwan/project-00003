@@ -17,7 +17,7 @@ export async function POST(
 
         await connectToDatabase();
 
-        const { text, description, priority, order } = await req.json();
+        const { text, description, priority, order, dueDate } = await req.json();
 
         const { listId } = await context.params;
 
@@ -36,6 +36,7 @@ export async function POST(
             description,
             priority: priority ?? "moderate",
             date: new Date().toISOString(),
+            dueDate: dueDate || null,
         });
 
         await TodoList.updateOne(
