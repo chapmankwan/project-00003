@@ -47,7 +47,7 @@ export const Card = ({
                 )}
         >
             <PriorityIcon priority={taskList.priority} />
-            <span className="flex-1 text-nowrap text-ellipsis">{decodeURIComponent(taskList.title)}</span>
+            <p className="flex-1 min-w-0 truncate">{decodeURIComponent(taskList.title)}</p>
 
             <div className="flex flex-[0.5] items-center gap-2 justify-end">
                 <div className="flex flex-col text-xs items-end w-full">

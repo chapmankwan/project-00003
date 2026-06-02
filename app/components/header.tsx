@@ -16,8 +16,8 @@ export const Header = () => {
                 <Image 
                     src="/android-chrome-512x512.png"
                     alt="main"
-                    width={30}
-                    height={30}
+                    width={24}
+                    height={24}
                 />
             </Link>
 

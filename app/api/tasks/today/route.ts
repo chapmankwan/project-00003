@@ -36,6 +36,7 @@ export async function POST(req: NextRequest) {
     }
  
     const body = await req.json();
+    console.log("+++ body", body);
  
     if (!body.text?.trim()) {
       return NextResponse.json({ error: "text is required" }, { status: 400 });
