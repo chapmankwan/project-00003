@@ -25,6 +25,7 @@ function formatOverdue(dueDate: string): string {
 }
 
 export const OverdueCard = ({ tasks }: OverdueCardProps) => {
+  console.log("+++ tasks", tasks);
   return (
     <div className="rounded-xl bg-mono-700 p-5">
       <div className="flex items-center justify-between mb-4">
@@ -32,14 +33,14 @@ export const OverdueCard = ({ tasks }: OverdueCardProps) => {
           Overdue
         </p>
         {tasks.length > 0 && (
-          <span className="text-xs font-medium text-red-500 dark:text-red-400">
+          <span className="text-xs font-medium text-blush-500 dark:text-blush-400">
             {tasks.length}
           </span>
         )}
       </div>
 
       {tasks.length === 0 && (
-        <p className="text-sm text-zinc-400 dark:text-zinc-500">
+        <p className="text-sm text-mono-400 dark:text-mono-500">
           Nothing overdue.
         </p>
       )}
@@ -47,18 +48,18 @@ export const OverdueCard = ({ tasks }: OverdueCardProps) => {
       <div className="flex flex-col gap-3">
         {tasks.map(task => (
           <div key={task._id} className="flex items-start gap-3">
-            <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-red-400 dark:bg-red-500 flex-shrink-0" />
+            <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-blush-700 flex-shrink-0" />
             <div className="flex-1 min-w-0">
-              <p className="text-sm text-zinc-900 dark:text-zinc-100 truncate">
+              <p className="text-sm text-mono-900 dark:text-mono-100 truncate">
                 {task.text}
               </p>
               <div className="flex items-center gap-2 mt-0.5">
                 {task.listId && (
-                  <span className="text-xs text-zinc-400 dark:text-zinc-500">
+                  <span className="text-xs text-mono-400 dark:text-mono-500">
                     {task.listId.name}
                   </span>
                 )}
-                <span className="text-xs font-medium text-red-400 dark:text-red-500 bg-red-50 dark:bg-red-950 px-1.5 py-0.5 rounded">
+                <span className="text-xs font-medium text-blush-400 dark:text-blush-500 bg-blush-50 dark:bg-blush-950 px-1.5 py-0.5 rounded">
                   {formatOverdue(task.dueDate)}
                 </span>
               </div>

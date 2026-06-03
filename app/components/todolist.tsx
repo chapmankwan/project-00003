@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 import { taskApiHooks } from "@/app/utilities/taskApiHooks";
 import { toSlug } from "@/app/utilities";
 
-import { CheckIcon, CheckCircleIcon, ChevronLeftIcon, TrashIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { CheckIcon, ChevronLeftIcon, TrashIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import clsx from "clsx";
 
@@ -285,14 +285,8 @@ export const TodoList = ({id}: { id:string }) => {
 
     const CompletionCheck = () => {
         return (
-            <span className="flex items-center gap-2 text-sm">
+            <span className="flex items-center gap-2 text-sm text-mint-500">
                 {completedTasksCount} / {totalTasksCount}
-                <CheckCircleIcon className={clsx("size-6", 
-                    completedTasksCount === totalTasksCount 
-                    && completedTasksCount > 0
-                    && !loading ? 
-                    "text-mint-500" : ""
-                )}/>
             </span>
         )
     };
@@ -330,7 +324,7 @@ export const TodoList = ({id}: { id:string }) => {
                 }
             </section>
             
-            <section className="flex w-[85%] md:w-2/3 pb-3">
+            <section className="flex gap-2 items-center w-[85%] md:w-2/3 pb-3">
                 <CompletionCheck />
 
                 <div className="flex items-center gap-2 ml-auto">

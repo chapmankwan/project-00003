@@ -45,7 +45,7 @@ export const StreakCard = ({
 
         <div>
           <p className="text-2xl font-medium text-zinc-100 leading-none">
-            { !todayCompleted && !todayTotal ? "...waiting" : `${todayCompleted}/${todayTotal}` }
+            { !todayCompleted && !todayTotal ? "0/0" : `${todayCompleted}/${todayTotal}` }
           </p>
           <p className="text-sm text-zinc-400 mt-1">
             today
