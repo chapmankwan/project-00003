@@ -1,3 +1,4 @@
+
 interface OverdueTask {
   _id: string;
   text: string;
@@ -25,7 +26,23 @@ function formatOverdue(dueDate: string): string {
 }
 
 export const OverdueCard = ({ tasks }: OverdueCardProps) => {
-  console.log("+++ tasks", tasks);
+  async function toggleOverdueTask(taskId: string, listId: string) {
+    try {
+      const res = await fetch(`/api/todo-lists/${listId}/tasks/${taskId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ completed: true }),
+      });
+    
+      if (!res.ok) throw new Error("Failed to complete task");
+      
+      console.log("Task marked as completed:", taskId);
+      // Optionally, you could refresh the list of overdue tasks here
+    } catch (err) { 
+      console.error("Error completing task:", err);
+    }
+  }
+
   return (
     <div className="rounded-xl bg-mono-700 p-5">
       <div className="flex items-center justify-between mb-4">
@@ -47,9 +64,12 @@ export const OverdueCard = ({ tasks }: OverdueCardProps) => {
 
       <div className="flex flex-col gap-3">
         {tasks.map(task => (
-          <div key={task._id} className="flex items-start gap-3">
+          <button key={task._id} className="flex items-start gap-3" onClick={() => {
+            // Handle task click
+            toggleOverdueTask(task._id, task.listId?._id || "");
+          }}>
             <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-blush-700 flex-shrink-0" />
-            <div className="flex-1 min-w-0">
+            <div className="">
               <p className="text-sm text-mono-900 dark:text-mono-100 truncate">
                 {task.text}
               </p>
@@ -64,7 +84,7 @@ export const OverdueCard = ({ tasks }: OverdueCardProps) => {
                 </span>
               </div>
             </div>
-          </div>
+          </button>
         ))}
       </div>
     </div>

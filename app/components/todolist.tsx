@@ -324,7 +324,7 @@ export const TodoList = ({id}: { id:string }) => {
                 }
             </section>
             
-            <section className="flex gap-2 items-center w-[85%] md:w-2/3 pb-3">
+            <section className="flex gap-2 items-center w-[85%] md:w-2/3 pb-1">
                 <CompletionCheck />
 
                 <div className="flex items-center gap-2 ml-auto">
