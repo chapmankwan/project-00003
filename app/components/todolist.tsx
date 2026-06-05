@@ -96,8 +96,6 @@ export const TodoList = ({id}: { id:string }) => {
                 if (!getResponse.ok) throw new Error("Failed to create list");
                 const list = await getResponse.json();
 
-                console.log("+++ fetched list", list);
-
                 setTasks(list.tasks);
                 setListTitle(list.title);
                 setLoading(false);
@@ -105,7 +103,6 @@ export const TodoList = ({id}: { id:string }) => {
                 const getCollectionRes = await fetch(`/api/collections/${list.collectionId}`);
                 if (!getCollectionRes.ok) throw new Error("Failed to fetch collection");
                 const collectionData = await getCollectionRes.json();
-                console.log("+++ fetched collection", collectionData);
                 setCollectionDetails({ name: collectionData.name, id: collectionData._id });
 
                 setEditTitle(list.title)
