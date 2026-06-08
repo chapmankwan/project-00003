@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 import { taskApiHooks } from "@/app/utilities/taskApiHooks";
 import { toSlug } from "@/app/utilities";
 
-import { CheckIcon, CheckCircleIcon, ChevronLeftIcon, TrashIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { CheckIcon, ChevronLeftIcon, TrashIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import clsx from "clsx";
 
@@ -30,7 +30,7 @@ import {
     verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 
-export const TodoList = ({id}: { id:string}) => {
+export const TodoList = ({id}: { id:string }) => {
     const { saveTask, updateTask, deleteTask } = taskApiHooks(id);
 
     const router = useRouter();
@@ -45,6 +45,11 @@ export const TodoList = ({id}: { id:string}) => {
     const [editTitle, setEditTitle] = useState("");
 
     const [isFlyoutOpen, setIsFlyoutOpen] = useState(false);
+
+    const [collectionDetails, setCollectionDetails] = useState<{ name: string; id: string }>({
+        name: "",
+        id: "",
+    });
 
     // Drag n Drop
     const sensors = useSensors(
@@ -94,6 +99,11 @@ export const TodoList = ({id}: { id:string}) => {
                 setTasks(list.tasks);
                 setListTitle(list.title);
                 setLoading(false);
+
+                const getCollectionRes = await fetch(`/api/collections/${list.collectionId}`);
+                if (!getCollectionRes.ok) throw new Error("Failed to fetch collection");
+                const collectionData = await getCollectionRes.json();
+                setCollectionDetails({ name: collectionData.name, id: collectionData._id });
 
                 setEditTitle(list.title)
 
@@ -197,12 +207,12 @@ export const TodoList = ({id}: { id:string}) => {
         }
     }
 
-    const addTask = async (text:string, priority: string = "moderate", description?: string) => {
+    const addTask = async (text:string, priority: string = "moderate", description?: string, dueDate?: string) => {
         if (!text.trim()) return;
         
         try {
             const order = tasks.length;
-            const savedTask = await saveTask(text, priority , order, description);
+            const savedTask = await saveTask(text, priority , order, description, dueDate);
 
             justAddedRef.current = true;
             setTasks([...tasks, savedTask]);
@@ -270,12 +280,20 @@ export const TodoList = ({id}: { id:string}) => {
         else return;
     }
 
+    const CompletionCheck = () => {
+        return (
+            <span className="flex items-center gap-2 text-sm text-mint-500">
+                {completedTasksCount} / {totalTasksCount}
+            </span>
+        )
+    };
+
     return (
         <div className="flex-1 flex flex-col items-center h-[calc(100dvh-56px)]">
-            <section className="flex py-3 w-[85%] md:w-2/3">
+            <section className="flex pt-3 w-[85%] md:w-2/3 max-w-[85%] md:max-w-2/3 truncate">
                 <button 
-                    className="cursor-pointer mr-3"
-                    onClick={() => router.back()}
+                    className="cursor-pointer mr-1"
+                    onClick={() => router.push(`/collections/${collectionDetails.id}/${collectionDetails.name}`)}
                     title="back to collection"
                 >
                         <ChevronLeftIcon className="size-5"/>
@@ -283,42 +301,8 @@ export const TodoList = ({id}: { id:string}) => {
                 {   
                     !isEditingTitle ?
                     <div className="flex w-full">
-                        <button onClick={() => setIsEditingTitle(true)} className="font-bold cursor-text p-1">{listTitle}</button>
-                        <div className="flex items-center gap-2 ml-auto">
-                            <span className="flex items-center gap-2 text-sm">
-                                {completedTasksCount} / {totalTasksCount}
-                                <CheckCircleIcon className={clsx("size-6", 
-                                    completedTasksCount === totalTasksCount 
-                                    && completedTasksCount > 0
-                                    && !loading ? 
-                                    "text-mint-500" : ""
-                                )}/>
-                            </span>
-                            <Menu>
-                                <MenuButton 
-                                    className="inline-flex p-1 rounded cursor-pointer bg-mono-500 hover:bg-mono-400"
-                                    onClick={(event) => event.stopPropagation()}
-                                >
-                                    <TrashIcon className="size-5"/>
-                                </MenuButton>
+                        <button onClick={() => setIsEditingTitle(true)} className="truncate font-bold cursor-text p-1">{listTitle}</button>
 
-                                <MenuItems
-                                    transition
-                                    anchor="left"
-                                    className="bg-mono-700 rounded-md"
-                                    onClick={(event) => event.stopPropagation()}
-                                >
-                                    <MenuItem>
-                                        <button 
-                                            className="flex items-center gap-2 cursor-pointer p-2 hover:text-red-500"
-                                            onClick={handleDeleteAllButton}
-                                        >
-                                            delete all tasks
-                                        </button>
-                                    </MenuItem>
-                                </MenuItems>
-                            </Menu>
-                        </div>
                     </div>
                     :
                     <div className="flex gap-2 items-center w-full">
@@ -336,6 +320,38 @@ export const TodoList = ({id}: { id:string}) => {
                     </div>
                 }
             </section>
+            
+            <section className="flex gap-2 items-center w-[85%] md:w-2/3 pb-1">
+                <CompletionCheck />
+
+                <div className="flex items-center gap-2 ml-auto">
+                    <Menu>
+                        <MenuButton 
+                            className="inline-flex p-1 rounded cursor-pointer bg-mono-500 hover:bg-mono-400"
+                            onClick={(event) => event.stopPropagation()}
+                        >
+                            <TrashIcon className="size-5"/>
+                        </MenuButton>
+
+                        <MenuItems
+                            transition
+                            anchor="left"
+                            className="bg-mono-700 rounded-md"
+                            onClick={(event) => event.stopPropagation()}
+                        >
+                            <MenuItem>
+                                <button 
+                                    className="flex items-center gap-2 cursor-pointer p-2 hover:text-red-500"
+                                    onClick={handleDeleteAllButton}
+                                >
+                                    delete all tasks
+                                </button>
+                            </MenuItem>
+                        </MenuItems>
+                    </Menu>
+                </div>
+            </section>
+
 
             {
                 loading ? 
@@ -384,7 +400,7 @@ export const TodoList = ({id}: { id:string}) => {
                 isFlyoutOpen && 
                 <FlyoutPanel 
                     onClose={() => setIsFlyoutOpen(false)}
-                    onSubmit={({text, priority, description} ) => addTask(text, priority, description)}
+                    onSubmit={({text, priority, description, dueDate} ) => addTask(text, priority, description, dueDate)}
                     panelTitle="New Task"
                     type="todo"
                 />

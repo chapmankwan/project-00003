@@ -9,19 +9,19 @@ export interface SubTask {
   text: string;
 }
 export interface Task {
-    completed: boolean;
-    date: Date;
-    dateCompleted: string | boolean;
-    edited: boolean;
-    _id: Types.ObjectId;
-    text: string;
-    priority: "minor" | "moderate" | "major";
-    order: number;
-    description?: string;
-    subTasks?: SubTask[];
-    type: "normal" | "daily-instance";
-    templateId?: Types.ObjectId; // if generated from template
-    recurrence?: string;
+  completed: boolean;
+  date: Date;
+  dateCompleted: string | boolean;
+  edited: boolean;
+  _id: Types.ObjectId;
+  text: string;
+  priority: "minor" | "moderate" | "major";
+  order: number;
+  description?: string;
+  subTasks?: SubTask[];
+  type: "normal" | "daily-instance";
+  templateId?: Types.ObjectId; // if generated from template
+  recurrence?: string;
 }
 
 export interface SubTask {
@@ -47,7 +47,8 @@ export interface Collection {
   name: string;
   description?: string;
   dateCreated: Date;
-  todoLists?: TodoListModel[]
+  todoLists?: TodoListModel[];
+  order: number;
 }
 
 export interface DailyTaskTemplate {

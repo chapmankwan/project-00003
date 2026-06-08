@@ -35,6 +35,12 @@ const DailyTaskSchema = new Schema({
     index: true
   },
 
+  dueDate: {
+    type: Date,
+    default: null,
+    index: true,
+  },
+
   completed: {
     type: Boolean,
     default: false,

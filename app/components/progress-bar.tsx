@@ -15,7 +15,7 @@ export const ProgressBar = ({ percent }: ProgressBar) => {
     const barColor = getProgressBarColor(percent);
 
     return (
-        <div className="w-full h-1.5 rounded-full bg-mono-400 overflow-hidden">
+        <div className="w-[80%] h-1.5 rounded-full bg-mono-400 overflow-hidden">
         <div
             className={clsx(
                 barColor,

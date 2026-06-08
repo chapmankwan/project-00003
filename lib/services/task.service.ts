@@ -16,7 +16,7 @@ export interface OverdueTask {
 
 interface ListDocPopulated {
   _id: Types.ObjectId;
-  name: string;
+  title: string;
 }
 
 /**
@@ -32,7 +32,7 @@ export async function getOverdueTasks(userId: string): Promise<OverdueTask[]> {
     completed: false,
     dueDate: { $lt: new Date(), $ne: null },
   })
-    .populate("listId", "name")
+    .populate("listId", "title _id")
     .select("text dueDate priority listId")
     .sort({ dueDate: 1 })
     .limit(10)
@@ -40,7 +40,7 @@ export async function getOverdueTasks(userId: string): Promise<OverdueTask[]> {
 
   return tasks.map(t => {
     const listId = t.listId as ListDocPopulated | Types.ObjectId | null;
-    const isPopulated = listId && "name" in listId;
+    const isPopulated = listId && "title" in listId;
 
     return {
       _id: t._id.toString(),
@@ -50,7 +50,7 @@ export async function getOverdueTasks(userId: string): Promise<OverdueTask[]> {
       listId: isPopulated
         ? {
             _id: (listId as ListDocPopulated)._id.toString(),
-            name: (listId as ListDocPopulated).name,
+            name: (listId as ListDocPopulated).title,
           }
         : null,
     };

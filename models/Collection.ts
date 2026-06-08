@@ -24,7 +24,11 @@ const CollectionSchema = new mongoose.Schema(
         ],
         dateCreated: {
             type: Date,
-        }
+        },
+        order: { 
+            type: Number, 
+            required: true 
+        },
     },
     { timestamps: true }
 );

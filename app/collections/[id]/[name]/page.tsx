@@ -190,7 +190,7 @@ export default function Collections () {
                             return (
                                 <Card 
                                     key={index} 
-                                    taskList={taskList} 
+                                    taskList={taskList}
                                     setIsDeleteDialog={setIsDeleteDialogOpen} 
                                     setSelectedTaskListId={setSelectedTaskListId} 
                                     duplicateTask={e => handleDuplicateButton(e, taskList._id)}

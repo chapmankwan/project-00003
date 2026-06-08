@@ -5,12 +5,12 @@ import { Types } from "mongoose";
 export const taskApiHooks = (listId: string) => {
     const api = `/api/todo-lists/${listId}/tasks`;
 
-    const saveTask = async (text: string, priority: string, order: number, description?: string) => {
+    const saveTask = async (text: string, priority: string, order: number, description?: string, dueDate?: string) => {
         try {
             const response = await fetch(api, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ text: text, priority: priority, order: order, description: description, }),
+                body: JSON.stringify({ text: text, priority: priority, order: order, description: description, dueDate: dueDate }),
             });
 
             if (!response.ok) {
