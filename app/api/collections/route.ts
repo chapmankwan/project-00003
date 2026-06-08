@@ -14,7 +14,7 @@ export async function GET() {
 
         const collections = await Collection.find({
             userId: new mongoose.Types.ObjectId(session.user.id)
-        });
+        }).sort({ order: 1 });
 
         return NextResponse.json(collections, { status: 200 });
     } catch (err) {
