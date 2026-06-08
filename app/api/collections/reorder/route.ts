@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { getServerSession } from "next-auth";
+import { HydratedDocument } from "mongoose";
 import { authOptions } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/mongodb";
 
 import { Collection } from "@/models";
 
 import { Collection as CollectionType} from "@/models/interfaces";
+
+type CollectionDoc = HydratedDocument<CollectionType>;
 
 export async function PATCH(
     req: NextRequest,
@@ -18,7 +21,7 @@ export async function PATCH(
         const { orderedIds } = await req.json();
         await connectToDatabase();
 
-        const collections = await Collection.find({
+        const collections: CollectionDoc[] = await Collection.find({
             userId: session.user.id,
         });
 
@@ -26,15 +29,11 @@ export async function PATCH(
             return NextResponse.json({ error: "List not found" }, { status: 404 });
         }
 
-        collections.forEach((collection: CollectionType) => {
+        collections.forEach((collection) => {
             collection.order = orderedIds.indexOf(collection._id.toString());
         });
-        collections.sort((a: CollectionType, b: CollectionType) => a.order - b.order);
-        // collection comes from Mongoose and includes document methods like `save`.
-        // Cast to any to satisfy TypeScript since CollectionType is a plain interface.
-        // FIX THIS SHIT
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await Promise.all(collections.map((collection: any) => collection.save()));
+        collections.sort((a, b) => a.order - b.order);
+        await Promise.all(collections.map((collection) => collection.save()));
 
         return NextResponse.json({ success: true });
 
