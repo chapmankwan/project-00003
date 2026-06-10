@@ -9,6 +9,7 @@ export interface QuickTask {
   text: string;
   completed: boolean;
   dateCompleted: string | null;
+  dueDate?: string | null;
   order: number;
 }
 
@@ -55,7 +56,7 @@ export async function getTodayTasks(
   await pruneCompletedTasks(listId, localDateParam);
 
   const tasks = await Task.find({ listId, userId })
-    .select("text completed dateCompleted order")
+    .select("text completed dateCompleted dueDate order")
     .sort({ order: 1 })
     .lean<TaskDoc[]>();
 
@@ -66,6 +67,7 @@ export async function getTodayTasks(
       text: t.text,
       completed: t.completed,
       dateCompleted: t.dateCompleted ? t.dateCompleted.toISOString() : null,
+      dueDate: t.dueDate ? t.dueDate.toISOString() : null,
       order: t.order,
     })),
   };
@@ -74,7 +76,8 @@ export async function getTodayTasks(
 export async function createTodayTask(
   userId: string,
   listId: string,
-  text: string
+  text: string,
+  dueDate?: string
 ): Promise<QuickTask> {
   await connectToDatabase();
 
@@ -91,6 +94,7 @@ export async function createTodayTask(
     text,
     completed: false,
     order: nextOrder,
+    dueDate: dueDate ? new Date(dueDate) : null,
     type: "normal",
   });
 

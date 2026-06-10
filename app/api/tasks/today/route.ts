@@ -45,7 +45,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "listId is required" }, { status: 400 });
     }
  
-    const task = await createTodayTask(session.user.id, body.listId, body.text.trim());
+    const task = await createTodayTask(
+      session.user.id,
+      body.listId,
+      body.text.trim(),
+      body.dueDate
+    );
     return NextResponse.json(task, { status: 201 });
   } catch (err) {
     console.error("Error in POST /api/tasks/today:", err);
