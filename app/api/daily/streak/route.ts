@@ -3,7 +3,7 @@ import { connectToDatabase } from "@/lib/mongodb";
 import { Daily, DailyTask } from "@/models";
 
 import { getServerSession } from "next-auth";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 import {
   calculateGlobalStreak,
@@ -13,15 +13,18 @@ import {
 
 const LOOKBACK_DAYS = 90;
 
-export async function GET() {
+export async function GET(req: NextRequest) {
     try {
         const session = await getServerSession(authOptions);
         if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
         await connectToDatabase();
 
+        const { searchParams } = new URL(req.url);
+        const localDateUtc = searchParams.get("localDateUtc");
+        const referenceDate = localDateUtc ? new Date(localDateUtc) : new Date();
         const userId = session.user.id;
-        const todayMs = toMidnightUTC(new Date());
+        const todayMs = toMidnightUTC(referenceDate);
         const lookbackDate = new Date(todayMs - LOOKBACK_DAYS * 86_400_000);
 
         // Fetch daily records for the last 90 days, sorted: descending
@@ -41,8 +44,9 @@ export async function GET() {
                 date: r.date,
                 completedCount: r.completedCount,
                 totalCount: r.totalCount,
-            }))
-            );
+            })),
+            referenceDate
+        );
 
         // Fetch individual DailyTask records for per-habit streaks
         // Only require templateId, text, date, and completed fields
@@ -59,7 +63,8 @@ export async function GET() {
                 text: task.text,
                 date: task.date,
                 completed: task.completed
-            }))
+            })),
+            referenceDate
         );
 
         return NextResponse.json({
