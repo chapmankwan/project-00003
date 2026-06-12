@@ -43,8 +43,8 @@ export function toMidnightUTC(date: Date): number {
  * @param records 
  * @returns Number for continuous global streak
  */
-export function calculateGlobalStreak(records: DailyRecord[]): number {
-  const todayMs = toMidnightUTC(new Date());
+export function calculateGlobalStreak(records: DailyRecord[], referenceDate: Date = new Date()): number {
+  const todayMs = toMidnightUTC(referenceDate);
   const yesterdayMs = todayMs - 86_400_000;
 
   // Filter out today, work only from yesterday backwards
@@ -79,8 +79,8 @@ export function calculateGlobalStreak(records: DailyRecord[]): number {
  * @params tasks
  * @return sorted streaking by tasks
  */
-export function calculatePerHabitStreaks(tasks: PerHabitRecord[]): HabitStreak[] {
-  const todayMs = toMidnightUTC(new Date());
+export function calculatePerHabitStreaks(tasks: PerHabitRecord[], referenceDate: Date = new Date()): HabitStreak[] {
+  const todayMs = toMidnightUTC(referenceDate);
   const yesterdayMs = todayMs - 86_400_000;
 
   // Group tasks by templateId

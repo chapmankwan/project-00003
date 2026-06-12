@@ -16,6 +16,14 @@ export function QuickTasksCard({ listId, initialTasks }: QuickTasksCardProps) {
   const [adding, setAdding] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const getLocalEndOfDayUtc = () => {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, "0");
+    const dd = String(today.getDate()).padStart(2, "0");
+    return new Date(`${yyyy}-${mm}-${dd}T23:59:59.999`).toISOString();
+  };
+
   useEffect(() => {
     if (inputOpen) inputRef.current?.focus();
   }, [inputOpen]);
@@ -32,7 +40,7 @@ export function QuickTasksCard({ listId, initialTasks }: QuickTasksCardProps) {
       const res = await fetch("/api/tasks/today", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ listId, text }),
+        body: JSON.stringify({ listId, text, dueDate: getLocalEndOfDayUtc() }),
       });
 
       if (!res.ok) throw new Error("Failed to add task");

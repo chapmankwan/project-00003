@@ -44,9 +44,10 @@ export default function DashboardPage() {
     const dateParam = toLocalDateParam(today);
 
     try {
+      const localDateUtc = new Date(`${dateParam}T00:00:00`).toISOString();
       const [dailyRes, streakRes, overdueRes, todayRes] = await Promise.all([
         fetch(`/api/daily?date=${dateParam}`),
-        fetch("/api/daily/streak"),
+        fetch(`/api/daily/streak?localDateUtc=${encodeURIComponent(localDateUtc)}`),
         fetch("/api/tasks/overdue"),
         fetch(`/api/tasks/today?date=${dateParam}`),
       ]);
@@ -85,7 +86,10 @@ export default function DashboardPage() {
   }, []);
   
   const refreshStreaks = async () => {
-    const res = await fetch("/api/daily/streak");
+    const today = new Date();
+    const dateParam = toLocalDateParam(today);
+    const localDateUtc = new Date(`${dateParam}T00:00:00`).toISOString();
+    const res = await fetch(`/api/daily/streak?localDateUtc=${encodeURIComponent(localDateUtc)}`);
     const streakData = await res.json();
     setData((prev) => prev ? { ...prev, streak: streakData } : prev);
   };
