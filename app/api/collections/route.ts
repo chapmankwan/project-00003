@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
         const session = await getServerSession( authOptions );
         if (!session?.user?.email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-        const { name, description } = await req.json();
+        const { name, description, order } = await req.json();
         if (!name || typeof name !== "string") NextResponse.json({ error: "Collection name is required" }, { status: 400 });
 
         await connectToDatabase();
@@ -40,6 +40,7 @@ export async function POST(req: NextRequest) {
             userId,
             todolists: [],
             dateCreated: new Date().toISOString(),
+            order,
         });
 
         await collection.save();
@@ -47,7 +48,8 @@ export async function POST(req: NextRequest) {
         return NextResponse.json(
             {
                 _id: collection._id.toString(),
-                name: collection.name
+                name: collection.name,
+                order: collection.order
             },
             { status: 201 }
         );

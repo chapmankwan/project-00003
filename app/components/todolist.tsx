@@ -198,6 +198,7 @@ export const TodoList = ({id}: { id:string }) => {
                 text,
                 edited: true,
             });
+            console.log("Updated task response:", updatedTaskRes);
 
             setTasks(prev =>
                 prev.map(t => (t._id === updatedTaskRes._id ? updatedTaskRes : t))
@@ -255,24 +256,24 @@ export const TodoList = ({id}: { id:string }) => {
     const completedTasksCount = tasks?.filter( task => task.completed )?.length;
 
     const handleUpdateTask = async (task: Task, payload: { text: string, priority: string, description?: string}) => {
-        const { text, priority, description } = payload
-        const updatedTaskRes = await updateTask(id, task._id, {
+        const { text, priority, description } = payload;
+        const updatedTask = await updateTask(id, task._id, {
             ...task,
-            text: text,
+            text,
             edited: true,
-            description: description,
-            priority: priority
+            description,
+            priority,
         });
 
-        setTasks((prevTasks) => {
-            return (
-                prevTasks.map( (t) => {
-                    return (
-                        t._id?.toString() === updatedTaskRes?.task?._id?.toString() ? updatedTaskRes.task : t
-                    )
-                })
+        setTasks((prevTasks) =>
+            prevTasks.map((t) =>
+                t._id?.toString() === updatedTask._id?.toString() ? updatedTask : t
             )
-        });
+        );
+
+        setSelectedTask((prev) =>
+            prev && prev._id?.toString() === updatedTask._id?.toString() ? updatedTask : prev
+        );
     };
 
     const handleDeleteAllButton = () => {
