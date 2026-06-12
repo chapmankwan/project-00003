@@ -5,7 +5,7 @@ import { connectToDatabase } from "@/lib/mongodb";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
-import { Collection, TodoList } from "@/models";
+import { Collection, Task, TodoList } from "@/models";
 
 import mongoose from "mongoose";
 
@@ -68,6 +68,8 @@ export async function DELETE(
 		);
 
 		await TodoList.deleteOne({ _id: list._id });
+
+		await Task.deleteMany({ listId: list._id });
 
 		return NextResponse.json(
 			{ message: "List deleted successfully", listId },

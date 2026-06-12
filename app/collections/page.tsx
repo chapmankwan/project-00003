@@ -81,7 +81,7 @@ export default function Collections () {
     }, [collections])
 
     const handleCreateCollection = async (text: string) => {
-        createCollection({name: text});
+        createCollection({name: text, order: collections.length});
         await fetchCollections();
     };
 
@@ -180,8 +180,6 @@ export default function Collections () {
             {
                 isFlyoutOpen && 
                 <FlyoutPanel 
-                    // use this to refetch after creating a new list
-                    // callback={fetchCollections}
                     onClose={() => setIsFlyoutOpen(false)}
                     onSubmit={ ({ text }) => handleCreateCollection(text)}
                     panelTitle="New Collection"
