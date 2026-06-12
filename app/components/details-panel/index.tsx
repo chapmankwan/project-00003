@@ -48,8 +48,12 @@ export const DetailsPanel =({
     }, []);
 
     useEffect(() => {
+        if (isEditingTask) return;
+        setTaskTitle(task.text);
+        setDescriptionInput(task.description || "");
+        setSelectedPriority(task.priority);
         setEditTaskInput(task.text);
-    }, [task])
+    }, [task, isEditingTask]);
 
     const handleClose = () => {
         // Animate out first, then unmount
@@ -70,6 +74,7 @@ export const DetailsPanel =({
         
         if (updateTask) updateTask({text: editTaskInput, priority: selectedPriority, description});
         setTaskTitle(editTaskInput);
+        setSelectedPriority(selectedPriority);
         setIsEditingTask(false);
     };
 
@@ -121,7 +126,7 @@ export const DetailsPanel =({
                         taskDescription={task.description || ""} 
                     />
                     <PriorityBox 
-                        priority={task.priority} 
+                        priority={isEditingTask ? task.priority : selectedPriority} 
                         isEditing={isEditingTask} 
                         selectedPriority={selectedPriority} 
                         setSelectedPriority={setSelectedPriority}
