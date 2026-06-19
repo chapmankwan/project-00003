@@ -74,6 +74,16 @@ export default function Collections () {
         // Only fetch for initial mount
         fetchCollections();
     },[fetchCollections]);
+
+    useEffect( () => {
+        // Ensure Quick Tasks collection exists
+        if (collections.length >= 0 && !loading) {
+            const hasQuickTasks = collections.some(c => c.name === "Quick Tasks");
+            if (!hasQuickTasks) {
+                createCollection({ name: "Quick Tasks", order: collections.length });
+            }
+        }
+    }, [collections, loading, createCollection]);
     
     useEffect(() => {
         // only focus on the create new button if there are no tasklists
@@ -157,7 +167,23 @@ export default function Collections () {
                     </div>
                 </Link>
             )
-    };    
+    };
+
+    const QuickTasksCard = () => {
+        return (
+            <Link
+                href={`/collections/quick-tasks`}
+                className="block bg-gradient-to-r from-mint-500 to-mint-700 hover:from-mint-600 hover:to-mint-800 p-4 rounded-lg cursor-pointer transition"
+            >
+                <div className="flex items-center justify-between">
+                    <span className="font-semibold">Quick Tasks</span>
+                    <span className="text-sm text-white bg-mint-900 px-3 py-1 rounded">
+                        View
+                    </span>
+                </div>
+            </Link>
+        );
+    };
 
     return (
         <section className="flex flex-1 flex-col items-center h-[calc(100dvh-72px)]">
@@ -166,6 +192,7 @@ export default function Collections () {
                 loading ? 
                 <Loader /> :
                 <ul className="w-[85%] md:w-2/3 flex-grow overflow-y-auto overflow-x-hidden mb-4 flex flex-col gap-1.5 scrollbar-soft">
+                    <QuickTasksCard />
                     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                         <SortableContext items={collections.map(c => c._id.toString())} strategy={verticalListSortingStrategy}>
                             {

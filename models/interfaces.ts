@@ -20,6 +20,8 @@ export interface Task {
   description?: string;
   subTasks?: SubTask[];
   type: "normal" | "daily-instance";
+  movedAt?: Date;
+  archived?: boolean;
   templateId?: Types.ObjectId; // if generated from template
   recurrence?: string;
 }

@@ -9,8 +9,10 @@ export interface TaskDoc {
   edited: boolean;
   dueDate?: Date | null;
   dateCompleted?: Date;
+  movedAt?: Date;
+  archived?: boolean;
   order: number;
-  type: "normal" | "daily-instance";
+  type: "normal" | "daily-instance" | "quick-task";
   templateId?: Types.ObjectId | null;
   priority: "minor" | "moderate" | "major";
   description?: string;
