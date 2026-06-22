@@ -51,6 +51,7 @@ export async function POST(req: NextRequest) {
       body.text.trim(),
       body.dueDate
     );
+    
     return NextResponse.json(task, { status: 201 });
   } catch (err) {
     console.error("Error in POST /api/tasks/today:", err);

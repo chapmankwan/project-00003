@@ -51,9 +51,14 @@ export default function Collections () {
     const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event;
         if (active.id !== over?.id) {
-            const oldIndex = collections.findIndex(c => c._id.toString() === active.id);
-            const newIndex = collections.findIndex(c => c._id.toString() === over?.id);
-            const reordered = arrayMove(collections, oldIndex, newIndex);
+            const oldIndex = visibleCollections.findIndex(c => c._id.toString() === active.id);
+            const newIndex = visibleCollections.findIndex(c => c._id.toString() === over?.id);
+            if (oldIndex === -1 || newIndex === -1) return;
+            // Reorder the full collections array based on visibleCollections move
+            const reorderedVisible = arrayMove(visibleCollections, oldIndex, newIndex);
+            // Build new full collections array preserving items not in visibleCollections
+            const hidden = collections.filter(c => c.name === "Quick Tasks");
+            const reordered = [...reorderedVisible, ...hidden];
             console.log("Reordered collections:", reordered);
             setCollections(reordered);
 
@@ -70,10 +75,15 @@ export default function Collections () {
     
     if ( status === "unauthenticated" ) redirect("/");
 
+    // derive visible collections excluding Quick Tasks so we can render a standalone card
+    const visibleCollections = collections.filter(c => c.name !== "Quick Tasks");
+
     useEffect( () => {
         // Only fetch for initial mount
         fetchCollections();
     },[fetchCollections]);
+
+    // server will ensure `Quick Tasks` exists on first access; no client-side auto-creation needed
     
     useEffect(() => {
         // only focus on the create new button if there are no tasklists
@@ -157,7 +167,23 @@ export default function Collections () {
                     </div>
                 </Link>
             )
-    };    
+    };
+
+    const QuickTasksCard = () => {
+        return (
+            <Link
+                href={`/collections/quick-tasks`}
+                className="block bg-gradient-to-r from-mint-500 to-mint-700 hover:from-mint-600 hover:to-mint-800 p-4 rounded-lg cursor-pointer transition"
+            >
+                <div className="flex items-center justify-between">
+                    <span className="font-semibold">Quick Tasks</span>
+                    <span className="text-sm text-white bg-mint-900 px-3 py-1 rounded">
+                        View
+                    </span>
+                </div>
+            </Link>
+        );
+    };
 
     return (
         <section className="flex flex-1 flex-col items-center h-[calc(100dvh-72px)]">
@@ -166,10 +192,11 @@ export default function Collections () {
                 loading ? 
                 <Loader /> :
                 <ul className="w-[85%] md:w-2/3 flex-grow overflow-y-auto overflow-x-hidden mb-4 flex flex-col gap-1.5 scrollbar-soft">
+                    <QuickTasksCard />
                     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                        <SortableContext items={collections.map(c => c._id.toString())} strategy={verticalListSortingStrategy}>
+                        <SortableContext items={visibleCollections.map(c => c._id.toString())} strategy={verticalListSortingStrategy}>
                             {
-                                collections.map( (collection, index) => (
+                                visibleCollections.map( (collection, index) => (
                                     <CollectionCard key={collection._id} collection={collection} index={index} />
                                 ))
                             }

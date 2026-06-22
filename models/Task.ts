@@ -33,6 +33,10 @@ const TaskSchema = new mongoose.Schema({
         default: null,
         index: true,
     },
+    // When a quick-task is moved into a per-date TodoList, record when it was moved
+    movedAt: { type: Date, default: null, index: true },
+    // Mark tasks that have been moved/archived for history purposes
+    archived: { type: Boolean, default: false, index: true },
     dateCompleted: { type: Date },
     order: { 
         type: Number, 
@@ -40,7 +44,7 @@ const TaskSchema = new mongoose.Schema({
     },
     type: {
         type: String,
-        enum: ["normal", "daily-instance"],
+        enum: ["normal", "daily-instance", "quick-task"],
         default: "normal",
         index: true,
     },
