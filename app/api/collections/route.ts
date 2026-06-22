@@ -12,9 +12,18 @@ export async function GET() {
         
         await connectToDatabase();
 
-        const collections = await Collection.find({
-            userId: new mongoose.Types.ObjectId(session.user.id)
-        }).sort({ order: 1 });
+        const userId = new mongoose.Types.ObjectId(session.user.id);
+
+        // Ensure the "Quick Tasks" collection exists for the user. Create it on first access.
+        let collections = await Collection.find({ userId }).sort({ order: 1 });
+
+        const hasQuickTasks = collections.some(c => c.name === "Quick Tasks");
+        if (!hasQuickTasks) {
+            const order = collections.length;
+            await Collection.create({ name: "Quick Tasks", userId, todolists: [], dateCreated: new Date(), order });
+            // re-query to include the newly created collection in the response
+            collections = await Collection.find({ userId }).sort({ order: 1 });
+        }
 
         return NextResponse.json(collections, { status: 200 });
     } catch (err) {

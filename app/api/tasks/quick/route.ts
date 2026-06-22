@@ -88,8 +88,6 @@ export async function GET(request: NextRequest) {
       .sort({ order: 1 })
       .lean<QuickTaskLean[]>();
 
-    console.log('[api/tasks/quick] GET result count', tasks.length);
-
     return Response.json(tasks.map(serializeTask));
   } catch (err) {
     console.error("Failed to fetch quick tasks:", err);
@@ -108,8 +106,6 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     const { text, date, dueDate } = body;
-
-    
 
     if (!text) {
       return new Response("Text is required", { status: 400 });
@@ -152,8 +148,6 @@ export async function POST(request: NextRequest) {
       date: taskDate ?? new Date(),
       dueDate: dueDate ? new Date(dueDate) : null,
     });
-
-    
 
     await TodoList.updateOne(
       { _id: listId },

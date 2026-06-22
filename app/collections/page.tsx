@@ -51,9 +51,14 @@ export default function Collections () {
     const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event;
         if (active.id !== over?.id) {
-            const oldIndex = collections.findIndex(c => c._id.toString() === active.id);
-            const newIndex = collections.findIndex(c => c._id.toString() === over?.id);
-            const reordered = arrayMove(collections, oldIndex, newIndex);
+            const oldIndex = visibleCollections.findIndex(c => c._id.toString() === active.id);
+            const newIndex = visibleCollections.findIndex(c => c._id.toString() === over?.id);
+            if (oldIndex === -1 || newIndex === -1) return;
+            // Reorder the full collections array based on visibleCollections move
+            const reorderedVisible = arrayMove(visibleCollections, oldIndex, newIndex);
+            // Build new full collections array preserving items not in visibleCollections
+            const hidden = collections.filter(c => c.name === "Quick Tasks");
+            const reordered = [...reorderedVisible, ...hidden];
             console.log("Reordered collections:", reordered);
             setCollections(reordered);
 
@@ -70,20 +75,15 @@ export default function Collections () {
     
     if ( status === "unauthenticated" ) redirect("/");
 
+    // derive visible collections excluding Quick Tasks so we can render a standalone card
+    const visibleCollections = collections.filter(c => c.name !== "Quick Tasks");
+
     useEffect( () => {
         // Only fetch for initial mount
         fetchCollections();
     },[fetchCollections]);
 
-    useEffect( () => {
-        // Ensure Quick Tasks collection exists
-        if (collections.length >= 0 && !loading) {
-            const hasQuickTasks = collections.some(c => c.name === "Quick Tasks");
-            if (!hasQuickTasks) {
-                createCollection({ name: "Quick Tasks", order: collections.length });
-            }
-        }
-    }, [collections, loading, createCollection]);
+    // server will ensure `Quick Tasks` exists on first access; no client-side auto-creation needed
     
     useEffect(() => {
         // only focus on the create new button if there are no tasklists
@@ -194,9 +194,9 @@ export default function Collections () {
                 <ul className="w-[85%] md:w-2/3 flex-grow overflow-y-auto overflow-x-hidden mb-4 flex flex-col gap-1.5 scrollbar-soft">
                     <QuickTasksCard />
                     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                        <SortableContext items={collections.map(c => c._id.toString())} strategy={verticalListSortingStrategy}>
+                        <SortableContext items={visibleCollections.map(c => c._id.toString())} strategy={verticalListSortingStrategy}>
                             {
-                                collections.map( (collection, index) => (
+                                visibleCollections.map( (collection, index) => (
                                     <CollectionCard key={collection._id} collection={collection} index={index} />
                                 ))
                             }

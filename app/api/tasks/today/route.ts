@@ -36,7 +36,6 @@ export async function POST(req: NextRequest) {
     }
  
     const body = await req.json();
-
  
     if (!body.text?.trim()) {
       return NextResponse.json({ error: "text is required" }, { status: 400 });
@@ -52,7 +51,6 @@ export async function POST(req: NextRequest) {
       body.text.trim(),
       body.dueDate
     );
-
     
     return NextResponse.json(task, { status: 201 });
   } catch (err) {
