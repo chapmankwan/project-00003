@@ -8,8 +8,10 @@ import clsx from "clsx";
 
 export const AccountDropdown = ({
   position = "right",
+  clickHandler = () => {},
 }: {
   position?: "center" | "left" | "right";  
+  clickHandler?: () => void;
 }) => {
   const { data: session } = useSession();
   const [open, setOpen] = useState(false);
@@ -57,13 +59,13 @@ export const AccountDropdown = ({
           <div className="flex flex-col py-1">
             <Link
               href="/account"
-              onClick={() => setOpen(false)}
+              onClick={() => {setOpen(false); clickHandler()}}
               className="px-4 py-2 text-xs text-mono-100 hover:bg-mono-600 transition-colors"
             >
               Account settings
             </Link>
             <button
-              onClick={() => signOut({ callbackUrl: "/account/login" })}
+              onClick={() => {signOut({ callbackUrl: "/account/login" }); clickHandler();}}
               className="px-4 py-2 text-xs text-mono-100 hover:bg-mono-600 transition-colors text-left cursor-pointer"
             >
               Sign out
