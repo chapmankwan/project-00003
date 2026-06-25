@@ -18,3 +18,5 @@ export * from "./overdue-card";
 export * from "./greeting-header";
 export * from "./account-dropdown";
 export * from "./quick-tasks-card";
+export * from "./quick-task-card";
+export * from "./collection-card";
