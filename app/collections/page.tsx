@@ -3,11 +3,10 @@ import { useEffect, useRef, useState } from "react";
 import { redirect } from "next/navigation";
 import { useSession } from "next-auth/react";
 
-import { FlyoutPanel, PageHeader, Loader, MoveableFab } from "@/app/components";
+import { CollectionCard, FlyoutPanel, PageHeader, Loader, MoveableFab, QuickTaskCard } from "@/app/components";
 import { useCollectionsApi } from "@/app/utilities/collectionApiHooks";
 
 import { Dialog, DialogPanel } from '@headlessui/react';
-import { ChevronUpDownIcon, TrashIcon } from "@heroicons/react/24/outline";
 
 import {
     DndContext,
@@ -23,12 +22,7 @@ import {
     arrayMove,
     SortableContext,
     verticalListSortingStrategy,
-    useSortable,
 } from "@dnd-kit/sortable";
-
-import { CSS } from "@dnd-kit/utilities";
-
-import Link from "next/link";
 
 export default function Collections () {
     const { collections, setCollections, loading, fetchCollections, createCollection } = useCollectionsApi();
@@ -117,74 +111,6 @@ export default function Collections () {
         setSelectedCollectionId(selectedCollectionId);
     };
 
-    // *** FIX TYPING
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const CollectionCard = ({ collection, index }: { collection: any, index: number }) => {
-        const { attributes, isDragging, listeners, setNodeRef, transform, transition } = useSortable({ id: collection._id.toString() });
-        const draggingStyle = {
-            transform: CSS.Transform.toString(transform),
-            transition,
-            opacity: isDragging ? 0.5 : 1,
-        };
-            return (
-                <Link 
-                    key={index} 
-                    ref={setNodeRef}
-                    href={`/collections/${collection._id}/${collection.name}`}
-                    className="
-                        bg-mono-700 hover:bg-mono-600
-                        flex items-center first:mt-0 last:mb-0 p-3 h-16 rounded-2xl gap-1 cursor-pointer mx-0.5"
-                    style={draggingStyle}
-                    {...attributes}
-                >
-                    <button
-                        {...listeners}
-                        className="cursor-grab active:cursor-grabbing touch-none"
-                        aria-label="Reorder collection"
-                    >
-                        <ChevronUpDownIcon className="size-4 text-mono-400" />
-                    </button>
-                    <span className="flex-1">{decodeURIComponent(collection.name)}</span>
-
-                    <div className="flex items-center gap-3">
-                        <div className="flex flex-col text-xs items-end">
-                            <p className="text-mono-400">
-                                { 
-                                    collection?.todoLists?.length && collection.todoLists.length > 0 ? 
-                                    `${collection.todoLists.length} trains` :
-                                    "empty"
-                                }   
-                            </p>
-                        </div>
-
-                        <button 
-                            className="flex items-center justify-between cursor-pointer hover:text-red-500" 
-                            onClick={(e) => onClickDeleteCollectionButton(e, collection._id)}
-                            title="delete"
-                        >
-                            <TrashIcon className="size-5" />
-                        </button>
-                    </div>
-                </Link>
-            )
-    };
-
-    const QuickTasksCard = () => {
-        return (
-            <Link
-                href={`/collections/quick-tasks`}
-                className="block bg-gradient-to-r from-mint-500 to-mint-700 hover:from-mint-600 hover:to-mint-800 p-4 rounded-lg cursor-pointer transition"
-            >
-                <div className="flex items-center justify-between">
-                    <span className="font-semibold">Quick Tasks</span>
-                    <span className="text-sm text-white bg-mint-900 px-3 py-1 rounded">
-                        View
-                    </span>
-                </div>
-            </Link>
-        );
-    };
-
     return (
         <section className="flex flex-1 flex-col items-center h-[calc(100dvh-72px)]">
             <PageHeader title="Collections"/>
@@ -192,12 +118,12 @@ export default function Collections () {
                 loading ? 
                 <Loader /> :
                 <ul className="w-[85%] md:w-2/3 flex-grow overflow-y-auto overflow-x-hidden mb-4 flex flex-col gap-1.5 scrollbar-soft">
-                    <QuickTasksCard />
+                    <QuickTaskCard />
                     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                         <SortableContext items={visibleCollections.map(c => c._id.toString())} strategy={verticalListSortingStrategy}>
                             {
                                 visibleCollections.map( (collection, index) => (
-                                    <CollectionCard key={collection._id} collection={collection} index={index} />
+                                    <CollectionCard key={collection._id} collection={collection} index={index} onClickDeleteCollectionButton={onClickDeleteCollectionButton} />
                                 ))
                             }
                         </SortableContext>

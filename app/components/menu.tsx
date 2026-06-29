@@ -116,7 +116,7 @@ export const Menu = () => {
                             Dailies
                         </Link>
 
-                        <AccountDropdown position="center" />
+                        <AccountDropdown position="center" clickHandler={() => setIsMenuOpen(false)} />
                     </>
                     ) : (
                     <>
