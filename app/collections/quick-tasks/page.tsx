@@ -108,7 +108,7 @@ export default function QuickTasksIndex() {
             <li key={group.date}>
               <Link
                 href={`/collections/quick-tasks/${group.date}`}
-                className="block bg-mono-700 hover:bg-mono-600 p-4 rounded-lg cursor-pointer transition"
+                className="block bg-mono-700 hover:bg-mono-500 p-4 rounded-lg cursor-pointer transition"
               >
                 <div className="flex items-center justify-between">
                   <span className="font-semibold">
