@@ -28,7 +28,7 @@ export const FlyoutPanel =({
     /* Priority List Selection */
     const priorityList = ["minor", "moderate", "major"];
     const [selectedPriority, setSelectedPriority] = useState<string>("moderate");
-    const priorityButtonHandler = (event: React.FormEvent, priority: string) => {
+    const priorityButtonHandler = (event: React.MouseEvent, priority: string) => {
         event.preventDefault();
         setSelectedPriority(priority);
     };
@@ -96,7 +96,24 @@ export const FlyoutPanel =({
         return () => clearTimeout(timer);
     }, []);
 
-    const handleClose = () => {
+    const handleClose = (force = false) => {
+        // If not forced, and the form has been modified, confirm discard
+        if (!force) {
+            const hasChanges = (
+                titleInput.trim().length > 0 ||
+                description.trim().length > 0 ||
+                dueDate.length > 0 ||
+                selectedRecurrence.length > 0 ||
+                isAddMoreSelected ||
+                selectedPriority !== "moderate"
+            );
+
+            if (hasChanges) {
+                const confirmDiscard = window.confirm("You have unsaved changes. Discard them?");
+                if (!confirmDiscard) return;
+            }
+        }
+
         // Animate out first, then unmount
         setIsVisible(false);
         setTimeout(onClose, 300); // match transition duration
@@ -108,8 +125,8 @@ export const FlyoutPanel =({
 		setDescription("");
 	};
 
-    const onSubmitHandler = async (event: React.FormEvent) => {
-        event.preventDefault();
+    const onSubmitHandler = async (event?: React.FormEvent | React.MouseEvent) => {
+        event?.preventDefault();
         if (!titleInput.trim().length || !onSubmit) return;
 
         try {
@@ -127,18 +144,25 @@ export const FlyoutPanel =({
         callback?.();
 		handleResetAllStates();
         if (titleInputRef.current) titleInputRef.current.focus();
-		if (!isAddMoreSelected) return handleClose();
+        if (!isAddMoreSelected) return handleClose(true);
+    };
+
+    const onKeyDownHandler = (event: React.KeyboardEvent) => {
+        if (event.key === "Escape") {
+            event.preventDefault();
+            handleClose();
+        }
     };
 
     return (
-        <section className="fixed inset-0 z-40">
+        <section className="fixed inset-0 z-40" onKeyDown={onKeyDownHandler}>
         {/* Backdrop */}
             <div
                 className={clsx(
                 "absolute inset-0 bg-black/50 transition-opacity duration-300 ease-in-out",
                 isVisible ? "opacity-100" : "opacity-0"
                 )}
-                onClick={handleClose}
+                onClick={() => handleClose()}
             />
 
             {/* Flyout Panel */}
@@ -156,7 +180,7 @@ export const FlyoutPanel =({
                 )}
             >
                 <div className="flex items-center justify-between p-6">
-                    <button onClick={handleClose} className="cursor-pointer text-blush-500">{panelType.cancelButton}</button>
+                    <button onClick={() => handleClose()} className="cursor-pointer text-blush-500">{panelType.cancelButton}</button>
                     <h1 className="cursor-default">{panelType.panelTitle}</h1>
                     <button onClick={onSubmitHandler} className="cursor-pointer text-mint-500">{panelType.submitButton}</button>
                 </div>
