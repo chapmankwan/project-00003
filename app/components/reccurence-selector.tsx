@@ -139,8 +139,8 @@ function WeekdayPicker({
 							w-10 h-10 rounded-lg text-xs font-semibold tracking-wide
 							transition-all duration-150 border
 							${active
-								? "bg-stone-800 text-amber-300 border-stone-700 shadow-inner"
-								: "bg-stone-900/50 text-stone-400 border-stone-700/50 hover:border-stone-500 hover:text-stone-200"
+								? "bg-mono-800 text-blush-300 border-mono-700 shadow-inner"
+								: "bg-mono-900/50 text-mono-400 border-mono-700/50 hover:border-mono-500 hover:text-mono-200"
 							}
 						`}
 					>
@@ -170,8 +170,8 @@ function MonthDayPicker({
 					className={`
 						w-8 h-8 rounded text-xs font-medium transition-all duration-100 border
 						${value === d
-							? "bg-stone-800 text-amber-300 border-stone-600"
-							: "bg-stone-900/40 text-stone-500 border-stone-700/40 hover:text-stone-200 hover:border-stone-500"
+							? "bg-mono-800 text-blush-300 border-mono-600"
+							: "bg-mono-900/40 text-mono-500 border-mono-700/40 hover:text-mono-200 hover:border-mono-500"
 						}
 					`}
 				>
@@ -201,8 +201,8 @@ function MonthPicker({
 						className={`
 							px-3 py-1.5 rounded text-xs font-medium transition-all duration-100 border
 							${value === month
-								? "bg-stone-800 text-amber-300 border-stone-600"
-								: "bg-stone-900/40 text-stone-500 border-stone-700/40 hover:text-stone-200 hover:border-stone-500"
+								? "bg-mono-800 text-blush-300 border-mono-600"
+								: "bg-mono-900/40 text-mono-500 border-mono-700/40 hover:text-mono-200 hover:border-mono-500"
 							}
 						`}
 					>
@@ -248,7 +248,6 @@ export default function RecurrenceSelector({
 	const needsMonthPicker = selectedPreset === 5;
 	const showSubPicker = needsWeekdayPicker || needsMonthDayPicker;
 
-	const currentRRule = buildRRule(selectedPreset, custom);
 	const currentHuman = humanReadable(selectedPreset, custom);
 
 	return (
@@ -284,12 +283,12 @@ export default function RecurrenceSelector({
 						>
 							{/* Active indicator pip */}
 							{active && (
-								<span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-amber-400" />
+								<span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-blush-400" />
 							)}
-							<p className={`text-xs font-semibold leading-tight ${active ? "text-mono-100" : "text-mono-400 group-hover:text-mono-200"}`}>
+							<p className={`text-xs font-semibold leading-tight ${active ? "text-mono-100" : "text-mono-300 group-hover:text-mono-300"}`}>
 								{preset.label}
 							</p>
-							<p className="text-[10px] text-stone-600 mt-0.5 leading-tight">
+							<p className="text-[10px] text-mono-400 mt-0.5 leading-tight">
 								{preset.description}
 							</p>
 						</button>
@@ -299,11 +298,11 @@ export default function RecurrenceSelector({
 
 			{/* Sub-pickers — only shown when relevant preset is selected */}
 			{showSubPicker && (
-				<div className="rounded-xl border border-stone-700/60 bg-stone-900/40 p-3 space-y-3 transition-all">
+				<div className="rounded-xl border border-mono-700/60 bg-mono-900/40 p-3 space-y-3 transition-all">
 
 					{needsWeekdayPicker && (
 						<div className="space-y-1.5">
-							<p className="text-[10px] uppercase tracking-widest text-stone-600">Day of week</p>
+							<p className="text-[10px] uppercase tracking-widest text-mono-600">Day of week</p>
 							<WeekdayPicker
 								selected={custom.weekdays}
 								multi={false}
@@ -314,7 +313,7 @@ export default function RecurrenceSelector({
 
 					{needsMonthPicker && (
 						<div className="space-y-1.5">
-							<p className="text-[10px] uppercase tracking-widest text-stone-600">Month</p>
+							<p className="text-[10px] uppercase tracking-widest text-mono-600">Month</p>
 							<MonthPicker
 								value={custom.month}
 								onChange={month => updateCustom({ month })}
@@ -324,7 +323,7 @@ export default function RecurrenceSelector({
 
 					{needsMonthDayPicker && (
 						<div className="space-y-1.5">
-							<p className="text-[10px] uppercase tracking-widest text-stone-600">Day of month</p>
+							<p className="text-[10px] uppercase tracking-widest text-mono-600">Day of month</p>
 							<MonthDayPicker
 								value={custom.monthDay}
 								onChange={monthDay => updateCustom({ monthDay })}
@@ -335,10 +334,10 @@ export default function RecurrenceSelector({
 			)}
 
 			{/* RRule debug output — remove in production */}
-			<div className="rounded-lg border border-stone-800 bg-stone-950/60 px-3 py-2">
-				<p className="text-[10px] uppercase tracking-widest text-stone-700 mb-0.5">rrule output</p>
-				<code className="text-[11px] text-stone-400 break-all">{currentRRule}</code>
-			</div>
+			{/* <div className="rounded-lg border border-mono-800 bg-mono-950/60 px-3 py-2">
+				<p className="text-[10px] uppercase tracking-widest text-mono-700 mb-0.5">rrule output</p>
+				<code className="text-[11px] text-mono-400 break-all">{currentRRule}</code>
+			</div> */}
 
 		</div>
 	);
