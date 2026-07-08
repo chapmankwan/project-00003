@@ -215,7 +215,7 @@ export const FlyoutPanel =({
                     {
                         panelType.hasDueDate &&
                         <div className="flex flex-col gap-1">
-                            <span className="text-sm">Due Date</span>
+                            <span className="text-sm">Due Date (optional)</span>
                             <input 
                                 className="p-2 border border-solid border-lavender-400 rounded-md bg-mono-700"
                                 type="date"
