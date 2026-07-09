@@ -62,7 +62,7 @@ export const DailiesCard = ({
   return (
     <div className="rounded-xl bg-mono-700 p-5">
       <div className="flex items-center justify-between mb-4">
-        <p className="text-xs font-medium uppercase text-mint-400">
+        <p className="text-xs font-semibold uppercase text-mono-400">
           Today&#39;s dailies
         </p>
         {/* Temporarily hidden to consider if its duplication is needed next to the streak card */}

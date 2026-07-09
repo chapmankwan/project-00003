@@ -62,7 +62,7 @@ export async function GET(request: NextRequest) {
     const query: {
       userId: string;
       type: string;
-      date?: { $gte: Date; $lte: Date };
+      $or?: Array<Record<string, unknown>>;
     } = {
       userId: session.user.id,
       type: "quick-task",
@@ -70,16 +70,16 @@ export async function GET(request: NextRequest) {
 
     if (date) {
       // Parse `date` (YYYY-MM-DD) as local-midnight bounds to avoid timezone ambiguity.
-      const parts = date.split("-").map(p => parseInt(p, 10));
+      const parts = date.split("-").map((p: string) => parseInt(p, 10));
       if (parts.length === 3) {
         const [y, m, d] = parts;
         const startOfDay = new Date(y, m - 1, d, 0, 0, 0, 0);
         const endOfDay = new Date(y, m - 1, d, 23, 59, 59, 999);
 
-        query.date = {
-          $gte: startOfDay,
-          $lte: endOfDay,
-        };
+        query.$or = [
+          { date: { $gte: startOfDay, $lte: endOfDay } },
+          { date: null, createdAt: { $gte: startOfDay, $lte: endOfDay } },
+        ];
       }
     }
 

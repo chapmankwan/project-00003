@@ -27,7 +27,7 @@ export const StreakCard = ({
 
   return (
     <div className="rounded-xl bg-mono-700 p-5">
-      <p className="text-xs font-medium uppercase text-mint-400 mb-4">
+      <p className="text-xs font-semibold uppercase text-mono-400 mb-4">
         Streak
       </p>
 

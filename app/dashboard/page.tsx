@@ -8,6 +8,7 @@ import {
   StreakCard,
   DailiesCard,
   OverdueCard,
+  HeatmapCard,
 } from "@/app/components";
 import { DashboardSkeleton } from "./components/dashboard-skeleton";
 import { QuickTasksCard } from "@/app/components/quick-tasks-card";
@@ -26,6 +27,12 @@ interface DashboardData {
   today: TodayTasksResult;
 }
 
+interface HeatmapEntry {
+  date: string;
+  completedCount: number;
+  totalCount: number;
+}
+
 function toLocalDateParam(date: Date): string {
   const yyyy = date.getFullYear();
   const mm = String(date.getMonth() + 1).padStart(2, "0");
@@ -35,6 +42,7 @@ function toLocalDateParam(date: Date): string {
 
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null);
+  const [heatmapData, setHeatmapData] = useState<HeatmapEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchDashboard = useCallback(async () => {
@@ -45,11 +53,12 @@ export default function DashboardPage() {
 
     try {
       const localDateUtc = new Date(`${dateParam}T00:00:00`).toISOString();
-      const [dailyRes, streakRes, overdueRes, todayRes] = await Promise.all([
+      const [dailyRes, streakRes, overdueRes, todayRes, heatmapRes] = await Promise.all([
         fetch(`/api/daily?date=${dateParam}`),
         fetch(`/api/daily/streak?localDateUtc=${encodeURIComponent(localDateUtc)}`),
         fetch("/api/tasks/overdue"),
         fetch(`/api/tasks/today?date=${dateParam}`),
+        fetch(`/api/daily/heatmap?date=${dateParam}`),
       ]);
 
       const failed = [
@@ -63,14 +72,16 @@ export default function DashboardPage() {
         throw new Error(`Failed to load: ${failed.join(", ")}`);
       }
 
-      const [daily, streak, overdue, todayTasks] = await Promise.all([
+      const [daily, streak, overdue, todayTasks, heatmap] = await Promise.all([
         dailyRes.json(),
         streakRes.json(),
         overdueRes.json(),
         todayRes.json(),
+        heatmapRes.ok ? heatmapRes.json() : [],
       ]);
 
       setData({ daily, streak, overdue, today: todayTasks });
+      setHeatmapData(heatmap);
     } catch (err) {
       console.error("Dashboard fetch error:", err);
       toast.error("Failed to load dashboard", {
@@ -137,6 +148,7 @@ export default function DashboardPage() {
             todayTotal={streak.todayTotal}
             perHabit={streak.perHabit}
           />
+          <HeatmapCard heatmapData={heatmapData} />
           <OverdueCard tasks={overdue} />
         </div>
 
