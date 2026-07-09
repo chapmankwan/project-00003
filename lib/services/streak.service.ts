@@ -1,5 +1,5 @@
 import { connectToDatabase } from "@/lib/mongodb";
-import { Daily, DailyTask } from "@/models";
+import { Daily, DailyTask, DailyTaskTemplate } from "@/models";
 import {
   calculateGlobalStreak,
   calculatePerHabitStreaks,
@@ -38,6 +38,17 @@ export async function getStreakData(userId: string): Promise<StreakResult> {
       .lean<DailyTaskDoc[]>(),
   ]);
 
+  const templateIds = Array.from(new Set(habitTasks.map(task => task.templateId.toString())));
+  const templates = templateIds.length > 0
+    ? await DailyTaskTemplate.find({ userId, _id: { $in: templateIds } })
+        .select("_id recurrence")
+        .lean<Array<{ _id: string; recurrence?: string }>>()
+    : [];
+
+  const recurrenceByTemplate = new Map(
+    templates.map(template => [template._id.toString(), template.recurrence])
+  );
+
   const globalStreak = calculateGlobalStreak(
     dailyRecords.map(r => ({
       date: r.date,
@@ -56,6 +67,7 @@ export async function getStreakData(userId: string): Promise<StreakResult> {
       text: t.text,
       date: t.date,
       completed: t.completed,
+      recurrence: recurrenceByTemplate.get(t.templateId.toString()),
     }))
   );
 
