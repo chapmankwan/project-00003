@@ -28,9 +28,16 @@ export const FlyoutPanel =({
     /* Priority List Selection */
     const priorityList = ["minor", "moderate", "major"];
     const [selectedPriority, setSelectedPriority] = useState<string>("moderate");
-    const priorityButtonHandler = (event: React.MouseEvent, priority: string) => {
+    const priorityButtonHandler = (event: React.MouseEvent | React.KeyboardEvent, priority: string) => {
         event.preventDefault();
         setSelectedPriority(priority);
+    };
+
+    const handlePriorityKeyDown = (event: React.KeyboardEvent, priority: string) => {
+        if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            priorityButtonHandler(event, priority);
+        }
     };
 
     /** Due Date Selection */
@@ -241,22 +248,25 @@ export const FlyoutPanel =({
                                 />
                                 {
                                     panelType.showPriority &&
-                                    <ul className="relative flex items-center gap-2 w-full mx-auto bg-mono-600 px-2 py-2 rounded-md">
+                                    <div className="relative flex items-center gap-2 w-full mx-auto bg-mono-600 px-2 py-2 rounded-md" role="radiogroup" aria-label="Priority">
                                         {
                                             priorityList.map( priority => (
-                                                <li 
+                                                <button
+                                                    type="button"
                                                     className={clsx(
-                                                        "cursor-pointer text-center px-2 py-1 rounded-md flex-1 relative z-40 select-none",
-                                                        selectedPriority === priority ? "text-mono-700" : "text-mono-100"
+                                                        "cursor-pointer text-center px-2 py-1 rounded-md flex-1 relative z-40 select-none border border-transparent transition-colors",
+                                                        selectedPriority === priority ? "text-mono-700 bg-lavender-300" : "text-mono-100 hover:bg-mono-500"
                                                     )}
                                                     key={priority}
                                                     onClick={event => priorityButtonHandler(event, priority)}
+                                                    onKeyDown={event => handlePriorityKeyDown(event, priority)}
+                                                    aria-pressed={selectedPriority === priority}
                                                 >
                                                     {priority}
-                                                </li>
+                                                </button>
                                             ))
                                         }
-                                    </ul>
+                                    </div>
                                 }
 
                             </div>
