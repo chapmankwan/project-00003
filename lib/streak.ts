@@ -9,6 +9,7 @@ export interface PerHabitRecord {
   text: string;
   date: Date;
   completed: boolean;
+  recurrence?: string;
 }
 
 export interface HabitStreak {
@@ -24,6 +25,12 @@ export interface StreakResult {
   perHabit: HabitStreak[];
 }
 
+import { shouldIncludeTemplate } from "@/lib/date";
+
+function isHabitScheduled(recurrence: string | undefined, date: Date): boolean {
+  if (!recurrence?.trim()) return true;
+  return shouldIncludeTemplate(recurrence, date);
+}
 
 /**
  * Normalizes a date to midnight UTC for safe comparison.
@@ -97,6 +104,8 @@ export function calculatePerHabitStreaks(tasks: PerHabitRecord[], referenceDate:
   const results: HabitStreak[] = [];
 
   for (const [templateId, { text, tasks: habitTasks }] of grouped) {
+    const recurrence = habitTasks.find(t => t.recurrence)?.recurrence;
+
     // Sort descending
     const sorted = habitTasks
       .filter(t => toMidnightUTC(t.date) <= yesterdayMs)
@@ -107,21 +116,31 @@ export function calculatePerHabitStreaks(tasks: PerHabitRecord[], referenceDate:
       continue;
     }
 
-    // If most recent past entry isn't yesterday, streak is 0
-    if (toMidnightUTC(sorted[0].date) !== yesterdayMs) {
-      results.push({ templateId, text, streak: 0 });
-      continue;
+    const taskByDate = new Map<number, PerHabitRecord>();
+    for (const task of sorted) {
+      taskByDate.set(toMidnightUTC(task.date), task);
     }
 
+    const earliestTaskDateMs = toMidnightUTC(sorted[sorted.length - 1].date);
     let streak = 0;
-    let expectedMs = yesterdayMs;
 
-    for (const task of sorted) {
-      const taskMs = toMidnightUTC(task.date);
-      if (taskMs !== expectedMs) break;
-      if (!task.completed) break;
+    for (let cursorMs = yesterdayMs; cursorMs >= earliestTaskDateMs; cursorMs -= 86_400_000) {
+      const cursorDate = new Date(cursorMs);
+
+      if (!isHabitScheduled(recurrence, cursorDate)) {
+        continue;
+      }
+
+      const task = taskByDate.get(cursorMs);
+      if (!task) {
+        break;
+      }
+
+      if (!task.completed) {
+        break;
+      }
+
       streak++;
-      expectedMs -= 86_400_000;
     }
 
     results.push({ templateId, text, streak });

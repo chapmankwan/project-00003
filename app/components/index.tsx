@@ -20,3 +20,4 @@ export * from "./account-dropdown";
 export * from "./quick-tasks-card";
 export * from "./quick-task-card";
 export * from "./collection-card";
+export * from "./heatmap-card";

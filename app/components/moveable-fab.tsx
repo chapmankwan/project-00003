@@ -108,7 +108,7 @@ export function MoveableFab({ onClick }: { onClick: () => void }) {
         ref.current!.releasePointerCapture(e.pointerId);
 
         if (dragging.current) {
-        snapToEdge();
+        snapToCorner();
         }
 
         dragging.current = false;
@@ -119,18 +119,17 @@ export function MoveableFab({ onClick }: { onClick: () => void }) {
         onClick();
     };
 
-    const snapToEdge = () => {
+    const snapToCorner = () => {
         const { innerWidth, innerHeight } = window;
 
-        const targetX =
-        posRef.current.x + BUTTON_SIZE / 2 < innerWidth / 2
-            ? 16
-            : innerWidth - BUTTON_SIZE - 16;
+        const centerX = innerWidth / 2;
+        const centerY = innerHeight / 2;
 
-        const targetY = Math.min(
-        Math.max(16, posRef.current.y),
-        innerHeight - BUTTON_SIZE - 16
-        );
+        const isLeft = posRef.current.x + BUTTON_SIZE / 2 < centerX;
+        const isTop = posRef.current.y + BUTTON_SIZE / 2 < centerY;
+
+        const targetX = isLeft ? 16 : innerWidth - BUTTON_SIZE - 16;
+        const targetY = isTop ? 16 : innerHeight - BUTTON_SIZE - 16;
 
         springAnimate({ x: targetX, y: targetY });
     };
