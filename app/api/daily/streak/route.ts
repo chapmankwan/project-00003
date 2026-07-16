@@ -1,7 +1,8 @@
 import { authOptions } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/mongodb";
-import { Daily, DailyTask } from "@/models";
+import { Daily, DailyTask, DailyTaskTemplate } from "@/models";
 
+import { Types } from "mongoose";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -24,12 +25,15 @@ export async function GET(req: NextRequest) {
         const localDateUtc = searchParams.get("localDateUtc");
         const referenceDate = localDateUtc ? new Date(localDateUtc) : new Date();
         const userId = session.user.id;
+        const normalizedUserId = Types.ObjectId.isValid(userId)
+            ? new Types.ObjectId(userId)
+            : userId;
         const todayMs = toMidnightUTC(referenceDate);
         const lookbackDate = new Date(todayMs - LOOKBACK_DAYS * 86_400_000);
 
         // Fetch daily records for the last 90 days, sorted: descending
         const dailyRecords = await Daily.find({
-            userId,
+            userId: normalizedUserId,
             date: { $gte: lookbackDate },
         })
             .select("date completedCount totalCount")
@@ -51,18 +55,40 @@ export async function GET(req: NextRequest) {
         // Fetch individual DailyTask records for per-habit streaks
         // Only require templateId, text, date, and completed fields
         const habitTasks = await DailyTask.find({
-            userId,
+            userId: normalizedUserId,
             date: { $gte: lookbackDate },
         })
             .select("templateId text date completed")
-            .lean();
-    
+            .lean<Array<{ templateId: Types.ObjectId | string; text: string; date: Date; completed: boolean }>>();
+
+        const templateIds = Array.from(
+            new Set(
+                habitTasks
+                    .map(task => task.templateId?.toString())
+                    .filter((id): id is string => Boolean(id))
+            )
+        );
+
+        const templates = templateIds.length > 0
+            ? await DailyTaskTemplate.find({
+                userId: normalizedUserId,
+                _id: { $in: templateIds.map(id => new Types.ObjectId(id)) },
+            })
+                .select("_id recurrence")
+                .lean<Array<{ _id: Types.ObjectId | string; recurrence?: string }>>()
+            : [];
+
+        const recurrenceByTemplate = new Map(
+            templates.map(template => [template._id.toString(), template.recurrence])
+        );
+
         const perHabit = calculatePerHabitStreaks(
-            habitTasks.map( task => ({
+            habitTasks.map(task => ({
                 templateId: task.templateId.toString(),
                 text: task.text,
                 date: task.date,
-                completed: task.completed
+                completed: task.completed,
+                recurrence: recurrenceByTemplate.get(task.templateId.toString()),
             })),
             referenceDate
         );

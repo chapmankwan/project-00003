@@ -106,6 +106,8 @@ export function calculatePerHabitStreaks(tasks: PerHabitRecord[], referenceDate:
   for (const [templateId, { text, tasks: habitTasks }] of grouped) {
     const recurrence = habitTasks.find(t => t.recurrence)?.recurrence;
 
+    console.log("+++ recurrence for templateId", templateId, "is", recurrence);
+
     // Sort descending
     const sorted = habitTasks
       .filter(t => toMidnightUTC(t.date) <= yesterdayMs)
