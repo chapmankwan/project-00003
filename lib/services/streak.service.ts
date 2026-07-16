@@ -1,4 +1,5 @@
 import { connectToDatabase } from "@/lib/mongodb";
+import { Types } from "mongoose";
 import { Daily, DailyTask, DailyTaskTemplate } from "@/models";
 import {
   calculateGlobalStreak,
@@ -27,22 +28,36 @@ export async function getStreakData(userId: string): Promise<StreakResult> {
   const todayMs = toMidnightUTC(new Date());
   const lookbackDate = new Date(todayMs - LOOKBACK_DAYS * 86_400_000);
 
+  const normalizedUserId = Types.ObjectId.isValid(userId)
+    ? new Types.ObjectId(userId)
+    : userId;
+
   const [dailyRecords, habitTasks] = await Promise.all([
-    Daily.find({ userId, date: { $gte: lookbackDate } })
+    Daily.find({ userId: normalizedUserId, date: { $gte: lookbackDate } })
       .select("date completedCount totalCount")
       .sort({ date: -1 })
       .lean<DailyDoc[]>(),
 
-    DailyTask.find({ userId, date: { $gte: lookbackDate } })
+    DailyTask.find({ userId: normalizedUserId, date: { $gte: lookbackDate } })
       .select("templateId text date completed")
       .lean<DailyTaskDoc[]>(),
   ]);
 
-  const templateIds = Array.from(new Set(habitTasks.map(task => task.templateId.toString())));
+  const templateIds = Array.from(
+    new Set(
+      habitTasks
+        .map(task => task.templateId?.toString())
+        .filter((id): id is string => Boolean(id))
+    )
+  );
+
   const templates = templateIds.length > 0
-    ? await DailyTaskTemplate.find({ userId, _id: { $in: templateIds } })
+    ? await DailyTaskTemplate.find({
+        userId: normalizedUserId,
+        _id: { $in: templateIds.map(id => new Types.ObjectId(id)) },
+      })
         .select("_id recurrence")
-        .lean<Array<{ _id: string; recurrence?: string }>>()
+        .lean<Array<{ _id: Types.ObjectId | string; recurrence?: string }>>()
     : [];
 
   const recurrenceByTemplate = new Map(
