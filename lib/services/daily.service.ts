@@ -15,6 +15,8 @@ export interface DailyListResult {
   date: string;
   completedCount: number;
   totalCount: number;
+  isHoliday?: boolean;
+  holidayNote?: string;
   tasks: DailyTaskItem[];
 }
 
@@ -43,6 +45,8 @@ export async function getDailyForDate(
     date: daily.date.toISOString(),
     completedCount: daily.completedCount,
     totalCount: daily.totalCount,
+    isHoliday: daily.isHoliday ?? false,
+    holidayNote: daily.holidayNote ?? "",
     tasks: tasks.map(t => ({
       _id: t._id.toString(),
       text: t.text,

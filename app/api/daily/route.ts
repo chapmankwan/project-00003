@@ -35,6 +35,48 @@ export async function GET(
             });
 
         if (dailyList) {
+            if (dailyList.isHoliday) {
+                return NextResponse.json(dailyList, { status: 200 });
+            }
+
+            if (dailyList.tasks.length === 0) {
+                // If a daily record exists but has no tasks, regenerate from templates.
+                const templates = await DailyTaskTemplate.find({
+                    userId: session.user.id,
+                }).sort({ order: 1 });
+
+                const applicableTemplates = templates.filter(t =>
+                    shouldIncludeTemplate(t.recurrence ?? "FREQ=DAILY", requestedDate)
+                );
+
+                const dailyTasks = await DailyTask.insertMany(
+                    applicableTemplates.map((template, index) => ({
+                        userId: session.user.id,
+                        dailyId: dailyList._id,
+                        templateId: template._id,
+                        date: requestedDate,
+                        text: template.text,
+                        description: template.description,
+                        priority: template.priority,
+                        completed: false,
+                        order: index,
+                        recurrence: applicableTemplates,
+                    }))
+                );
+
+                dailyList.tasks = dailyTasks.map((t) => t._id);
+                dailyList.completedCount = 0;
+                dailyList.totalCount = dailyTasks.length;
+                await dailyList.save();
+
+                const populatedDaily = await Daily.findById(dailyList._id).populate({
+                    path: "tasks",
+                    options: { sort: { order: 1 } },
+                });
+
+                return NextResponse.json(populatedDaily, { status: 200 });
+            }
+
             return NextResponse.json(dailyList, { status: 200 });
         }
 

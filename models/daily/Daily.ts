@@ -21,6 +21,8 @@ const DailySchema = new Schema({
 
   completedCount: { type: Number, default: 0 },
   totalCount:     { type: Number, default: 0 },
+  isHoliday:      { type: Boolean, default: false, index: true },
+  holidayNote:    { type: String, default: "" },
   
 }, {
   timestamps: true

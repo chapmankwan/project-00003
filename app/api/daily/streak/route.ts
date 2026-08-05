@@ -36,18 +36,25 @@ export async function GET(req: NextRequest) {
             userId: normalizedUserId,
             date: { $gte: lookbackDate },
         })
-            .select("date completedCount totalCount")
+            .select("date completedCount totalCount isHoliday")
             .sort({ date: -1 })
             .lean();
 
         // Exclude today from past records, as today possibly isn't complete and will break the streaks
         const todayRecord = dailyRecords.find( dailyRecord => toMidnightUTC(dailyRecord.date) === todayMs );
 
+        const holidayDates = new Set(
+          dailyRecords
+            .filter(r => r.isHoliday)
+            .map(r => toMidnightUTC(r.date))
+        );
+
         const globalStreak = calculateGlobalStreak(
             dailyRecords.map((r) => ({
                 date: r.date,
                 completedCount: r.completedCount,
                 totalCount: r.totalCount,
+                isHoliday: r.isHoliday,
             })),
             referenceDate
         );
@@ -90,7 +97,8 @@ export async function GET(req: NextRequest) {
                 completed: task.completed,
                 recurrence: recurrenceByTemplate.get(task.templateId.toString()),
             })),
-            referenceDate
+            referenceDate,
+            holidayDates
         );
 
         return NextResponse.json({

@@ -33,6 +33,7 @@ export async function GET(req: NextRequest) {
                 date: 1,
                 completedCount: 1,
                 totalCount: 1,
+                isHoliday: 1,
                 _id: 0,
             }
         ).sort({ date: 1 });
