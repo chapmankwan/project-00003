@@ -53,6 +53,8 @@ export const StreakCard = ({
         </div>
       </div>
 
+      <p className="mt-3 text-xs text-blush-300">Holidays do not break streaks — they are ignored when calculating streak continuity.</p>
+
       <button
         onClick={() => setExpanded(prev => !prev)}
         className="mt-4 text-xs text-mono-500 hover:text-mono-300 transition-colors cursor-pointer"
@@ -76,7 +78,7 @@ export const StreakCard = ({
                 {habit.text}
               </span>
               <span className="font-medium text-zinc-900 dark:text-zinc-100 flex items-center gap-1">
-                <span className="inline-block w-2 h-2 rounded-full bg-amber-400" />
+                <span className="inline-block w-2 h-2 rounded-full bg-blush-400" />
                 {habit.streak}
               </span>
             </div>

@@ -42,7 +42,12 @@ export function toUTCDateString(date: Date): string {
 }
 
 // Colour mapping
-export const getCompletionColor = (completedCount: number, totalCount: number): string => {
+export const getCompletionColor = (
+  completedCount: number,
+  totalCount: number,
+  isHoliday: boolean = false
+): string => {
+        if (isHoliday) return "bg-blush-700 border-blush-400";
     if (totalCount === 0) return "bg-mono-700/40 border-mono-700/20";
         const pct = completedCount / totalCount;
         if (pct === 0)   return "bg-mono-700/60 border-mono-600/30";
@@ -53,8 +58,12 @@ export const getCompletionColor = (completedCount: number, totalCount: number): 
         return "bg-lavender-500 border-lavender-400/60"; // 100%
 };
 
-export const getCompletionGlow = (completedCount: number, totalCount: number): string => {
-    if (totalCount === 0 || completedCount === 0) return "";
+export const getCompletionGlow = (
+  completedCount: number,
+  totalCount: number,
+  isHoliday: boolean = false
+): string => {
+    if (isHoliday || totalCount === 0 || completedCount === 0) return "";
     const pct = completedCount / totalCount;
     if (pct === 1) return "shadow-[0_0_6px_rgba(85,187,174,0.5)]";
     if (pct >= 0.75) return "shadow-[0_0_4px_rgba(85,187,174,0.25)]";

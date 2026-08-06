@@ -2,6 +2,7 @@ export interface DailyRecord {
   date: Date;
   completedCount: number;
   totalCount: number;
+  isHoliday?: boolean;
 }
 
 export interface PerHabitRecord {
@@ -10,6 +11,7 @@ export interface PerHabitRecord {
   date: Date;
   completed: boolean;
   recurrence?: string;
+  isHoliday?: boolean;
 }
 
 export interface HabitStreak {
@@ -54,27 +56,34 @@ export function calculateGlobalStreak(records: DailyRecord[], referenceDate: Dat
   const todayMs = toMidnightUTC(referenceDate);
   const yesterdayMs = todayMs - 86_400_000;
 
-  // Filter out today, work only from yesterday backwards
-  const past = records.filter(r => toMidnightUTC(r.date) <= yesterdayMs);
+  const past = records
+    .filter(r => toMidnightUTC(r.date) <= yesterdayMs)
+    .sort((a, b) => toMidnightUTC(b.date) - toMidnightUTC(a.date));
 
   if (past.length === 0) return 0;
 
-  // Check if yesterday exists and is complete, if not, then streak is 0
-  const mostRecent = toMidnightUTC(past[0].date);
-  if (mostRecent !== yesterdayMs) return 0;
+  const recordByDate = new Map<number, DailyRecord>();
+  for (const record of past) {
+    recordByDate.set(toMidnightUTC(record.date), record);
+  }
 
   let streak = 0;
-  let expectedMs = yesterdayMs;
+  let cursorMs = yesterdayMs;
 
-  for (const record of past) {
-    const recordMs = toMidnightUTC(record.date);
+  while (true) {
+    const record = recordByDate.get(cursorMs);
+    if (!record) break;
 
-    if (recordMs !== expectedMs) break; // streak ends if gap in days
-    if (record.totalCount === 0) break; // no tasks that day, do not count, for reoccurence
-    if (record.completedCount !== record.totalCount) break; // if incomplete, streak ends
+    if (record.isHoliday) {
+      cursorMs -= 86_400_000;
+      continue;
+    }
+
+    if (record.totalCount === 0) break;
+    if (record.completedCount !== record.totalCount) break;
 
     streak++;
-    expectedMs -= 86_400_000;
+    cursorMs -= 86_400_000;
   }
 
   return streak;
@@ -86,7 +95,11 @@ export function calculateGlobalStreak(records: DailyRecord[], referenceDate: Dat
  * @params tasks
  * @return sorted streaking by tasks
  */
-export function calculatePerHabitStreaks(tasks: PerHabitRecord[], referenceDate: Date = new Date()): HabitStreak[] {
+export function calculatePerHabitStreaks(
+  tasks: PerHabitRecord[],
+  referenceDate: Date = new Date(),
+  holidayDates: Set<number> = new Set()
+): HabitStreak[] {
   const todayMs = toMidnightUTC(referenceDate);
   const yesterdayMs = todayMs - 86_400_000;
 
@@ -130,6 +143,10 @@ export function calculatePerHabitStreaks(tasks: PerHabitRecord[], referenceDate:
       const cursorDate = new Date(cursorMs);
 
       if (!isHabitScheduled(recurrence, cursorDate)) {
+        continue;
+      }
+
+      if (holidayDates.has(cursorMs)) {
         continue;
       }
 

@@ -43,6 +43,8 @@ export interface DailyDoc {
   tasks: DailyTaskDoc[];
   completedCount: number;
   totalCount: number;
+  isHoliday?: boolean;
+  holidayNote?: string;
   createdAt: Date;
   updatedAt: Date;
 }

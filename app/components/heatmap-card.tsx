@@ -8,6 +8,7 @@ interface HeatmapEntry {
   date: string;
   completedCount: number;
   totalCount: number;
+  isHoliday?: boolean;
 }
 
 interface HeatmapCardProps {
@@ -35,7 +36,9 @@ export const HeatmapCard = ({ anchorDate, heatmapData = [], onDateSelect }: Heat
 
       <div className="mb-3 h-5">
         {hoveredEntry ? (
-          <p className="text-xs text-mono-300 font-mono">{formatDisplayDate(hovered!)} · {hoveredEntry.completedCount}/{hoveredEntry.totalCount} done</p>
+          <p className="text-xs text-mono-300 font-mono">
+            {formatDisplayDate(hovered!)} · {hoveredEntry.isHoliday ? "Holiday" : `${hoveredEntry.completedCount}/${hoveredEntry.totalCount} done`}
+          </p>
         ) : (
           <p className="text-xs text-mono-400">Activity</p>
         )}
@@ -52,8 +55,8 @@ export const HeatmapCard = ({ anchorDate, heatmapData = [], onDateSelect }: Heat
               onMouseLeave={() => setHovered(null)}
               className={clsx(
                 "w-4 h-4 rounded-xs border transition-all duration-150",
-                entry ? getCompletionColor(entry.completedCount, entry.totalCount) : "bg-mono-700/30 border-mono-700/20",
-                entry ? getCompletionGlow(entry.completedCount, entry.totalCount) : "",
+                entry ? getCompletionColor(entry.completedCount, entry.totalCount, entry.isHoliday ?? false) : "bg-mono-700/30 border-mono-700/20",
+                entry ? getCompletionGlow(entry.completedCount, entry.totalCount, entry.isHoliday ?? false) : "",
                 "cursor-pointer hover:scale-110 hover:brightness-110"
               )}
               aria-label={d}
@@ -75,6 +78,11 @@ export const HeatmapCard = ({ anchorDate, heatmapData = [], onDateSelect }: Heat
           <div key={bg} className={`w-3 h-3 rounded-sm ${bg}`} />
         ))}
         <span className="text-[10px] text-mono-600">More</span>
+
+        <div className="ml-auto flex items-center gap-2">
+          <div className="w-3 h-3 rounded-sm bg-blush-700 border border-blush-400" />
+          <span className="text-[10px] text-blush-300">Holiday</span>
+        </div>
       </div>
     </div>
   );
