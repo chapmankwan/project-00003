@@ -35,10 +35,6 @@ export async function GET(
             });
 
         if (dailyList) {
-            if (dailyList.isHoliday) {
-                return NextResponse.json(dailyList, { status: 200 });
-            }
-
             if (dailyList.tasks.length === 0) {
                 // If a daily record exists but has no tasks, regenerate from templates.
                 const templates = await DailyTaskTemplate.find({
