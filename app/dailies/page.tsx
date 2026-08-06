@@ -36,6 +36,7 @@ export default function DailyPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
     const [selectedDate, setSelectedDate] = useState(getTodayString());
+    const [holidayNote, setHolidayNote] = useState("");
     const [heatmapData, setHeatmapData] = useState<HeatmapEntry[]>([]);
 
     const openDetails = (task: Task) => setSelectedTask(task);
@@ -57,6 +58,7 @@ export default function DailyPage() {
 
             setList(data);
             setTasks(data.tasks);
+            setHolidayNote(data.holidayNote ?? "");
         } catch (err) {
             console.error("Error loading daily:", err);
         } finally {
@@ -131,11 +133,11 @@ export default function DailyPage() {
                 <button
                     type="button"
                     onClick={async () => {
-                        if (!list) return;
+                                if (!list) return;
                         try {
                             const res = await fetch(
                                 `/api/daily/holiday?date=${selectedDate}`,
-                                { method: list.isHoliday ? "DELETE" : "POST", headers: { "Content-Type": "application/json" }, body: list.isHoliday ? undefined : JSON.stringify({ date: selectedDate, note: "Holiday" }) }
+                                { method: list.isHoliday ? "DELETE" : "POST", headers: { "Content-Type": "application/json" }, body: list.isHoliday ? undefined : JSON.stringify({ date: selectedDate, note: holidayNote || "Holiday" }) }
                             );
                             if (!res.ok) throw new Error("Failed to update holiday");
                             await loadDaily(selectedDate);
@@ -143,12 +145,12 @@ export default function DailyPage() {
                             console.error("Error setting holiday status:", err);
                         }
                     }}
-                    className="px-2 py-1 text-xs font-semibold rounded-sm bg-blush-700 hover:bg-blush-600 transition-colors"
+                    className="px-2 py-1 ml-auto text-xs font-semibold cursor-pointer rounded-sm bg-blush-700 hover:bg-blush-600 transition-colors"
                 >
                     {list?.isHoliday ? "Remove Holiday" : "Mark Holiday"}
                 </button>
 
-                <Link href="/dailies/templates" className="px-1.5 py-0.5 ml-auto text-sm bg-lavender-600 hover:bg-lavender-700 rounded-sm">
+                <Link href="/dailies/templates" className="px-1.5 py-0.5 text-sm bg-lavender-600 hover:bg-lavender-700 rounded-sm">
                     Habit Templates
                 </Link>
             </section>
@@ -164,11 +166,48 @@ export default function DailyPage() {
                 isLoading ? 
                 <Loader/> :
                 <div className="w-[85%] md:w-2/3">
-                    {list?.isHoliday && (
+                    {list?.isHoliday ? (
                         <div className="mb-4 rounded-md border border-blush-400/20 bg-blush-900/20 p-4 text-sm text-blush-100">
-                            <strong>Holiday:</strong> {list.holidayNote || "This day is marked as a holiday."}
+                            <div className="flex items-center justify-between gap-4">
+                                <strong>Holiday:</strong>
+                                <button
+                                    type="button"
+                                    onClick={async () => {
+                                        if (!list) return;
+                                        try {
+                                            const res = await fetch(
+                                                `/api/daily/holiday?date=${selectedDate}`,
+                                                { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ date: selectedDate, note: holidayNote || "Holiday" }) }
+                                            );
+                                            if (!res.ok) throw new Error("Failed to update holiday note");
+                                            await loadDaily(selectedDate);
+                                        } catch (err) {
+                                            console.error("Error updating holiday note:", err);
+                                        }
+                                    }}
+                                    className="rounded-sm border border-blush-400 px-2 py-1 text-xs text-blush-100 hover:bg-blush-800 transition-colors"
+                                >
+                                    Save note
+                                </button>
+                            </div>
+                            <div className="mt-3 flex flex-col gap-2">
+                                <label className="text-xs text-mono-400" htmlFor="holiday-note">
+                                    Holiday note
+                                </label>
+                                <input
+                                    id="holiday-note"
+                                    type="text"
+                                    value={holidayNote}
+                                    onChange={(e) => setHolidayNote(e.target.value)}
+                                    placeholder="Enter holiday note"
+                                    className="w-full rounded-md border border-mono-700 bg-mono-950 px-3 py-2 text-sm text-mono-100 focus:border-blush-500 focus:outline-none focus:ring-2 focus:ring-blush-500/20"
+                                />
+                            </div>
+                            <p className="mt-2 text-sm text-blush-100/80">
+                                {list.holidayNote || "This day is marked as a holiday."}
+                            </p>
                         </div>
-                    )}
+                    ) : null}
                     <ul className={clsx(
                         "w-full flex-grow overflow-y-auto overflow-x-hidden mb-4 flex flex-col rounded-md touch-pan-y scrollbar-soft",
                         "transition-[max-height] duration-300 max-h-[100dvh]"

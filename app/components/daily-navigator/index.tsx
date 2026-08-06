@@ -100,7 +100,7 @@ export const DailyNavigator = ({ selectedDate, onDateChange, heatmapData, onHeat
 
             <div className="ml-auto flex items-center gap-2">
                 <div className="w-3 h-3 rounded-sm bg-blush-700 border border-blush-400" />
-                <span className="text-[10px] text-blush-300">Holiday</span>
+                <span className="text-[10px] text-mono-600">Holiday</span>
             </div>
         </div>
     )
