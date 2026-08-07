@@ -47,25 +47,13 @@ export const getCompletionColor = (
   totalCount: number,
   isHoliday: boolean = false
 ): string => {
-        if (isHoliday) return "bg-blush-700 border-blush-400";
-    if (totalCount === 0) return "bg-mono-700/40 border-mono-700/20";
+        if (isHoliday) return "bg-mint-400 border-mint-400";
+    if (totalCount === 0) return "bg-mono-800/70 border-mono-800/70";
         const pct = completedCount / totalCount;
-        if (pct === 0)   return "bg-mono-700/60 border-mono-600/30";
-        if (pct < 0.25)  return "bg-lavender-900 border-lavender-900/60";
-        if (pct < 0.5)   return "bg-lavender-800 border-lavender-800/60";
-        if (pct < 0.75)  return "bg-lavender-700 border-lavender-700/60";
-        if (pct < 1)     return "bg-lavender-600 border-lavender-600/60";
-        return "bg-lavender-500 border-lavender-400/60"; // 100%
+        if (pct === 0)   return "bg-mono-800/70 border-mono-800/70";
+        if (pct < 0.25)  return "bg-lavender-900 border-lavender-900";
+        if (pct < 0.5)   return "bg-lavender-800 border-lavender-800";
+        if (pct < 0.75)  return "bg-lavender-700 border-lavender-700";
+        if (pct < 1)     return "bg-lavender-600 border-lavender-600";
+        return "bg-lavender-500 border-lavender-500"; // 100%
 };
-
-export const getCompletionGlow = (
-  completedCount: number,
-  totalCount: number,
-  isHoliday: boolean = false
-): string => {
-    if (isHoliday || totalCount === 0 || completedCount === 0) return "";
-    const pct = completedCount / totalCount;
-    if (pct === 1) return "shadow-[0_0_6px_rgba(85,187,174,0.5)]";
-    if (pct >= 0.75) return "shadow-[0_0_4px_rgba(85,187,174,0.25)]";
-    return "";
-}
