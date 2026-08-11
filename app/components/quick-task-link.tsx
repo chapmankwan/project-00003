@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export const QuickTaskCard = () => {
+export const QuickTaskLink = () => {
     return (
         <Link
             href={`/collections/quick-tasks`}

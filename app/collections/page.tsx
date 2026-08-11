@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { redirect } from "next/navigation";
 import { useSession } from "next-auth/react";
 
-import { CollectionCard, FlyoutPanel, PageHeader, Loader, MoveableFab, QuickTaskCard } from "@/app/components";
+import { CollectionCard, FlyoutPanel, PageHeader, Loader, MoveableFab, QuickTaskLink } from "@/app/components";
 import { useCollectionsApi } from "@/app/utilities/collectionApiHooks";
 
 import { Dialog, DialogPanel } from '@headlessui/react';
@@ -118,7 +118,7 @@ export default function Collections () {
                 loading ? 
                 <Loader /> :
                 <ul className="w-[85%] md:w-2/3 flex-grow overflow-y-auto overflow-x-hidden mb-4 flex flex-col gap-1.5 scrollbar-soft">
-                    <QuickTaskCard />
+                    <QuickTaskLink />
                     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                         <SortableContext items={visibleCollections.map(c => c._id.toString())} strategy={verticalListSortingStrategy}>
                             {
