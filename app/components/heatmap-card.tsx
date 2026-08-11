@@ -1,7 +1,7 @@
 "use client";
 
 import clsx from "clsx";
-import { buildLastXDays, getCompletionColor, getCompletionGlow, formatDisplayDate, toUTCDateString } from "./daily-navigator/utilities";
+import { buildLastXDays, getCompletionColor, formatDisplayDate, toUTCDateString } from "./daily-navigator/utilities";
 import { useState } from "react";
 
 interface HeatmapEntry {
@@ -55,8 +55,7 @@ export const HeatmapCard = ({ anchorDate, heatmapData = [], onDateSelect }: Heat
               onMouseLeave={() => setHovered(null)}
               className={clsx(
                 "w-4 h-4 rounded-xs border transition-all duration-150",
-                entry ? getCompletionColor(entry.completedCount, entry.totalCount, entry.isHoliday ?? false) : "bg-mono-700/30 border-mono-700/20",
-                entry ? getCompletionGlow(entry.completedCount, entry.totalCount, entry.isHoliday ?? false) : "",
+                entry ? getCompletionColor(entry.completedCount, entry.totalCount, entry.isHoliday ?? false) : "bg-mono-800/70 border-mono-800/70",
                 "cursor-pointer hover:scale-110 hover:brightness-110"
               )}
               aria-label={d}
@@ -66,21 +65,21 @@ export const HeatmapCard = ({ anchorDate, heatmapData = [], onDateSelect }: Heat
       </div>
 
       <div className="flex items-center gap-1 pt-2">
-        <span className="text-[10px] text-mono-600">Less</span>
+        <span className="text-[10px] text-mono-400">Less</span>
         {[
-          "bg-mono-700/30",
+          "bg-mono-800/70",
           "bg-lavender-950",
           "bg-lavender-900",
           "bg-lavender-800",
           "bg-lavender-700",
           "bg-lavender-500",
         ].map(bg => (
-          <div key={bg} className={`w-3 h-3 rounded-sm ${bg}`} />
+          <div key={bg} className={`w-3 h-3 rounded-xs ${bg}`} />
         ))}
-        <span className="text-[10px] text-mono-600">More</span>
+        <span className="text-[10px] text-mono-400">More</span>
 
         <div className="ml-auto flex items-center gap-2">
-          <div className="w-3 h-3 rounded-sm bg-blush-700 border border-blush-400" />
+          <div className="w-3 h-3 rounded-xs bg-mint-400 border border-mint-400" />
           <span className="text-[10px] text-blush-300">Holiday</span>
         </div>
       </div>

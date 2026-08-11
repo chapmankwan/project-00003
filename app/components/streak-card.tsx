@@ -53,7 +53,7 @@ export const StreakCard = ({
         </div>
       </div>
 
-      <p className="mt-3 text-xs text-blush-300">Holidays do not break streaks — they are ignored when calculating streak continuity.</p>
+      <p className="mt-3 text-xs text-blush-400/70">Holidays do not break streaks. Take time off!</p>
 
       <button
         onClick={() => setExpanded(prev => !prev)}
